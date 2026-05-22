@@ -1,0 +1,120 @@
+class PlatformSecurityStatus {
+  const PlatformSecurityStatus({
+    required this.platform,
+    required this.provider,
+    required this.systemKeystoreAvailable,
+    required this.degraded,
+    required this.message,
+  });
+
+  final String platform;
+  final String provider;
+  final bool systemKeystoreAvailable;
+  final bool degraded;
+  final String message;
+
+  factory PlatformSecurityStatus.fromJson(Map<String, Object?> json) {
+    return PlatformSecurityStatus(
+      platform: json['platform'] as String? ?? '-',
+      provider: json['provider'] as String? ?? '-',
+      systemKeystoreAvailable: json['systemKeystoreAvailable'] as bool? ?? false,
+      degraded: json['degraded'] as bool? ?? true,
+      message: json['message'] as String? ?? '',
+    );
+  }
+}
+
+class AppStatus {
+  const AppStatus({
+    required this.enrolled,
+    required this.securityStatus,
+    this.config,
+    this.recovery,
+  });
+
+  final bool enrolled;
+  final PlatformSecurityStatus securityStatus;
+  final Map<String, Object?>? config;
+  final Map<String, Object?>? recovery;
+
+  factory AppStatus.fromJson(Object? value) {
+    final json = (value as Map).cast<String, Object?>();
+    return AppStatus(
+      enrolled: json['enrolled'] as bool? ?? false,
+      securityStatus: PlatformSecurityStatus.fromJson(
+        (json['securityStatus'] as Map?)?.cast<String, Object?>() ?? const {},
+      ),
+      config: (json['config'] as Map?)?.cast<String, Object?>(),
+      recovery: (json['recovery'] as Map?)?.cast<String, Object?>(),
+    );
+  }
+}
+
+class CredentialRecord {
+  const CredentialRecord({
+    required this.recordId,
+    required this.recordSeq,
+    required this.displayName,
+    required this.serviceHint,
+    required this.accountHint,
+    required this.version,
+    required this.salt,
+    required this.encodingDescriptor,
+    required this.state,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final String recordId;
+  final int recordSeq;
+  final String displayName;
+  final String serviceHint;
+  final String accountHint;
+  final int version;
+  final String salt;
+  final Map<String, Object?> encodingDescriptor;
+  final String state;
+  final String createdAt;
+  final String updatedAt;
+
+  factory CredentialRecord.fromJson(Object? value) {
+    final json = (value as Map).cast<String, Object?>();
+    return CredentialRecord(
+      recordId: json['recordId'] as String,
+      recordSeq: (json['recordSeq'] as num).toInt(),
+      displayName: json['displayName'] as String? ?? '',
+      serviceHint: json['serviceHint'] as String? ?? '',
+      accountHint: json['accountHint'] as String? ?? '',
+      version: (json['version'] as num).toInt(),
+      salt: json['salt'] as String? ?? '',
+      encodingDescriptor: (json['encodingDescriptor'] as Map).cast<String, Object?>(),
+      state: json['state'] as String? ?? 'active',
+      createdAt: json['createdAt'] as String? ?? '',
+      updatedAt: json['updatedAt'] as String? ?? '',
+    );
+  }
+}
+
+class UsbCandidate {
+  const UsbCandidate({
+    required this.rootPath,
+    required this.packagePath,
+    required this.readable,
+    required this.message,
+  });
+
+  final String rootPath;
+  final String packagePath;
+  final bool readable;
+  final String message;
+
+  factory UsbCandidate.fromJson(Object? value) {
+    final json = (value as Map).cast<String, Object?>();
+    return UsbCandidate(
+      rootPath: json['rootPath'] as String? ?? '',
+      packagePath: json['packagePath'] as String? ?? '',
+      readable: json['readable'] as bool? ?? false,
+      message: json['message'] as String? ?? '',
+    );
+  }
+}
