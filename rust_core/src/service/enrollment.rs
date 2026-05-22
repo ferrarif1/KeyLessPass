@@ -1,6 +1,6 @@
 use crate::crypto::{b64_encode, recovery as crypto_recovery, SecretBytes};
 use crate::domain::{AppConfig, LocalFactorPayload, UsbFactorPayload};
-use crate::error::Result;
+use crate::error::{KeylessPassError, Result};
 use crate::platform::{
     current_platform_provider, current_security_status, PlatformFactorProvider,
     PlatformSecurityStatus,
@@ -41,6 +41,12 @@ pub fn enroll_with_provider(
     request: EnrollmentRequest,
 ) -> Result<EnrollmentResponse> {
     paths.ensure()?;
+    if paths.config_path.exists() || paths.local_factor_path.exists() || paths.db_path.exists() {
+        return Err(KeylessPassError::Validation(
+            "KeylessPass is already enrolled on this device; ordinary re-enrollment is blocked to avoid overwriting master-key-dependent recovery material. Use recovery to rebuild a missing factor package, or perform an explicit factory reset outside the normal enrollment flow.".to_string(),
+        ));
+    }
+
     let user_id = Uuid::new_v4();
     let device_id = provider.get_or_create_device_id()?;
     let device_secret: SecretBytes = provider.get_or_create_device_secret()?;

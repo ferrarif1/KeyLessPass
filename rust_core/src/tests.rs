@@ -85,6 +85,21 @@ fn same_cdr_derivation_is_stable() {
 }
 
 #[test]
+fn reenrollment_is_blocked_after_local_state_exists() {
+    let harness = setup();
+    let err = enroll_with_provider(
+        &harness.paths,
+        &harness.provider,
+        EnrollmentRequest {
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap_err();
+    assert!(err.to_string().contains("already enrolled"));
+}
+
+#[test]
 fn display_service_and_account_hints_do_not_affect_derivation() {
     let harness = setup();
     let before = derive(&harness);

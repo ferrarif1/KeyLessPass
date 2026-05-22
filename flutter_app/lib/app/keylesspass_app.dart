@@ -12,6 +12,16 @@ import '../widgets/desktop_widgets.dart';
 
 enum _View { services, add, enroll, recovery, security, settings }
 
+UsbCandidate? _preferredUsbCandidate(List<UsbCandidate> candidates, {bool requireReadable = false}) {
+  if (candidates.isEmpty) return null;
+  if (requireReadable) {
+    for (final candidate in candidates) {
+      if (candidate.readable) return candidate;
+    }
+  }
+  return candidates.first;
+}
+
 class KeylessPassDesktopApp extends StatelessWidget {
   const KeylessPassDesktopApp({super.key});
 
@@ -271,10 +281,10 @@ class _HomeWindowState extends State<_HomeWindow> {
       );
     }
     if (_status?.enrolled != true && _view != _View.enroll) {
-      return _EnrollmentPage(api: api, usbCandidates: _usbCandidates, onDone: _refresh);
+      return _EnrollmentPage(api: api, usbCandidates: _usbCandidates, enrolled: false, onDone: _refresh);
     }
     return switch (_view) {
-      _View.enroll => _EnrollmentPage(api: api, usbCandidates: _usbCandidates, onDone: _refresh),
+      _View.enroll => _EnrollmentPage(api: api, usbCandidates: _usbCandidates, enrolled: _status?.enrolled == true, onDone: _refresh),
       _View.add => _AddCredentialPage(api: api, onDone: _refresh),
       _View.recovery => _RecoveryPage(api: api, usbCandidates: _usbCandidates, onDone: _refresh),
       _View.security => _SecurityPage(status: _status, usbCandidates: _usbCandidates),
@@ -318,10 +328,11 @@ class _HomeWindowState extends State<_HomeWindow> {
 }
 
 class _EnrollmentPage extends StatefulWidget {
-  const _EnrollmentPage({required this.api, required this.usbCandidates, required this.onDone});
+  const _EnrollmentPage({required this.api, required this.usbCandidates, required this.enrolled, required this.onDone});
 
   final CoreApi api;
   final List<UsbCandidate> usbCandidates;
+  final bool enrolled;
   final Future<void> Function() onDone;
 
   @override
@@ -337,8 +348,20 @@ class _EnrollmentPageState extends State<_EnrollmentPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.usbCandidates.isNotEmpty) {
-      _usbPath.text = widget.usbCandidates.first.rootPath;
+    _fillUsbPathIfEmpty();
+  }
+
+  @override
+  void didUpdateWidget(covariant _EnrollmentPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _fillUsbPathIfEmpty();
+  }
+
+  void _fillUsbPathIfEmpty() {
+    if (_usbPath.text.trim().isNotEmpty) return;
+    final candidate = _preferredUsbCandidate(widget.usbCandidates);
+    if (candidate != null) {
+      _usbPath.text = candidate.rootPath;
     }
   }
 
@@ -350,6 +373,12 @@ class _EnrollmentPageState extends State<_EnrollmentPage> {
   }
 
   Future<void> _submit() async {
+    if (widget.enrolled) {
+      setState(() {
+        _message = '当前设备已初始化。为避免覆盖 K_master、本机因子包和 USB 因子包，普通初始化已锁定；如需补 USB，请使用恢复向导。';
+      });
+      return;
+    }
     setState(() {
       _busy = true;
       _message = null;
@@ -387,15 +416,25 @@ class _EnrollmentPageState extends State<_EnrollmentPage> {
                   icon: Icons.usb_rounded,
                   tone: widget.usbCandidates.isEmpty ? KpColors.warning : KpColors.primary,
                 ),
+                if (widget.enrolled) ...[
+                  const SizedBox(height: 12),
+                  const InlineNotice(
+                    text: '此设备已经初始化。重新初始化会生成新的 K_master，旧 CDR 将无法再派生出原服务密码，因此已禁止在普通初始化页面覆盖现有状态。USB 丢失请进入恢复向导重建 USB factor package。',
+                    icon: Icons.lock_rounded,
+                    tone: KpColors.warning,
+                  ),
+                ],
                 const SizedBox(height: 16),
                 TextField(
                   controller: _mnemonic,
                   obscureText: true,
+                  enabled: !widget.enrolled,
                   decoration: const InputDecoration(labelText: 'Mnemonic phrase'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _usbPath,
+                  enabled: !widget.enrolled,
                   decoration: InputDecoration(
                     labelText: 'USB 路径',
                     suffixIcon: PopupMenuButton<String>(
@@ -432,9 +471,9 @@ class _EnrollmentPageState extends State<_EnrollmentPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: FilledButton.icon(
-                    onPressed: _busy ? null : _submit,
+                    onPressed: _busy || widget.enrolled ? null : _submit,
                     icon: const Icon(Icons.verified_user_rounded),
-                    label: Text(_busy ? '初始化中...' : '创建本机因子和 USB 因子'),
+                    label: Text(widget.enrolled ? '已初始化，禁止覆盖' : (_busy ? '初始化中...' : '创建本机因子和 USB 因子')),
                   ),
                 ),
               ],
@@ -646,8 +685,20 @@ class _DeriveDialogState extends State<_DeriveDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.usbCandidates.isNotEmpty) {
-      _usbPath.text = widget.usbCandidates.first.rootPath;
+    _fillUsbPathIfEmpty();
+  }
+
+  @override
+  void didUpdateWidget(covariant _DeriveDialog oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _fillUsbPathIfEmpty();
+  }
+
+  void _fillUsbPathIfEmpty() {
+    if (_usbPath.text.trim().isNotEmpty) return;
+    final candidate = _preferredUsbCandidate(widget.usbCandidates, requireReadable: true);
+    if (candidate != null) {
+      _usbPath.text = candidate.rootPath;
     }
   }
 
@@ -845,8 +896,20 @@ class _RecoveryPageState extends State<_RecoveryPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.usbCandidates.isNotEmpty) {
-      _usbPath.text = widget.usbCandidates.first.rootPath;
+    _fillUsbPathIfEmpty();
+  }
+
+  @override
+  void didUpdateWidget(covariant _RecoveryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _fillUsbPathIfEmpty();
+  }
+
+  void _fillUsbPathIfEmpty() {
+    if (_usbPath.text.trim().isNotEmpty) return;
+    final candidate = _preferredUsbCandidate(widget.usbCandidates, requireReadable: !_recoverUsb);
+    if (candidate != null) {
+      _usbPath.text = candidate.rootPath;
     }
   }
 
@@ -894,12 +957,24 @@ class _RecoveryPageState extends State<_RecoveryPage> {
                     ButtonSegment(value: false, label: Text('更换本机')),
                   ],
                   selected: {_recoverUsb},
-                  onSelectionChanged: (value) => setState(() => _recoverUsb = value.first),
+                  onSelectionChanged: (value) => setState(() {
+                    _recoverUsb = value.first;
+                    _usbPath.clear();
+                    _fillUsbPathIfEmpty();
+                  }),
                 ),
                 const SizedBox(height: 16),
                 const InlineNotice(
                   text: '恢复只重建缺失因子包并刷新 recovery metadata generation；它不会改变 CDR 的 encodingDescriptor，也不会改变既有服务密码。',
                   icon: Icons.settings_backup_restore_rounded,
+                ),
+                const SizedBox(height: 16),
+                InlineNotice(
+                  text: widget.usbCandidates.isEmpty
+                      ? '未发现可移动路径。也可以手动输入 Finder 中显示的挂载路径，例如 /Volumes/WD。'
+                      : '已发现 ${widget.usbCandidates.length} 个可移动路径；当前会优先使用 ${_usbPath.text.isEmpty ? '手动输入路径' : _usbPath.text}。',
+                  icon: Icons.usb_rounded,
+                  tone: widget.usbCandidates.isEmpty ? KpColors.warning : KpColors.primary,
                 ),
                 const SizedBox(height: 16),
                 TextField(controller: _mnemonic, obscureText: true, decoration: const InputDecoration(labelText: 'Mnemonic phrase')),
