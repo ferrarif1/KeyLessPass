@@ -68,7 +68,7 @@ cp test/goldens/*.png ../docs/assets/screenshots/
 
 ## Prerequisites
 
-- **Rust** — stable toolchain ([`rust-toolchain.toml`](rust-toolchain.toml)); crate requires **Rust ≥ 1.77**
+- **Rust** — **≥ 1.70** (verified with **rustc 1.70.0**); optional stable channel pin in [`rust-toolchain.toml`](rust-toolchain.toml) (does not override your installed compiler version)
 - **Flutter** — SDK **≥ 3.3.0** ([`flutter_app/pubspec.yaml`](flutter_app/pubspec.yaml))
 - **Desktop platform SDKs**
   - macOS: Xcode / macOS desktop support
@@ -255,7 +255,7 @@ Sensitive derivation and recovery failures return generalized errors at the FFI 
 
 ## License
 
-There is **no** `LICENSE` file at the repository root. Confirm licensing with the upstream maintainer before redistribution; consider adding an explicit license if you plan to open-source the project.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Links
 

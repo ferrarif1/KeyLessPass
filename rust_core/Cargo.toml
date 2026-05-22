@@ -3,7 +3,7 @@ name = "keylesspass_core"
 version = "0.1.0"
 description = "KeylessPass storage-free local password derivation core"
 edition = "2021"
-rust-version = "1.77"
+rust-version = "1.70"
 
 [lib]
 name = "keylesspass_core"

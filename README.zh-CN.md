@@ -30,7 +30,7 @@ KeyLessPass 是一个**仅本地运行**的桌面端密码管理原型：不维�
 
 ## 环境要求
 
-- **Rust**：stable 工具链（见 [`rust-toolchain.toml`](rust-toolchain.toml)），crate 要求 **Rust ≥ 1.77**
+- **Rust**：**≥ 1.70**（已在 **rustc 1.70.0** 上验证）；可选用 [`rust-toolchain.toml`](rust-toolchain.toml) 中的 stable 通道（不会覆盖你已安装的编译器版本）
 - **Flutter**：SDK **≥ 3.3.0**（见 [`flutter_app/pubspec.yaml`](flutter_app/pubspec.yaml)）
 - **桌面平台 SDK**：
   - macOS：Xcode / macOS 桌面支持
@@ -189,7 +189,7 @@ KeyLessPass/
 
 ## 许可证
 
-本仓库根目录**未包含**独立的 `LICENSE` 文件。使用前请自行确认上游仓库的许可条款；若需开源分发，建议由维护者补充明确许可证。
+本项目采用 [MIT 许可证](LICENSE)。
 
 ## 相关链接
 
