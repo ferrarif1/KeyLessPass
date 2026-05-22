@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo.svg" alt="KeyLessPass" width="96" height="96" />
+  <img src="docs/assets/logo.png" alt="KeyLessPass" width="96" height="96" />
 </p>
 
 <h1 align="center">KeyLessPass</h1>
@@ -22,7 +22,12 @@
 
 KeyLessPass is a **local-only** desktop prototype for managing service credentials without a traditional encrypted password database. It does **not** persist plaintext target-system passwords on disk. When you need a password, the app **deterministically derives** it from a master key, device-bound factors, and a USB factor package. Local SQLite stores only **CDR (Credential Derivation Record)** metadata and integrity tags — never the derived password.
 
-This repository is a standalone Git project ([`ferrarif1/KeyLessPass`](https://github.com/ferrarif1/KeyLessPass)). If you obtained it via the parent `PwdDriver` workspace, KeyLessPass usually lives at `PwdDriver/KeyLessPass/` alongside other materials; builds are independent.
+Clone this repository:
+
+```bash
+git clone https://github.com/ferrarif1/KeyLessPass.git
+cd KeyLessPass
+```
 
 ## Features
 

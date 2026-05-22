@@ -1,8 +1,33 @@
-# KeyLessPass
+<p align="center">
+  <img src="docs/assets/logo.png" alt="KeyLessPass" width="96" height="96" />
+</p>
+
+<h1 align="center">KeyLessPass</h1>
+
+<p align="center">
+  <strong>仅本地运行的桌面密码管理原型 — 按需派生口令，不保存口令库。</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/ferrarif1/KeyLessPass">GitHub</a>
+  ·
+  <a href="README.md">English</a>
+  ·
+  <a href="docs/DESIGN.md">设计</a>
+  ·
+  <a href="docs/SECURITY.md">安全</a>
+</p>
+
+---
 
 KeyLessPass 是一个**仅本地运行**的桌面端密码管理原型：不维护传统意义上的“加密密码库”，也不在磁盘上持久化目标系统的明文口令。应用在需要时根据主密钥、本机因子与 USB 因子等材料**确定性派生**服务口令；本地 SQLite 仅保存 **CDR（Credential Derivation Record，凭据派生记录）** 元数据与完整性信息，不存储派生出的密码。
 
-本仓库为可独立构建的 Git 项目（远程：`https://github.com/ferrarif1/KeyLessPass`）。若你通过父目录 `PwdDriver` 获取代码，KeyLessPass 通常位于其中的 `KeyLessPass/` 子目录，与论文稿件等其它材料并列，互不影响构建。
+克隆本仓库：
+
+```bash
+git clone https://github.com/ferrarif1/KeyLessPass.git
+cd KeyLessPass
+```
 
 **English documentation:** [README.md](README.md)
 
