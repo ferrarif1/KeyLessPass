@@ -17,6 +17,61 @@ import 'app_theme.dart';
 enum _Section { dashboard, setup, records, add, derive, rotation, usb, security, settings, about }
 enum _RecordFilter { all, active, pending, retired, conflict, error }
 
+class _ResponsiveGrid extends StatelessWidget {
+  const _ResponsiveGrid({
+    required this.children,
+    this.minItemWidth = 220,
+    this.maxColumns = 3,
+    this.spacing = 12,
+  });
+
+  final List<Widget> children;
+  final double minItemWidth;
+  final int maxColumns;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        if (!width.isFinite || width <= 0) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final child in children) ...[
+                child,
+                if (child != children.last) SizedBox(height: spacing),
+              ],
+            ],
+          );
+        }
+
+        final columns = ((width + spacing) / (minItemWidth + spacing)).floor().clamp(1, maxColumns).toInt();
+        final itemWidth = (width - spacing * (columns - 1)) / columns;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            for (final child in children) SizedBox(width: itemWidth, child: child),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(width: double.infinity, child: child);
+  }
+}
+
 extension _Text on BuildContext {
   AppLocalizations get t => AppLocalizations.of(this);
 }
@@ -80,7 +135,7 @@ class _HomeWindow extends StatefulWidget {
 
 class _HomeWindowState extends State<_HomeWindow> {
   CoreApi? _api;
-  _Section _section = _Section.dashboard;
+  _Section _section = _initialSectionFromEnvironment();
   _RecordFilter _filter = _RecordFilter.all;
   AppStatus? _status;
   List<CredentialRecord> _records = [];
@@ -323,13 +378,14 @@ class _HomeWindowState extends State<_HomeWindow> {
       subtitle: t.dashboardSubtitle,
       children: [
         _messageBar(),
-        Wrap(
+        _ResponsiveGrid(
+          minItemWidth: 210,
+          maxColumns: 3,
           spacing: 12,
-          runSpacing: 12,
           children: [
-            SizedBox(width: 220, child: SignalTile(label: t.activeRecords, value: '${_records.length}', tone: KpColors.primary)),
-            SizedBox(width: 220, child: SignalTile(label: t.usbStatus, value: _usbCandidates.isEmpty ? t.notFound : t.available, tone: _usbCandidates.isEmpty ? KpColors.warning : KpColors.success)),
-            SizedBox(width: 220, child: SignalTile(label: t.integrity, value: t.ok, tone: KpColors.success)),
+            SignalTile(label: t.activeRecords, value: '${_records.length}', tone: KpColors.primary),
+            SignalTile(label: t.usbStatus, value: _usbCandidates.isEmpty ? t.notFound : t.available, tone: _usbCandidates.isEmpty ? KpColors.warning : KpColors.success),
+            SignalTile(label: t.integrity, value: t.ok, tone: KpColors.success),
           ],
         ),
         SectionPanel(
@@ -338,14 +394,23 @@ class _HomeWindowState extends State<_HomeWindow> {
             children: [
               Text(t.quickActions, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 14),
-              Wrap(
+              _ResponsiveGrid(
+                minItemWidth: 190,
+                maxColumns: 4,
                 spacing: 12,
-                runSpacing: 12,
                 children: [
-                  FilledButton.icon(onPressed: _status?.enrolled == true ? () => setState(() => _section = _Section.add) : null, icon: const Icon(Icons.add_rounded), label: Text(t.actionAddRecord)),
-                  OutlinedButton.icon(onPressed: _records.isEmpty ? null : () => setState(() => _section = _Section.derive), icon: const Icon(Icons.password_rounded), label: Text(t.actionDerive)),
-                  OutlinedButton.icon(onPressed: _records.isEmpty ? null : () => setState(() => _section = _Section.rotation), icon: const Icon(Icons.rotate_right_rounded), label: Text(t.actionRotate)),
-                  OutlinedButton.icon(onPressed: () => setState(() => _section = _Section.usb), icon: const Icon(Icons.settings_backup_restore_rounded), label: Text(t.actionRecovery)),
+                  _ActionButton(
+                    child: FilledButton.icon(onPressed: _status?.enrolled == true ? () => setState(() => _section = _Section.add) : null, icon: const Icon(Icons.add_rounded), label: Text(t.actionAddRecord)),
+                  ),
+                  _ActionButton(
+                    child: OutlinedButton.icon(onPressed: _records.isEmpty ? null : () => setState(() => _section = _Section.derive), icon: const Icon(Icons.password_rounded), label: Text(t.actionDerive)),
+                  ),
+                  _ActionButton(
+                    child: OutlinedButton.icon(onPressed: _records.isEmpty ? null : () => setState(() => _section = _Section.rotation), icon: const Icon(Icons.rotate_right_rounded), label: Text(t.actionRotate)),
+                  ),
+                  _ActionButton(
+                    child: OutlinedButton.icon(onPressed: () => setState(() => _section = _Section.usb), icon: const Icon(Icons.settings_backup_restore_rounded), label: Text(t.actionRecovery)),
+                  ),
                 ],
               ),
             ],
@@ -771,6 +836,31 @@ class _HomeWindowState extends State<_HomeWindow> {
   String _shortDate(String value) {
     if (value.length >= 16) return value.substring(0, 16).replaceFirst('T', ' ');
     return value.isEmpty ? '-' : value;
+  }
+}
+
+_Section _initialSectionFromEnvironment() {
+  switch (Platform.environment['KEYLESSPASS_START_SECTION']?.trim().toLowerCase()) {
+    case 'setup':
+      return _Section.setup;
+    case 'records':
+      return _Section.records;
+    case 'add':
+      return _Section.add;
+    case 'derive':
+      return _Section.derive;
+    case 'rotation':
+      return _Section.rotation;
+    case 'usb':
+      return _Section.usb;
+    case 'security':
+      return _Section.security;
+    case 'settings':
+      return _Section.settings;
+    case 'about':
+      return _Section.about;
+    default:
+      return _Section.dashboard;
   }
 }
 

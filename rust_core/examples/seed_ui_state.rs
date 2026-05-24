@@ -6,7 +6,7 @@ use std::env;
 use std::path::PathBuf;
 
 const DEMO_MNEMONIC: &str =
-    "paper evidence prototype mnemonic phrase only for anonymous screenshots";
+    "anchor bridge cedar delta ember forest galaxy harbor ivory jasmine kernel lantern";
 
 fn main() -> Result<(), String> {
     let mut args = env::args().skip(1);
@@ -30,12 +30,12 @@ fn main() -> Result<(), String> {
     .map_err(String::from)?;
 
     for (display_name, service_hint, account_hint) in [
-        ("Demo Payroll Portal", "legacy.example.local", "demo.user"),
-        ("Demo VPN Console", "vpn.example.local", "demo.operator"),
+        ("Operations Console", "ops.internal.local", "operator"),
+        ("Vendor Portal", "vendor.internal.local", "reviewer"),
         (
-            "Demo Finance System",
-            "finance.example.local",
-            "demo.approver",
+            "Database Gateway",
+            "database.internal.local",
+            "admin",
         ),
     ] {
         add_credential_with_provider(

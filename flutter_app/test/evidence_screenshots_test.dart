@@ -39,7 +39,7 @@ void main() {
       tester,
       const _EnrollmentEvidence(),
       'enrollment.png',
-      selectedIndex: 2,
+      selectedIndex: 1,
       enrolled: false,
     );
   });
@@ -49,6 +49,7 @@ void main() {
       tester,
       const _CdrListEvidence(),
       'cdr_list.png',
+      selectedIndex: 2,
     );
   });
 
@@ -57,6 +58,7 @@ void main() {
       tester,
       const _DeriveEvidence(),
       'derive_password.png',
+      selectedIndex: 2,
     );
   });
 
@@ -65,6 +67,16 @@ void main() {
       tester,
       const _RotationEvidence(),
       'rotation.png',
+      selectedIndex: 2,
+    );
+  });
+
+  testWidgets('usb recovery screenshot', (tester) async {
+    await renderEvidenceScreen(
+      tester,
+      const _UsbRecoveryEvidence(),
+      'usb_recovery.png',
+      selectedIndex: 3,
     );
   });
 }
@@ -196,28 +208,17 @@ class _EvidenceShell extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 330,
+                Expanded(
                   child: ListView(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     children: [
-                      _EvidenceNavItem(icon: Icons.view_list_rounded, label: 'Records', selected: selectedIndex == 0),
-                      _EvidenceNavItem(icon: Icons.add_rounded, label: 'Add', selected: selectedIndex == 1),
-                      _EvidenceNavItem(icon: Icons.verified_user_rounded, label: 'Setup', selected: selectedIndex == 2),
-                      _EvidenceNavItem(icon: Icons.settings_backup_restore_rounded, label: 'Recovery', selected: selectedIndex == 3),
+                      _EvidenceNavItem(icon: Icons.home_rounded, label: 'Dashboard', selected: selectedIndex == 0),
+                      _EvidenceNavItem(icon: Icons.verified_user_rounded, label: 'Setup', selected: selectedIndex == 1),
+                      _EvidenceNavItem(icon: Icons.view_list_rounded, label: 'Records', selected: selectedIndex == 2),
+                      _EvidenceNavItem(icon: Icons.usb_rounded, label: 'USB Device', selected: selectedIndex == 3),
                       _EvidenceNavItem(icon: Icons.security_rounded, label: 'Security', selected: selectedIndex == 4),
                       _EvidenceNavItem(icon: Icons.tune_rounded, label: 'Settings', selected: selectedIndex == 5),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1, color: KpColors.hairline),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(10),
-                    children: const [
-                      _MiniRecord(title: 'Operations Console', subtitle: 'seq 1 / v1 / active', selected: true),
-                      _MiniRecord(title: 'Vendor Portal', subtitle: 'seq 2 / v1 / active'),
-                      _MiniRecord(title: 'Database Gateway', subtitle: 'seq 3 / v1 / active'),
+                      _EvidenceNavItem(icon: Icons.info_outline_rounded, label: 'About', selected: selectedIndex == 6),
                     ],
                   ),
                 ),
@@ -241,39 +242,6 @@ class _EvidenceShell extends StatelessWidget {
             ),
           ),
           Expanded(child: Padding(padding: const EdgeInsets.all(28), child: body)),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniRecord extends StatelessWidget {
-  const _MiniRecord({
-    required this.title,
-    required this.subtitle,
-    this.selected = false,
-  });
-
-  final String title;
-  final String subtitle;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: selected ? KpColors.surfaceCard : KpColors.surfaceSoft,
-        border: Border.all(color: selected ? KpColors.primary : KpColors.hairline),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(color: KpColors.bodyStrong, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: const TextStyle(color: KpColors.muted, fontSize: 12)),
         ],
       ),
     );
@@ -609,6 +577,80 @@ class _RotationEvidence extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class _UsbRecoveryEvidence extends StatelessWidget {
+  const _UsbRecoveryEvidence();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const PageTitle(
+          title: 'USB Device',
+          subtitle: 'Manage the ordinary removable USB factor package and recovery workflows from one place.',
+        ),
+        const SizedBox(height: 22),
+        const Row(
+          children: [
+            Expanded(child: SignalTile(label: 'Detected USB volumes', value: '1')),
+            SizedBox(width: 14),
+            Expanded(child: SignalTile(label: 'Package status', value: 'Readable')),
+            SizedBox(width: 14),
+            Expanded(child: SignalTile(label: 'Local mode', value: 'Enabled')),
+          ],
+        ),
+        const SizedBox(height: 22),
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SectionPanel(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('USB actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 14),
+                      const _Field(label: 'USB path', value: '/Volumes/WD'),
+                      const SizedBox(height: 12),
+                      const _Field(label: 'Mnemonic', value: '******** ******** ********'),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(child: FilledButton.icon(onPressed: () {}, icon: const Icon(Icons.verified_rounded), label: const Text('Verify package', style: _buttonTextStyle))),
+                          const SizedBox(width: 12),
+                          Expanded(child: OutlinedButton.icon(onPressed: () {}, icon: const Icon(Icons.usb_rounded), label: const Text('Rebuild USB', style: _buttonTextStyle))),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Expanded(
+                child: SectionPanel(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Recovery tools', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      SizedBox(height: 14),
+                      InlineNotice(text: 'A single factor is not enough to recover. Choose a recovery mode when two factors are available.'),
+                      SizedBox(height: 14),
+                      InfoRow(label: 'USB lost', value: 'mnemonic + local material'),
+                      InfoRow(label: 'New device', value: 'mnemonic + USB material'),
+                      InfoRow(label: 'Mnemonic forgotten', value: 'enterprise recovery process'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

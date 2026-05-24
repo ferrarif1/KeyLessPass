@@ -1,64 +1,153 @@
 # KeyLessPass
 
-KeyLessPass is a local-only desktop client for deriving enterprise passwords on demand. It is designed for internal legacy systems, operations consoles, vendor portals, database gateways, and other environments that still require text passwords.
+<p align="center">
+  <img src="docs/readme-assets/logo.png" width="112" alt="KeyLessPass logo" />
+</p>
 
-KeyLessPass is not a web app, not a browser extension, and not a cloud password manager. It does not store target-system plaintext passwords, does not maintain an encrypted service-password vault, and does not store the mnemonic phrase.
+<p align="center">
+  <strong>Storage-free local password derivation for desktop enterprise workflows.</strong>
+</p>
 
-## Key Features
+<p align="center">
+  <a href="README.zh-CN.md">简体中文</a>
+  ·
+  <a href="SECURITY.md">Security</a>
+  ·
+  <a href="PRIVACY.md">Privacy</a>
+  ·
+  <a href="RELEASE.md">Release</a>
+</p>
 
-- Native desktop client built with Flutter Desktop and a Rust security core.
-- Local SQLite CDR metadata storage with integrity protection.
-- Ordinary removable USB drive support for the USB factor package.
+<p align="center">
+  <img alt="Local only" src="https://img.shields.io/badge/local--only-by%20default-101010">
+  <img alt="Desktop" src="https://img.shields.io/badge/desktop-macOS%20%7C%20Windows%20%7C%20Linux-101010">
+  <img alt="Core" src="https://img.shields.io/badge/core-Rust-101010">
+  <img alt="UI" src="https://img.shields.io/badge/UI-Flutter%20Desktop-101010">
+  <img alt="No cloud" src="https://img.shields.io/badge/cloud-none-101010">
+</p>
+
+KeyLessPass is a native desktop client for deriving text passwords on demand for internal systems that still depend on legacy password login. It is intended for operations consoles, vendor portals, database gateways, network appliances, and small enterprise environments where a local-only security posture is required.
+
+It is not a web app, not a browser extension, not a cloud password manager, and not a password vault. KeyLessPass does not store target-system plaintext passwords, does not maintain an encrypted service-password database, and does not store the mnemonic phrase.
+
+## Screenshots
+
+| Enrollment | Records |
+| --- | --- |
+| ![Enrollment](docs/readme-assets/screenshots/01-enrollment.png) | ![Records](docs/readme-assets/screenshots/02-records.png) |
+
+| Derive Password | Rotation |
+| --- | --- |
+| ![Derive password](docs/readme-assets/screenshots/03-derive-password.png) | ![Rotation](docs/readme-assets/screenshots/04-rotation.png) |
+
+| USB Device and Recovery |
+| --- |
+| ![USB device and recovery](docs/readme-assets/screenshots/05-usb-recovery.png) |
+
+## Why KeyLessPass
+
+Traditional password managers protect a vault of stored secrets. KeyLessPass takes a different path: it stores only protected local state, USB factor material, Credential Description Records, and recovery metadata. The service password is derived only when the user provides the required local factors.
+
+This makes it useful when an organization must keep using legacy password-based systems but wants to avoid accumulating a recoverable password vault on endpoints.
+
+## Core Features
+
+- Native Flutter Desktop UI with a Rust security core.
+- Local SQLite storage for non-secret CDR metadata and integrity tags.
+- Ordinary removable USB drive support for USB factor packages.
 - Random per-user master key generated during enrollment.
-- Local English and Simplified Chinese mnemonic generation; generated phrases are not stored.
-- Password derivation based on `recordSeq`, stable `recordId`, `version`, `salt`, and `encodingDescriptor`.
-- Display metadata such as name, service hint, and account hint can be edited without changing the derived password.
-- Two-phase rotation: create pending version, derive and update the target system, then commit or cancel.
-- Local recovery flows for rebuilding missing USB or local factor packages with two available factors.
-- USB device management for path selection, package verification, and USB package rebuild.
-- Redacted diagnostics export for support without secrets.
-- macOS, Windows, and Linux architecture with platform factor provider abstraction.
+- English and Simplified Chinese mnemonic generation on the local device.
+- Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
+- Editable display metadata that does not change derived passwords.
+- Two-phase password rotation with pending, commit, and cancel states.
+- Local recovery workflows for rebuilding missing USB or local factor packages.
+- USB management for path selection, package verification, and package rebuild.
+- Redacted diagnostics export.
+- Cross-platform provider abstraction for macOS, Windows, Linux, and fallback secure storage.
 - English and Simplified Chinese UI resources.
+
+## What Is Stored
+
+| Stored locally | Not stored |
+| --- | --- |
+| Protected local factor package | Target-system plaintext passwords |
+| USB factor package on a user-selected USB drive | Encrypted service-password vault |
+| CDR metadata, salts, versions, and MAC tags | Mnemonic phrase |
+| Recovery metadata for local two-factor recovery operations | Cloud account, sync state, analytics |
 
 ## How It Works
 
-During enrollment, KeyLessPass generates a random 256-bit master key. The mnemonic phrase can be entered manually or generated locally in English or Simplified Chinese. It is used only as one recovery/derivation factor and is not the root seed for service passwords. The local platform factor, USB factor, and mnemonic-derived factor are combined through HKDF to derive a service-specific secret.
+During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is used only as one factor; it is not the root seed for service passwords. The local platform factor, USB factor, and mnemonic-derived factor are combined through HKDF to derive a service-specific secret.
 
-For each credential record, only non-secret CDR metadata is stored locally. The actual service password is generated on demand, encoded deterministically according to the record's password rule, and then cleared from the UI/clipboard after a short timeout.
+For each credential record, KeyLessPass stores only non-secret CDR metadata. Display fields such as name, service hint, account hint, and notes are searchable and editable, but they are not part of the derivation path. Password rule changes create a new CDR version and are treated as rotation.
 
-Changing `displayName`, `serviceHint`, `accountHint`, or notes does not change the derived password. Changing password rules requires a new CDR version and is treated as rotation.
+```mermaid
+flowchart LR
+    M["Mnemonic phrase<br/>not stored"] --> D["Local derivation"]
+    L["Platform local factor"] --> D
+    U["USB factor package"] --> D
+    C["CDR metadata<br/>recordSeq + recordId + version + salt"] --> D
+    D --> P["Service password<br/>shown briefly / clipboard timeout"]
+```
 
 ## Security Model
 
 - No target-system plaintext password is written to disk.
 - No encrypted service-password vault is maintained.
 - No mnemonic phrase is stored.
-- No network sync, cloud account, browser autofill, or remote backend is included.
+- No cloud sync, remote backend, browser autofill, or account login is included.
+- All random values come from the operating system CSPRNG.
 - CDR and factor packages are integrity checked before use.
-- Sensitive values such as mnemonic text, master key, factor secrets, HKDF output, and derived passwords must not be logged.
-- Clipboard clearing is enabled by default and configurable in settings.
+- Derived passwords are masked by default and cleared from the clipboard after a configurable timeout.
+- Sensitive values such as mnemonic text, master key, factor secrets, raw HKDF output, AEAD keys, HMAC keys, and derived passwords must not be logged.
 
-Client-only rollback detection is limited to local/USB metadata comparisons and integrity checks. Full protection against coordinated rollback of all local copies requires an external trusted state or append-only audit integration.
+Client-only rollback detection is limited to local and USB metadata checks. Stronger rollback protection can be added through an external version digest, append-only audit log, or trusted monotonic state integration.
 
-## Install / Build
+## Desktop Navigation
+
+The product UI is organized around stable desktop modules:
+
+- Dashboard
+- Setup
+- Records
+- USB Device
+- Security
+- Settings
+- About
+
+Record-centric actions such as add, derive, and rotation are launched from Records. Recovery tools are grouped under USB Device.
+
+## Architecture
+
+```text
+KeyLessPass
+├── flutter_app/          # Flutter Desktop UI
+├── rust_core/            # Rust cryptography, storage, recovery, and FFI core
+├── packaging/            # macOS, Windows, and Linux packaging scripts
+├── docs/                 # Product, security, readiness, and design documentation
+└── releases/             # Local release artifacts, ignored by git
+```
+
+The Rust core is intentionally independent from platform-specific secure storage details. Platform factor providers implement a common interface, with macOS Keychain, Windows DPAPI, Linux local/fallback storage, and future TPM/Secure Enclave hooks isolated behind the provider layer.
+
+## Quick Start
 
 ### Prerequisites
 
 - Flutter Desktop SDK
 - Rust toolchain
-- macOS: Xcode for macOS desktop builds
-- Windows: Visual Studio build tools for Windows desktop builds
+- macOS: Xcode for desktop builds
+- Windows: Visual Studio Build Tools for desktop builds
 - Linux: Flutter Linux desktop dependencies
 
-### Build Rust Core
+### Build and Test the Core
 
 ```bash
 cd rust_core
-cargo build
 cargo test
 ```
 
-### Build Flutter Desktop
+### Run the Desktop App
 
 ```bash
 cd flutter_app
@@ -68,46 +157,45 @@ flutter test
 flutter run -d macos
 ```
 
-On macOS systems where `xcode-select` points to Command Line Tools, use:
+### macOS Release Build
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer flutter build macos --release
-```
-
-### Release Builds
-
-```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+FLUTTER_BIN=/path/to/flutter \
+CODESIGN_IDENTITY='-' \
 packaging/macos/build_dmg.sh
-packaging/linux/build_packages.sh
-powershell -ExecutionPolicy Bypass -File packaging/windows/build_installer.ps1
 ```
 
-See [RELEASE.md](RELEASE.md) for signing, notarization, and packaging details.
+The local unsigned app bundle is produced under:
+
+```text
+flutter_app/build/macos/Build/Products/Release/KeyLessPass.app
+```
+
+For distribution, sign with a Developer ID Application certificate and notarize the DMG. See [RELEASE.md](RELEASE.md).
 
 ## Internationalization
 
-UI text is sourced from Flutter ARB files:
+UI strings are sourced from Flutter ARB resources:
 
 - `flutter_app/lib/l10n/app_en.arb`
 - `flutter_app/lib/l10n/app_zh.arb`
 
-The app follows the system language by default and provides manual English / Simplified Chinese selection in Settings. Resource completeness is checked by `flutter_app/test/i18n_test.dart`.
-
-## Privacy
-
-KeyLessPass is local-only by default. It does not upload passwords, mnemonic phrases, factor secrets, CDR records, or usage analytics. See [PRIVACY.md](PRIVACY.md).
+The app follows the system language by default and supports manual English / Simplified Chinese selection in Settings.
 
 ## Current Status
 
-The macOS desktop path is the primary tested target. Rust core tests cover derivation stability, metadata immutability boundaries, CDR/USB tamper failures, rotation, and platform provider abstraction. Windows and Linux code paths are structured for build and packaging follow-up.
+macOS is the primary tested desktop target. The architecture and packaging scripts reserve Windows and Linux support, including platform factor provider separation for future hardening.
+
+The Rust test suite covers derivation stability, metadata immutability boundaries, path-field sensitivity, tamper failures, missing factors, rotation behavior, recovery behavior, and platform provider trait tests. Flutter tests cover UI construction, navigation, language switching, i18n resource completeness, and documentation screenshots.
 
 ## Roadmap
 
-- macOS Developer ID signing and notarized DMG.
-- Windows DPAPI hardening and MSI installer.
-- Linux Secret Service/libsecret option and deb/rpm/AppImage packaging.
-- External optional version digest or append-only audit integration for stronger rollback detection.
-- Enterprise diagnostics export with strict sensitive-data redaction.
+- Developer ID signing and notarized macOS DMG.
+- Windows DPAPI hardening and MSI packaging validation.
+- Linux Secret Service/libsecret option and deb/rpm/AppImage packaging validation.
+- Optional external version digest or append-only audit integration.
+- Enterprise diagnostics export with stricter redaction review.
 
 ## Documentation
 
@@ -118,3 +206,7 @@ The macOS desktop path is the primary tested target. Rust core tests cover deriv
 - [DEVELOPMENT.md](DEVELOPMENT.md)
 - [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
 - [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)
+
+## License
+
+See [LICENSE](LICENSE).
