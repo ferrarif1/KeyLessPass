@@ -120,6 +120,7 @@ fn setup() -> Harness {
             display_name: "Synthetic Legacy Service".to_string(),
             service_hint: "example.internal".to_string(),
             account_hint: "test-user".to_string(),
+            notes: String::new(),
             encoding_descriptor: Some(EncodingDescriptor::default()),
         },
     )
@@ -207,6 +208,7 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                     display_name: "Renamed Synthetic Service".to_string(),
                     service_hint: "changed.example".to_string(),
                     account_hint: "renamed-user".to_string(),
+                    notes: "metadata only".to_string(),
                     encoding_descriptor: Some(EncodingDescriptor::default()),
                 },
             )
@@ -286,6 +288,7 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                     display_name: "Synthetic Legacy Service".to_string(),
                     service_hint: "example.internal".to_string(),
                     account_hint: "test-user".to_string(),
+                    notes: String::new(),
                     encoding_descriptor: Some(changed.clone()),
                 },
             );
@@ -463,8 +466,11 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
         "Derivation fails.",
         || {
             let h = setup();
-            fs::write(usb_package_file(h.usb_dir.path()), b"{\"packageMac\":\"broken\"}")
-                .map_err(|err| err.to_string())?;
+            fs::write(
+                usb_package_file(h.usb_dir.path()),
+                b"{\"packageMac\":\"broken\"}",
+            )
+            .map_err(|err| err.to_string())?;
             let result = derive(&h, h.version);
             if result.is_err() {
                 ok("Tampered USB package was rejected.")
@@ -611,7 +617,10 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
         "Static check of the Rust and Flutter source tree for logging macros/print calls.",
         "No logging path emits secrets.",
         || {
-            let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf();
+            let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .parent()
+                .unwrap()
+                .to_path_buf();
             let mut findings = Vec::new();
             for production_dir in [
                 PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src"),
@@ -691,7 +700,10 @@ fn scan_for_logging(path: &Path, findings: &mut Vec<String>) -> std::io::Result<
     for entry in fs::read_dir(path)? {
         let entry = entry?;
         let child = entry.path();
-        let name = child.file_name().and_then(|value| value.to_str()).unwrap_or("");
+        let name = child
+            .file_name()
+            .and_then(|value| value.to_str())
+            .unwrap_or("");
         if matches!(name, "target" | "build" | ".dart_tool" | ".git") {
             continue;
         }
@@ -744,6 +756,7 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
                     display_name: format!("Synthetic Service {}", Uuid::new_v4()),
                     service_hint: "perf.example".to_string(),
                     account_hint: "perf-user".to_string(),
+                    notes: String::new(),
                     encoding_descriptor: Some(EncodingDescriptor::default()),
                 },
             )
@@ -754,12 +767,15 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
             let h = setup();
             let (_, payload) = load_local_factor_payload(&h.provider, &h.paths.local_factor_path)
                 .map_err(|err| err.to_string())?;
-            let master_key = crypto::b64_decode(&payload.k_master).map_err(|err| err.to_string())?;
+            let master_key =
+                crypto::b64_decode(&payload.k_master).map_err(|err| err.to_string())?;
             let store = CdrStore::new(&h.paths.db_path);
             let record = store
                 .get(h.record_id, Some(h.version))
                 .map_err(|err| err.to_string())?;
-            record.verify_mac(&master_key).map_err(|err| err.to_string())?;
+            record
+                .verify_mac(&master_key)
+                .map_err(|err| err.to_string())?;
             Ok(())
         }),
         measure("PERF-04", "Single password derivation", || {
@@ -772,11 +788,16 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
             encoder::encode_password(&[7_u8; 32], &descriptor).map_err(|err| err.to_string())?;
             Ok(())
         }),
-        measure("PERF-06", "USB factor package read and authenticated decrypt", || {
-            let h = setup();
-            load_usb_factor_payload(MNEMONIC, h.usb_dir.path()).map_err(|err| err.to_string())?;
-            Ok(())
-        }),
+        measure(
+            "PERF-06",
+            "USB factor package read and authenticated decrypt",
+            || {
+                let h = setup();
+                load_usb_factor_payload(MNEMONIC, h.usb_dir.path())
+                    .map_err(|err| err.to_string())?;
+                Ok(())
+            },
+        ),
         measure("PERF-07", "Create pending rotation", || {
             let h = setup();
             rotate_credential_with_provider(
@@ -827,23 +848,29 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
             read_usb_factor_package(h.usb_dir.path()).map_err(|err| err.to_string())?;
             Ok(())
         }),
-        measure("PERF-10", "Local factor recovery / rebuild local package", || {
-            let h = setup();
-            let new_app = tempfile::tempdir().map_err(|err| err.to_string())?;
-            let new_paths = StoragePaths::from_app_dir(new_app.path().to_path_buf());
-            let new_provider =
-                FallbackPlatformFactorProvider::new(new_paths.app_dir.clone(), "evidence-macos");
-            recover_local_with_provider(
-                &new_paths,
-                &new_provider,
-                RecoverLocalRequest {
-                    mnemonic: MNEMONIC.to_string(),
-                    usb_path: h.usb_dir.path().to_string_lossy().to_string(),
-                },
-            )
-            .map_err(|err| err.to_string())?;
-            Ok(())
-        }),
+        measure(
+            "PERF-10",
+            "Local factor recovery / rebuild local package",
+            || {
+                let h = setup();
+                let new_app = tempfile::tempdir().map_err(|err| err.to_string())?;
+                let new_paths = StoragePaths::from_app_dir(new_app.path().to_path_buf());
+                let new_provider = FallbackPlatformFactorProvider::new(
+                    new_paths.app_dir.clone(),
+                    "evidence-macos",
+                );
+                recover_local_with_provider(
+                    &new_paths,
+                    &new_provider,
+                    RecoverLocalRequest {
+                        mnemonic: MNEMONIC.to_string(),
+                        usb_path: h.usb_dir.path().to_string_lossy().to_string(),
+                    },
+                )
+                .map_err(|err| err.to_string())?;
+                Ok(())
+            },
+        ),
     ]
 }
 

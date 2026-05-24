@@ -1,6 +1,7 @@
 use crate::error::{KeylessPassError, Result};
 use hkdf::Hkdf;
 use sha2::Sha256;
+use unicode_normalization::UnicodeNormalization;
 use uuid::Uuid;
 
 pub fn hkdf_sha256(
@@ -25,6 +26,8 @@ pub fn hkdf_32(input_key_material: &[u8], salt: &[u8], info: &[u8]) -> Result<[u
 
 pub fn normalize_mnemonic(mnemonic: &str) -> String {
     mnemonic
+        .nfkc()
+        .collect::<String>()
         .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ")
@@ -42,6 +45,16 @@ pub fn derive_mnemonic_factor(mnemonic: &str, user_id: &Uuid, salt: &[u8]) -> Re
     ikm.extend_from_slice(normalized.as_bytes());
     ikm.extend_from_slice(user_id.as_bytes());
     hkdf_32(&ikm, salt, b"KeylessPass mnemonic factor")
+}
+
+pub fn derive_mnemonic_verifier(f_m: &[u8]) -> Result<String> {
+    let verifier = hkdf_sha256(
+        f_m,
+        b"KeylessPass mnemonic verifier salt",
+        b"KeylessPass mnemonic verifier",
+        32,
+    )?;
+    Ok(crate::crypto::b64_encode(&verifier))
 }
 
 pub fn derive_platform_factor(

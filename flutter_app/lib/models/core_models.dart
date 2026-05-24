@@ -57,6 +57,7 @@ class CredentialRecord {
     required this.displayName,
     required this.serviceHint,
     required this.accountHint,
+    required this.notes,
     required this.version,
     required this.salt,
     required this.encodingDescriptor,
@@ -70,6 +71,7 @@ class CredentialRecord {
   final String displayName;
   final String serviceHint;
   final String accountHint;
+  final String notes;
   final int version;
   final String salt;
   final Map<String, Object?> encodingDescriptor;
@@ -85,12 +87,35 @@ class CredentialRecord {
       displayName: json['displayName'] as String? ?? '',
       serviceHint: json['serviceHint'] as String? ?? '',
       accountHint: json['accountHint'] as String? ?? '',
+      notes: json['notes'] as String? ?? '',
       version: (json['version'] as num).toInt(),
       salt: json['salt'] as String? ?? '',
       encodingDescriptor: (json['encodingDescriptor'] as Map).cast<String, Object?>(),
       state: json['state'] as String? ?? 'active',
       createdAt: json['createdAt'] as String? ?? '',
       updatedAt: json['updatedAt'] as String? ?? '',
+    );
+  }
+
+  CredentialRecord copyWith({
+    String? displayName,
+    String? serviceHint,
+    String? accountHint,
+    String? notes,
+  }) {
+    return CredentialRecord(
+      recordId: recordId,
+      recordSeq: recordSeq,
+      displayName: displayName ?? this.displayName,
+      serviceHint: serviceHint ?? this.serviceHint,
+      accountHint: accountHint ?? this.accountHint,
+      notes: notes ?? this.notes,
+      version: version,
+      salt: salt,
+      encodingDescriptor: encodingDescriptor,
+      state: state,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 }

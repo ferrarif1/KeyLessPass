@@ -1,4 +1,4 @@
-use crate::crypto::{b64_encode, recovery as crypto_recovery, SecretBytes};
+use crate::crypto::{b64_encode, kdf, recovery as crypto_recovery, SecretBytes};
 use crate::domain::{AppConfig, LocalFactorPayload, UsbFactorPayload};
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{
@@ -55,12 +55,15 @@ pub fn enroll_with_provider(
     let usb_secret = crate::crypto::random_bytes(32);
     let mnemonic_salt = crate::crypto::random_bytes(16);
     let mnemonic_salt_b64 = b64_encode(&mnemonic_salt);
+    let f_m = kdf::derive_mnemonic_factor(&request.mnemonic, &user_id, &mnemonic_salt)?;
+    let mnemonic_verifier = kdf::derive_mnemonic_verifier(&f_m)?;
 
     let local_payload = LocalFactorPayload {
         k_master: b64_encode(&k_master),
         device_secret: b64_encode(device_secret.expose()),
         usb_secret: b64_encode(&usb_secret),
         mnemonic_salt: mnemonic_salt_b64.clone(),
+        mnemonic_verifier: Some(mnemonic_verifier.clone()),
         recovery_generation: 1,
     };
     let usb_payload = UsbFactorPayload {
@@ -68,6 +71,7 @@ pub fn enroll_with_provider(
         usb_secret: b64_encode(&usb_secret),
         device_secret: b64_encode(device_secret.expose()),
         mnemonic_salt: mnemonic_salt_b64,
+        mnemonic_verifier: Some(mnemonic_verifier),
         recovery_generation: 1,
     };
 

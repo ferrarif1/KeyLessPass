@@ -1,5 +1,5 @@
 use crate::crypto::kdf;
-use crate::domain::EncodingDescriptor;
+use crate::domain::{CredentialState, EncodingDescriptor};
 use crate::platform::fallback::FallbackPlatformFactorProvider;
 use crate::platform::linux::LinuxPlatformFactorProvider;
 use crate::platform::macos::MacOSPlatformFactorProvider;
@@ -11,7 +11,14 @@ use crate::service::credentials::{
 };
 use crate::service::derive::{derive_password_with_provider, DerivePasswordRequest};
 use crate::service::enrollment::{enroll_with_provider, EnrollmentRequest};
-use crate::service::rotation::{rotate_credential_with_provider, RotateCredentialRequest};
+use crate::service::recovery::{
+    recover_local_with_provider, recover_usb_with_provider, RecoverLocalRequest, RecoverUsbRequest,
+};
+use crate::service::rotation::{
+    cancel_rotation_with_provider, confirm_rotation_with_provider, rotate_credential_with_provider,
+    CancelRotationRequest, ConfirmRotationRequest, RotateCredentialRequest,
+};
+use crate::service::usb::{verify_usb_package, VerifyUsbPackageRequest};
 use crate::storage::{usb_package_file, CdrStore, StoragePaths};
 use tempfile::TempDir;
 use uuid::Uuid;
@@ -49,6 +56,7 @@ fn setup() -> Harness {
             display_name: "Legacy ERP".to_string(),
             service_hint: "erp.internal".to_string(),
             account_hint: "alice".to_string(),
+            notes: String::new(),
             encoding_descriptor: Some(EncodingDescriptor::default()),
         },
     )
@@ -85,6 +93,90 @@ fn same_cdr_derivation_is_stable() {
 }
 
 #[test]
+fn factor_packages_and_recovery_metadata_include_schema_versions() {
+    let harness = setup();
+    let local_text = std::fs::read_to_string(&harness.paths.local_factor_path).unwrap();
+    let usb_text = std::fs::read_to_string(usb_package_file(harness.usb_dir.path())).unwrap();
+    let recovery_text = std::fs::read_to_string(&harness.paths.recovery_path).unwrap();
+
+    assert!(local_text.contains("\"schemaVersion\""));
+    assert!(local_text.contains("\"packageVersion\""));
+    assert!(usb_text.contains("\"schemaVersion\""));
+    assert!(usb_text.contains("\"packageVersion\""));
+    assert!(recovery_text.contains("\"schemaVersion\""));
+}
+
+#[test]
+fn usb_package_authentication_verification_rejects_wrong_mnemonic() {
+    let harness = setup();
+    let ok = verify_usb_package(VerifyUsbPackageRequest {
+        mnemonic: MNEMONIC.to_string(),
+        usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+    })
+    .unwrap();
+    assert!(ok.valid);
+
+    assert!(verify_usb_package(VerifyUsbPackageRequest {
+        mnemonic: "wrong mnemonic phrase".to_string(),
+        usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+    })
+    .is_err());
+}
+
+#[test]
+fn recovery_requires_two_valid_factors() {
+    let harness = setup();
+    let usb_file = usb_package_file(harness.usb_dir.path());
+    std::fs::remove_file(&usb_file).unwrap();
+
+    assert!(recover_usb_with_provider(
+        &harness.paths,
+        &harness.provider,
+        RecoverUsbRequest {
+            mnemonic: "wrong mnemonic phrase".to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+
+    recover_usb_with_provider(
+        &harness.paths,
+        &harness.provider,
+        RecoverUsbRequest {
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap();
+    assert!(usb_file.exists());
+
+    let new_app_dir = tempfile::tempdir().unwrap();
+    let new_paths = StoragePaths::from_app_dir(new_app_dir.path().to_path_buf());
+    let new_provider =
+        FallbackPlatformFactorProvider::new(new_paths.app_dir.clone(), "replacement-device");
+    recover_local_with_provider(
+        &new_paths,
+        &new_provider,
+        RecoverLocalRequest {
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap();
+    assert!(new_paths.local_factor_path.exists());
+
+    assert!(recover_local_with_provider(
+        &new_paths,
+        &new_provider,
+        RecoverLocalRequest {
+            mnemonic: "wrong mnemonic phrase".to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+}
+
+#[test]
 fn reenrollment_is_blocked_after_local_state_exists() {
     let harness = setup();
     let err = enroll_with_provider(
@@ -112,6 +204,7 @@ fn display_service_and_account_hints_do_not_affect_derivation() {
             display_name: "Renamed ERP".to_string(),
             service_hint: "changed.example".to_string(),
             account_hint: "bob".to_string(),
+            notes: "metadata only".to_string(),
             encoding_descriptor: Some(EncodingDescriptor::default()),
         },
     )
@@ -162,6 +255,7 @@ fn encoding_descriptor_change_requires_rotation() {
             display_name: "Legacy ERP".to_string(),
             service_hint: "erp.internal".to_string(),
             account_hint: "alice".to_string(),
+            notes: String::new(),
             encoding_descriptor: Some(changed.clone()),
         },
     )
@@ -178,6 +272,67 @@ fn encoding_descriptor_change_requires_rotation() {
     )
     .unwrap();
     assert_eq!(rotated.version, harness.version + 1);
+}
+
+#[test]
+fn rotation_cancel_and_commit_preserve_expected_states() {
+    let harness = setup();
+    let store = CdrStore::new(&harness.paths.db_path);
+    let before = derive(&harness);
+
+    let pending = rotate_credential_with_provider(
+        &harness.paths,
+        &harness.provider,
+        RotateCredentialRequest {
+            record_id: harness.record_id,
+            encoding_descriptor: None,
+        },
+    )
+    .unwrap();
+    assert_eq!(pending.version, harness.version + 1);
+    assert_eq!(
+        store
+            .get(harness.record_id, Some(harness.version))
+            .unwrap()
+            .state,
+        CredentialState::Active
+    );
+
+    cancel_rotation_with_provider(
+        &harness.paths,
+        &harness.provider,
+        CancelRotationRequest {
+            record_id: harness.record_id,
+            version: pending.version,
+        },
+    )
+    .unwrap();
+    assert!(store.get(harness.record_id, Some(pending.version)).is_err());
+    assert_eq!(before, derive(&harness));
+
+    let pending = rotate_credential_with_provider(
+        &harness.paths,
+        &harness.provider,
+        RotateCredentialRequest {
+            record_id: harness.record_id,
+            encoding_descriptor: None,
+        },
+    )
+    .unwrap();
+    confirm_rotation_with_provider(
+        &harness.paths,
+        &harness.provider,
+        ConfirmRotationRequest {
+            record_id: harness.record_id,
+            version: pending.version,
+        },
+    )
+    .unwrap();
+
+    let old = store.get(harness.record_id, Some(harness.version)).unwrap();
+    let new_record = store.get(harness.record_id, Some(pending.version)).unwrap();
+    assert_eq!(old.state, CredentialState::Retired);
+    assert_eq!(new_record.state, CredentialState::Active);
 }
 
 #[test]

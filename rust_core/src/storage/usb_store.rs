@@ -76,7 +76,11 @@ pub fn load_usb_factor_payload(
     let salt = b64_decode(&package.kdf_salt)?;
     let f_m = kdf::derive_mnemonic_factor(mnemonic, &package.user_id, &salt)?;
     let expected = mac::hmac_sha256_base64(&mac::package_mac_key(&f_m), &package.mac_payload()?)?;
-    if !mac::constant_time_eq_b64(&expected, &package.package_mac)? {
+    let legacy_expected =
+        mac::hmac_sha256_base64(&mac::package_mac_key(&f_m), &package.legacy_mac_payload()?)?;
+    if !mac::constant_time_eq_b64(&expected, &package.package_mac)?
+        && !mac::constant_time_eq_b64(&legacy_expected, &package.package_mac)?
+    {
         return Err(KeylessPassError::Integrity(
             "USB package MAC mismatch".to_string(),
         ));

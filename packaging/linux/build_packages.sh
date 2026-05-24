@@ -2,10 +2,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 cd "$ROOT/rust_core"
 cargo build --release
 cd "$ROOT/flutter_app"
-flutter build linux --release
+"$FLUTTER_BIN" build linux --release
 
 BUNDLE="$ROOT/flutter_app/build/linux/x64/release/bundle"
 cp "$ROOT/rust_core/target/release/libkeylesspass_core.so" "$BUNDLE/lib/"

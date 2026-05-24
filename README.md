@@ -1,267 +1,120 @@
-<p align="center">
-  <img src="docs/assets/logo.png" alt="KeyLessPass" width="96" height="96" />
-</p>
+# KeyLessPass
 
-<h1 align="center">KeyLessPass</h1>
+KeyLessPass is a local-only desktop client for deriving enterprise passwords on demand. It is designed for internal legacy systems, operations consoles, vendor portals, database gateways, and other environments that still require text passwords.
 
-<p align="center">
-  <strong>Local-only desktop password manager prototype — derive passwords on demand, store no password vault.</strong>
-</p>
+KeyLessPass is not a web app, not a browser extension, and not a cloud password manager. It does not store target-system plaintext passwords, does not maintain an encrypted service-password vault, and does not store the mnemonic phrase.
 
-<p align="center">
-  <a href="https://github.com/ferrarif1/KeyLessPass">GitHub</a>
-  ·
-  <a href="README.zh-CN.md">简体中文</a>
-  ·
-  <a href="docs/DESIGN.md">Design</a>
-  ·
-  <a href="docs/SECURITY.md">Security</a>
-</p>
+## Key Features
 
----
+- Native desktop client built with Flutter Desktop and a Rust security core.
+- Local SQLite CDR metadata storage with integrity protection.
+- Ordinary removable USB drive support for the USB factor package.
+- Random per-user master key generated during enrollment.
+- Local English and Simplified Chinese mnemonic generation; generated phrases are not stored.
+- Password derivation based on `recordSeq`, stable `recordId`, `version`, `salt`, and `encodingDescriptor`.
+- Display metadata such as name, service hint, and account hint can be edited without changing the derived password.
+- Two-phase rotation: create pending version, derive and update the target system, then commit or cancel.
+- Local recovery flows for rebuilding missing USB or local factor packages with two available factors.
+- USB device management for path selection, package verification, and USB package rebuild.
+- Redacted diagnostics export for support without secrets.
+- macOS, Windows, and Linux architecture with platform factor provider abstraction.
+- English and Simplified Chinese UI resources.
 
-KeyLessPass is a **local-only** desktop prototype for managing service credentials without a traditional encrypted password database. It does **not** persist plaintext target-system passwords on disk. When you need a password, the app **deterministically derives** it from a master key, device-bound factors, and a USB factor package. Local SQLite stores only **CDR (Credential Derivation Record)** metadata and integrity tags — never the derived password.
+## How It Works
 
-Clone this repository:
+During enrollment, KeyLessPass generates a random 256-bit master key. The mnemonic phrase can be entered manually or generated locally in English or Simplified Chinese. It is used only as one recovery/derivation factor and is not the root seed for service passwords. The local platform factor, USB factor, and mnemonic-derived factor are combined through HKDF to derive a service-specific secret.
 
-```bash
-git clone https://github.com/ferrarif1/KeyLessPass.git
-cd KeyLessPass
-```
+For each credential record, only non-secret CDR metadata is stored locally. The actual service password is generated on demand, encoded deterministically according to the record's password rule, and then cleared from the UI/clipboard after a short timeout.
 
-## Features
+Changing `displayName`, `serviceHint`, `accountHint`, or notes does not change the derived password. Changing password rules requires a new CDR version and is treated as rotation.
 
-- **No password vault** — Target-system plaintext passwords are not stored; the mnemonic phrase is never persisted locally ([`docs/SECURITY.md`](docs/SECURITY.md)).
-- **Multi-factor derivation** — Enrollment combines a mnemonic, a platform factor, and a USB factor package; derivation verifies factor integrity (HMAC and related checks).
-- **CDR management** — SQLite holds stable derivation fields (`recordSeq`, `recordId`, `version`, `salt`, `encodingDescriptor`). Display fields (`displayName`, `serviceHint`, `accountHint`) do not affect derivation ([`docs/DESIGN.md`](docs/DESIGN.md)).
-- **Flutter desktop UI** — Credential list, add record, enrollment, recovery, security status, and settings; keyboard shortcuts for derive and rotation.
-- **Password rotation** — Changing `encodingDescriptor` creates a new version; a two-phase flow requires explicit confirmation before the new version becomes active.
-- **Recovery** — Rebuild missing material via USB factor package or local recovery paths.
-- **Cross-platform desktop** — Targets **macOS, Windows, and Linux** with platform-specific factor protection (macOS Keychain, Windows DPAPI extension point, Linux local AEAD + file permissions; fallback mode is surfaced when protection is unavailable).
-- **JSON FFI** — Flutter calls Rust through a small C ABI (`keylesspass_ffi_json` / `keylesspass_ffi_free`).
+## Security Model
 
-**Explicitly out of scope:** web services, cloud sync, browser extensions, browser autofill, and a WebView-based main UI.
+- No target-system plaintext password is written to disk.
+- No encrypted service-password vault is maintained.
+- No mnemonic phrase is stored.
+- No network sync, cloud account, browser autofill, or remote backend is included.
+- CDR and factor packages are integrity checked before use.
+- Sensitive values such as mnemonic text, master key, factor secrets, HKDF output, and derived passwords must not be logged.
+- Clipboard clearing is enabled by default and configurable in settings.
 
-## Screenshots
+Client-only rollback detection is limited to local/USB metadata comparisons and integrity checks. Full protection against coordinated rollback of all local copies requires an external trusted state or append-only audit integration.
 
-UI captures are generated from the Flutter evidence golden tests (demo data; derived passwords are masked in images).
+## Install / Build
 
-| Enrollment | Credential records |
-|:---:|:---:|
-| ![Enrollment](docs/assets/screenshots/enrollment.png) | ![CDR list](docs/assets/screenshots/cdr_list.png) |
+### Prerequisites
 
-| Derive password | Rotation workflow |
-|:---:|:---:|
-| ![Derive password](docs/assets/screenshots/derive_password.png) | ![Rotation](docs/assets/screenshots/rotation.png) |
+- Flutter Desktop SDK
+- Rust toolchain
+- macOS: Xcode for macOS desktop builds
+- Windows: Visual Studio build tools for Windows desktop builds
+- Linux: Flutter Linux desktop dependencies
 
-To refresh screenshots after UI changes:
+### Build Rust Core
 
 ```bash
-cd flutter_app
-flutter test test/evidence_screenshots_test.dart --update-goldens
-cp test/goldens/*.png ../docs/assets/screenshots/
+cd rust_core
+cargo build
+cargo test
 ```
 
-## Tech stack
-
-| Component | Technology |
-|-----------|------------|
-| UI | Flutter Desktop (`keylesspass_desktop`) |
-| Core & cryptography | Rust `keylesspass_core` (`rlib` / `cdylib` / `staticlib`) |
-| Local metadata | SQLite (`rusqlite`, bundled) |
-| Crypto primitives | HKDF-SHA256, HMAC-SHA256, AES-GCM, and related building blocks |
-
-## Prerequisites
-
-- **Rust** — **≥ 1.70** (verified with **rustc 1.70.0**); optional stable channel pin in [`rust-toolchain.toml`](rust-toolchain.toml) (does not override your installed compiler version)
-- **Flutter** — SDK **≥ 3.3.0** ([`flutter_app/pubspec.yaml`](flutter_app/pubspec.yaml))
-- **Desktop platform SDKs**
-  - macOS: Xcode / macOS desktop support
-  - Windows: Visual Studio build tools + Windows desktop support
-  - Linux: GTK and other Flutter Linux desktop dependencies
-- **Optional** — Writable USB volume path for enrollment/recovery factor packages
-
-If platform folders (`macos/`, `windows/`, `linux/`) are missing after clone, run [`tools/init_flutter_desktop.sh`](tools/init_flutter_desktop.sh) to scaffold Flutter multi-desktop project files.
-
-## Install and build
-
-### 1. Build Rust core
-
-```bash
-./tools/build_rust_core.sh
-```
-
-Or from `rust_core/`:
-
-```bash
-cargo build           # debug library for flutter run
-cargo build --release # release builds / packaging
-```
-
-### 2. Flutter dependencies
+### Build Flutter Desktop
 
 ```bash
 cd flutter_app
 flutter pub get
-```
-
-### 3. Run in development
-
-Build the **debug** `libkeylesspass_core` (or `keylesspass_core.dll` on Windows) first. Flutter resolves the dynamic library next to the executable and under `../rust_core/target/debug/` (see [`flutter_app/lib/ffi/rust_core.dart`](flutter_app/lib/ffi/rust_core.dart)).
-
-```bash
-cd flutter_app
-flutter run -d macos    # or windows / linux
-```
-
-### 4. Release packaging
-
-| Platform | Script |
-|----------|--------|
-| macOS | [`packaging/macos/build_dmg.sh`](packaging/macos/build_dmg.sh) |
-| Linux | [`packaging/linux/build_packages.sh`](packaging/linux/build_packages.sh) |
-| Windows | [`packaging/windows/build_installer.ps1`](packaging/windows/build_installer.ps1) |
-
-Each script runs `cargo build --release` and `flutter build <platform> --release`, then copies `libkeylesspass_core` into the app bundle or output directory. DMG, DEB/RPM/AppImage, and MSI/EXE installers require additional signing and installer tooling on your machine (scripts print reminders).
-
-## Usage
-
-1. **Enroll (first run)** — Enter a mnemonic and choose a writable USB path to create local and USB factor packages. The mnemonic is **not** written to disk.
-2. **Add a credential** — Configure `encodingDescriptor` and stable derivation fields; persist a new CDR row.
-3. **Derive a password** — Select a record and derive; the password is shown briefly and can be copied. The clipboard is **cleared after about 30 seconds**; nothing is logged or stored locally.
-4. **Rotate** — Update encoding or version, follow the pending → confirm workflow.
-5. **Recover** — Use USB or local recovery when a factor package is missing (see the in-app Recovery view).
-6. **Security status** — Inspect platform factor protection (Keychain, DPAPI, fallback, etc.).
-
-If the device is already enrolled, ordinary re-enrollment is blocked to avoid overwriting master-key-dependent recovery material. Use recovery to rebuild a missing package, or an explicit factory reset (prototype capability; production deployments need a dedicated design).
-
-### Keyboard shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>N</kbd> | Open add-credential view |
-| <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>D</kbd> | Derive password for selected record |
-| <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>R</kbd> | Start rotation for selected record |
-
-## Configuration
-
-### Data directory
-
-Default application data locations (overridable via environment variable):
-
-| Platform | Default path |
-|----------|----------------|
-| macOS | `~/Library/Application Support/KeylessPass/` |
-| Windows | `%APPDATA%\KeylessPass\` |
-| Linux | `$XDG_DATA_HOME/keylesspass` or `~/.local/share/keylesspass` |
-
-Typical files inside:
-
-| File | Purpose |
-|------|---------|
-| `keylesspass-config.json` | Application configuration |
-| `cdr.sqlite3` | CDR database |
-| `local-factor-package.json` | Protected local factor package |
-| `recovery-metadata.json` | Recovery metadata |
-
-### Environment variables
-
-| Variable | Description |
-|----------|-------------|
-| `KEYLESSPASS_HOME` | When set, used as the application data root (overrides platform defaults) |
-
-## Testing
-
-**Rust:**
-
-```bash
-cd rust_core
-cargo test
-```
-
-**Flutter:**
-
-```bash
-cd flutter_app
+flutter analyze
 flutter test
+flutter run -d macos
 ```
 
-**Evidence / demo harnesses** (temporary directories, simulated USB, JSON output):
+On macOS systems where `xcode-select` points to Command Line Tools, use:
 
 ```bash
-cd rust_core
-cargo run --example evidence_harness
-cargo run --example seed_ui_state
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer flutter build macos --release
 ```
 
-## Project structure
+### Release Builds
 
-```
-KeyLessPass/
-├── rust_core/              # keylesspass_core: crypto, CDR, factors, FFI, platforms
-│   ├── src/
-│   │   ├── crypto/         # KDF, AEAD, MAC, encoding, recovery algorithms
-│   │   ├── domain/         # CDR, factors, configuration models
-│   │   ├── service/        # enroll, derive, rotate, recover
-│   │   ├── storage/        # SQLite, factor packages, USB storage
-│   │   ├── platform/       # macOS / Windows / Linux factor providers
-│   │   └── ffi.rs          # JSON FFI entry points
-│   └── examples/           # evidence_harness, seed_ui_state
-├── flutter_app/            # keylesspass_desktop: UI + FFI bindings
-├── docs/
-│   ├── DESIGN.md           # architecture & derivation boundaries
-│   ├── SECURITY.md         # security notes
-│   └── assets/             # logo, UI screenshots
-├── tools/                  # build_rust_core.sh, init_flutter_desktop.sh
-├── packaging/              # per-platform release scripts
-└── rust-toolchain.toml
+```bash
+packaging/macos/build_dmg.sh
+packaging/linux/build_packages.sh
+powershell -ExecutionPolicy Bypass -File packaging/windows/build_installer.ps1
 ```
 
-## FFI operations
+See [RELEASE.md](RELEASE.md) for signing, notarization, and packaging details.
 
-Request shape:
+## Internationalization
 
-```json
-{"op":"<operation>","payload":{...}}
-```
+UI text is sourced from Flutter ARB files:
 
-Response shape:
+- `flutter_app/lib/l10n/app_en.arb`
+- `flutter_app/lib/l10n/app_zh.arb`
 
-```json
-{"ok":true,"data":{...}}
-```
+The app follows the system language by default and provides manual English / Simplified Chinese selection in Settings. Resource completeness is checked by `flutter_app/test/i18n_test.dart`.
 
-or
+## Privacy
 
-```json
-{"ok":false,"error":"..."}
-```
+KeyLessPass is local-only by default. It does not upload passwords, mnemonic phrases, factor secrets, CDR records, or usage analytics. See [PRIVACY.md](PRIVACY.md).
 
-| `op` | Description |
-|------|-------------|
-| `getAppStatus` | Enrollment state, config, security summary |
-| `getSecurityStatus` | Platform protection status |
-| `listCredentials` | List CDR rows |
-| `listUsbCandidates` | Enumerate candidate USB paths |
-| `enroll` | First-time enrollment |
-| `addCredential` | Add a credential record |
-| `updateCredentialDisplay` | Update non-derivation display fields |
-| `derivePassword` | Derive service password |
-| `rotateCredential` / `confirmRotation` | Rotation workflow |
-| `recoverUsb` / `recoverLocal` | USB or local recovery |
+## Current Status
 
-Sensitive derivation and recovery failures return generalized errors at the FFI boundary ([`docs/DESIGN.md`](docs/DESIGN.md)).
+The macOS desktop path is the primary tested target. Rust core tests cover derivation stability, metadata immutability boundaries, CDR/USB tamper failures, rotation, and platform provider abstraction. Windows and Linux code paths are structured for build and packaging follow-up.
+
+## Roadmap
+
+- macOS Developer ID signing and notarized DMG.
+- Windows DPAPI hardening and MSI installer.
+- Linux Secret Service/libsecret option and deb/rpm/AppImage packaging.
+- External optional version digest or append-only audit integration for stronger rollback detection.
+- Enterprise diagnostics export with strict sensitive-data redaction.
 
 ## Documentation
 
-- [**DESIGN.md**](docs/DESIGN.md) — Architecture, derivation field boundaries, `PlatformFactorProvider`, FFI contract
-- [**SECURITY.md**](docs/SECURITY.md) — Randomness, persistence boundaries, logging, MVP rollback detection scope
-- [**README.zh-CN.md**](README.zh-CN.md) — Chinese documentation
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Links
-
-- Public repository: <https://github.com/ferrarif1/KeyLessPass>
+- [SECURITY.md](SECURITY.md)
+- [PRIVACY.md](PRIVACY.md)
+- [RELEASE.md](RELEASE.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [DEVELOPMENT.md](DEVELOPMENT.md)
+- [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
+- [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)

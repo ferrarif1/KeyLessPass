@@ -98,6 +98,20 @@ impl CdrStore {
         Ok(())
     }
 
+    pub fn delete_version(&self, record_id: Uuid, version: u32) -> Result<()> {
+        let conn = self.connection()?;
+        let affected = conn.execute(
+            "DELETE FROM cdr_records WHERE record_id = ?1 AND version = ?2",
+            params![record_id.to_string(), version],
+        )?;
+        if affected == 0 {
+            return Err(KeylessPassError::Validation(
+                "CDR record/version not found".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
     pub fn list_all(&self) -> Result<Vec<CredentialDescriptionRecord>> {
         let conn = self.connection()?;
         let mut stmt = conn.prepare(

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -165,7 +164,7 @@ class _EvidenceShell extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'KeylessPass',
+                              'KeyLessPass',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
@@ -174,7 +173,7 @@ class _EvidenceShell extends StatelessWidget {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              'macOS desktop prototype',
+                              'Local desktop client',
                               style: TextStyle(fontSize: 12, color: KpColors.muted),
                             ),
                           ],
@@ -190,7 +189,7 @@ class _EvidenceShell extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       StatusPill(
-                        label: enrolled ? 'Initialized' : 'Enroll required',
+                        label: enrolled ? 'Ready' : 'Setup required',
                         tone: enrolled ? KpColors.success : KpColors.warning,
                       ),
                       const StatusPill(label: 'Offline', tone: KpColors.primary),
@@ -199,16 +198,15 @@ class _EvidenceShell extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 330,
-                  child: NavigationRail(
-                    extended: true,
-                    selectedIndex: selectedIndex,
-                    destinations: const [
-                      NavigationRailDestination(icon: Icon(Icons.view_list_rounded), label: Text('Records')),
-                      NavigationRailDestination(icon: Icon(Icons.add_rounded), label: Text('Add')),
-                      NavigationRailDestination(icon: Icon(Icons.verified_user_rounded), label: Text('Enroll')),
-                      NavigationRailDestination(icon: Icon(Icons.settings_backup_restore_rounded), label: Text('Recovery')),
-                      NavigationRailDestination(icon: Icon(Icons.security_rounded), label: Text('Security')),
-                      NavigationRailDestination(icon: Icon(Icons.tune_rounded), label: Text('Settings')),
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    children: [
+                      _EvidenceNavItem(icon: Icons.view_list_rounded, label: 'Records', selected: selectedIndex == 0),
+                      _EvidenceNavItem(icon: Icons.add_rounded, label: 'Add', selected: selectedIndex == 1),
+                      _EvidenceNavItem(icon: Icons.verified_user_rounded, label: 'Setup', selected: selectedIndex == 2),
+                      _EvidenceNavItem(icon: Icons.settings_backup_restore_rounded, label: 'Recovery', selected: selectedIndex == 3),
+                      _EvidenceNavItem(icon: Icons.security_rounded, label: 'Security', selected: selectedIndex == 4),
+                      _EvidenceNavItem(icon: Icons.tune_rounded, label: 'Settings', selected: selectedIndex == 5),
                     ],
                   ),
                 ),
@@ -217,9 +215,9 @@ class _EvidenceShell extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.all(10),
                     children: const [
-                      _MiniRecord(title: 'Demo Payroll Portal', subtitle: 'seq 1 / v1 / active', selected: true),
-                      _MiniRecord(title: 'Demo VPN Console', subtitle: 'seq 2 / v1 / active'),
-                      _MiniRecord(title: 'Demo Finance System', subtitle: 'seq 3 / v1 / active'),
+                      _MiniRecord(title: 'Operations Console', subtitle: 'seq 1 / v1 / active', selected: true),
+                      _MiniRecord(title: 'Vendor Portal', subtitle: 'seq 2 / v1 / active'),
+                      _MiniRecord(title: 'Database Gateway', subtitle: 'seq 3 / v1 / active'),
                     ],
                   ),
                 ),
@@ -282,6 +280,46 @@ class _MiniRecord extends StatelessWidget {
   }
 }
 
+class _EvidenceNavItem extends StatelessWidget {
+  const _EvidenceNavItem({
+    required this.icon,
+    required this.label,
+    this.selected = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: selected ? KpColors.surfaceCard : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: selected ? KpColors.primary : KpColors.muted),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: selected ? KpColors.ink : KpColors.muted,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _EnrollmentEvidence extends StatelessWidget {
   const _EnrollmentEvidence();
 
@@ -297,14 +335,14 @@ class _EnrollmentEvidence extends StatelessWidget {
         const SizedBox(height: 22),
         const WorkflowStepper(steps: ['Mnemonic', 'Platform factor', 'USB factor', 'Recovery metadata'], current: 1),
         const SizedBox(height: 22),
-        Row(
+        const Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: SectionPanel(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text('Mnemonic phrase', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                     SizedBox(height: 14),
                     _Field(label: 'Mnemonic', value: '******** ******** ******** ********'),
@@ -318,8 +356,8 @@ class _EnrollmentEvidence extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 20),
-            const SizedBox(
+            SizedBox(width: 20),
+            SizedBox(
               width: 300,
               child: SectionPanel(
                 child: Column(
@@ -381,9 +419,9 @@ class _CdrListEvidence extends StatelessWidget {
                 child: SectionPanel(
                   child: ListView(
                     children: const [
-                      _RecordRow(name: 'Demo Payroll Portal', service: 'legacy.example.local', account: 'demo.user'),
-                      _RecordRow(name: 'Demo VPN Console', service: 'vpn.example.local', account: 'demo.operator'),
-                      _RecordRow(name: 'Demo Finance System', service: 'finance.example.local', account: 'demo.approver'),
+                      _RecordRow(name: 'Operations Console', service: 'ops.example.local', account: 'operator'),
+                      _RecordRow(name: 'Vendor Portal', service: 'vendor.example.local', account: 'reviewer'),
+                      _RecordRow(name: 'Database Gateway', service: 'db.example.local', account: 'admin'),
                     ],
                   ),
                 ),

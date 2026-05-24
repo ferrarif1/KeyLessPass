@@ -20,8 +20,9 @@ class KpColors {
   static const error = Color(0xffef4444);
 }
 
-ThemeData buildKeylessPassTheme() {
-  final base = ThemeData.dark(useMaterial3: true);
+ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
+  final isDark = brightness == Brightness.dark;
+  final base = isDark ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true);
   const textTheme = TextTheme(
     headlineSmall: TextStyle(fontSize: 32, fontWeight: FontWeight.w700, height: 1.2, color: KpColors.ink),
     titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.3, color: KpColors.ink),
@@ -39,17 +40,27 @@ ThemeData buildKeylessPassTheme() {
   );
 
   return base.copyWith(
-    scaffoldBackgroundColor: KpColors.canvas,
-    canvasColor: KpColors.canvas,
+    scaffoldBackgroundColor: isDark ? KpColors.canvas : const Color(0xfff7f8f2),
+    canvasColor: isDark ? KpColors.canvas : const Color(0xfff7f8f2),
     dividerColor: KpColors.hairline,
-    colorScheme: const ColorScheme.dark(
-      primary: KpColors.primary,
-      onPrimary: KpColors.canvas,
-      secondary: KpColors.primary,
-      surface: KpColors.surfaceCard,
-      onSurface: KpColors.ink,
-      error: KpColors.error,
-    ),
+    colorScheme: (isDark
+            ? const ColorScheme.dark(
+                primary: KpColors.primary,
+                onPrimary: KpColors.canvas,
+                secondary: KpColors.primary,
+                surface: KpColors.surfaceCard,
+                onSurface: KpColors.ink,
+                error: KpColors.error,
+              )
+            : const ColorScheme.light(
+                primary: KpColors.primaryActive,
+                onPrimary: KpColors.canvas,
+                secondary: KpColors.primaryActive,
+                surface: Color(0xffffffff),
+                onSurface: Color(0xff111111),
+                error: KpColors.error,
+              ))
+        .copyWith(outline: KpColors.hairlineStrong),
     textTheme: textTheme,
     primaryTextTheme: textTheme,
     filledButtonTheme: FilledButtonThemeData(
@@ -101,7 +112,6 @@ ThemeData buildKeylessPassTheme() {
       textColor: KpColors.body,
       iconColor: KpColors.body,
       selectedColor: KpColors.primary,
-      selectedTileColor: KpColors.surfaceCard,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
     navigationRailTheme: const NavigationRailThemeData(

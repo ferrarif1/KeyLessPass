@@ -1,1 +1,22 @@
-/rust_core/target/debug
+.DS_Store
+docs/assets/.DS_Store
+packaging/.DS_Store
+
+# Rust
+/rust_core/target/
+
+# Flutter
+/flutter_app/build/
+/flutter_app/.dart_tool/
+/flutter_app/.flutter-plugins
+/flutter_app/.flutter-plugins-dependencies
+/flutter_app/test/failures/
+
+# Local release artifacts
+/releases/
+/dist/
+
+# Generated local runtime data
+KeylessPass_core_evidence_package/
+KeylessPass_core_evidence_package.zip
+*.log

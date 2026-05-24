@@ -46,7 +46,8 @@ pub trait PlatformFactorProvider {
 
 Windows uses a DPAPI extension point. macOS uses Keychain where available.
 Linux/UOS/Kylin use local AEAD package protection plus file permissions in the
-MVP. Fallback protection is surfaced to the UI as a reduced-security state.
+first release path. Fallback protection is surfaced to the UI as a reduced-security
+state.
 
 ## FFI
 

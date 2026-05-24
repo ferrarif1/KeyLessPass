@@ -11,6 +11,8 @@ pub struct AddCredentialRequest {
     pub display_name: String,
     pub service_hint: String,
     pub account_hint: String,
+    #[serde(default)]
+    pub notes: String,
     pub encoding_descriptor: Option<EncodingDescriptor>,
 }
 
@@ -22,6 +24,8 @@ pub struct UpdateCredentialDisplayRequest {
     pub display_name: String,
     pub service_hint: String,
     pub account_hint: String,
+    #[serde(default)]
+    pub notes: String,
     pub encoding_descriptor: Option<EncodingDescriptor>,
 }
 
@@ -64,6 +68,7 @@ pub fn add_credential_with_provider(
         request.display_name,
         request.service_hint,
         request.account_hint,
+        request.notes,
         descriptor,
     );
     record.set_mac(&master_key)?;
@@ -101,6 +106,7 @@ pub fn update_credential_display_with_provider(
         request.display_name,
         request.service_hint,
         request.account_hint,
+        request.notes,
         &master_key,
     )?;
     store.update(&record)?;

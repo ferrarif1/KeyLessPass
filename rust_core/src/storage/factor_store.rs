@@ -60,7 +60,13 @@ pub fn load_local_factor_payload(
     let master_key = b64_decode(&payload.k_master)?;
     let expected =
         mac::hmac_sha256_base64(&mac::package_mac_key(&master_key), &package.mac_payload()?)?;
-    if !mac::constant_time_eq_b64(&expected, &package.package_mac)? {
+    let legacy_expected = mac::hmac_sha256_base64(
+        &mac::package_mac_key(&master_key),
+        &package.legacy_mac_payload()?,
+    )?;
+    if !mac::constant_time_eq_b64(&expected, &package.package_mac)?
+        && !mac::constant_time_eq_b64(&legacy_expected, &package.package_mac)?
+    {
         return Err(KeylessPassError::Integrity(
             "local package MAC mismatch".to_string(),
         ));

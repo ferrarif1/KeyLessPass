@@ -32,7 +32,11 @@ fn main() -> Result<(), String> {
     for (display_name, service_hint, account_hint) in [
         ("Demo Payroll Portal", "legacy.example.local", "demo.user"),
         ("Demo VPN Console", "vpn.example.local", "demo.operator"),
-        ("Demo Finance System", "finance.example.local", "demo.approver"),
+        (
+            "Demo Finance System",
+            "finance.example.local",
+            "demo.approver",
+        ),
     ] {
         add_credential_with_provider(
             &paths,
@@ -41,6 +45,7 @@ fn main() -> Result<(), String> {
                 display_name: display_name.to_string(),
                 service_hint: service_hint.to_string(),
                 account_hint: account_hint.to_string(),
+                notes: String::new(),
                 encoding_descriptor: None,
             },
         )

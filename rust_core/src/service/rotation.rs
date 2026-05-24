@@ -20,6 +20,13 @@ pub struct ConfirmRotationRequest {
     pub version: u32,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CancelRotationRequest {
+    pub record_id: Uuid,
+    pub version: u32,
+}
+
 pub fn rotate_credential(
     request: RotateCredentialRequest,
 ) -> std::result::Result<CredentialDescriptionRecord, String> {
@@ -32,6 +39,12 @@ pub fn confirm_rotation(request: ConfirmRotationRequest) -> std::result::Result<
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     confirm_rotation_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
+}
+
+pub fn cancel_rotation(request: CancelRotationRequest) -> std::result::Result<(), String> {
+    let paths = StoragePaths::default().map_err(String::from)?;
+    let provider = current_platform_provider(&paths.app_dir);
+    cancel_rotation_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn rotate_credential_with_provider(
@@ -95,5 +108,25 @@ pub fn confirm_rotation_with_provider(
 
     new_record.mark_active(&master_key)?;
     store.update(&new_record)?;
+    Ok(())
+}
+
+pub fn cancel_rotation_with_provider(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    request: CancelRotationRequest,
+) -> Result<()> {
+    let config = read_config(paths)?;
+    let (_, local_payload) = load_local_factor_payload(provider, &config.local_factor_path)?;
+    let master_key = crate::crypto::b64_decode(&local_payload.k_master)?;
+    let store = CdrStore::new(&config.cdr_store_path);
+    let record = store.get(request.record_id, Some(request.version))?;
+    record.verify_mac(&master_key)?;
+    if record.state != CredentialState::PendingRotation {
+        return Err(KeylessPassError::Validation(
+            "selected CDR version is not pending rotation".to_string(),
+        ));
+    }
+    store.delete_version(request.record_id, request.version)?;
     Ok(())
 }

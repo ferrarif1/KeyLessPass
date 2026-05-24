@@ -85,6 +85,8 @@ pub struct CredentialDescriptionRecord {
     pub display_name: String,
     pub service_hint: String,
     pub account_hint: String,
+    #[serde(default)]
+    pub notes: String,
     pub version: u32,
     pub salt: String,
     pub encoding_descriptor: EncodingDescriptor,
@@ -101,6 +103,7 @@ impl CredentialDescriptionRecord {
         display_name: impl Into<String>,
         service_hint: impl Into<String>,
         account_hint: impl Into<String>,
+        notes: impl Into<String>,
         encoding_descriptor: EncodingDescriptor,
     ) -> Self {
         let now = Utc::now();
@@ -110,6 +113,7 @@ impl CredentialDescriptionRecord {
             display_name: display_name.into(),
             service_hint: service_hint.into(),
             account_hint: account_hint.into(),
+            notes: notes.into(),
             version: 1,
             salt: crate::crypto::random_base64(16),
             encoding_descriptor,
@@ -132,6 +136,7 @@ impl CredentialDescriptionRecord {
             display_name: previous.display_name.clone(),
             service_hint: previous.service_hint.clone(),
             account_hint: previous.account_hint.clone(),
+            notes: previous.notes.clone(),
             version: previous.version + 1,
             salt: crate::crypto::random_base64(16),
             encoding_descriptor,
@@ -164,11 +169,13 @@ impl CredentialDescriptionRecord {
         display_name: String,
         service_hint: String,
         account_hint: String,
+        notes: String,
         master_key: &[u8],
     ) -> Result<()> {
         self.display_name = display_name;
         self.service_hint = service_hint;
         self.account_hint = account_hint;
+        self.notes = notes;
         self.updated_at = Utc::now();
         self.set_mac(master_key)
     }

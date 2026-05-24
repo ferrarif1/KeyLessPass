@@ -1,9 +1,10 @@
 use crate::service::{
-    add_credential, confirm_rotation, derive_password, enroll, get_app_status, get_security_status,
-    list_credentials, recover_local, recover_usb, rotate_credential, update_credential_display,
-    AddCredentialRequest, ConfirmRotationRequest, DerivePasswordRequest, EnrollmentRequest,
-    RecoverLocalRequest, RecoverUsbRequest, RotateCredentialRequest,
-    UpdateCredentialDisplayRequest,
+    add_credential, cancel_rotation, confirm_rotation, derive_password, enroll, get_app_status,
+    get_security_status, list_credentials, recover_local, recover_usb, rotate_credential,
+    update_credential_display, AddCredentialRequest, CancelRotationRequest, ConfirmRotationRequest,
+    DerivePasswordRequest, EnrollmentRequest, GenerateMnemonicRequest, RecoverLocalRequest,
+    RecoverUsbRequest, RotateCredentialRequest, UpdateCredentialDisplayRequest,
+    VerifyUsbPackageRequest,
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
@@ -58,6 +59,12 @@ fn dispatch(request: FfiRequest) -> String {
         "getSecurityStatus" => get_security_status().map(to_value),
         "listCredentials" => list_credentials().map(to_value),
         "listUsbCandidates" => crate::service::list_usb_candidates().map(to_value),
+        "verifyUsbPackage" => parse::<VerifyUsbPackageRequest>(request.payload)
+            .and_then(crate::service::verify_usb_package)
+            .map(to_value),
+        "generateMnemonic" => parse::<GenerateMnemonicRequest>(request.payload)
+            .and_then(crate::service::generate_mnemonic)
+            .map(to_value),
         "enroll" => parse::<EnrollmentRequest>(request.payload)
             .and_then(enroll)
             .map(to_value),
@@ -75,6 +82,9 @@ fn dispatch(request: FfiRequest) -> String {
             .map(to_value),
         "confirmRotation" => parse::<ConfirmRotationRequest>(request.payload)
             .and_then(confirm_rotation)
+            .map(|_| Value::Null),
+        "cancelRotation" => parse::<CancelRotationRequest>(request.payload)
+            .and_then(cancel_rotation)
             .map(|_| Value::Null),
         "recoverUsb" => parse::<RecoverUsbRequest>(request.payload)
             .and_then(recover_usb)
@@ -111,7 +121,7 @@ fn error_response(message: &str) -> String {
 
 fn safe_error(op: &str, detail: &str) -> String {
     match op {
-        "derivePassword" | "recoverUsb" | "recoverLocal" => {
+        "derivePassword" | "recoverUsb" | "recoverLocal" | "verifyUsbPackage" => {
             "无法完成操作：所需本机材料、USB 因子或输入口令未通过安全校验。".to_string()
         }
         "enroll" if detail.contains("USB") || detail.contains("usb") => {
@@ -134,5 +144,28 @@ mod tests {
         keylesspass_ffi_free(ptr);
         assert!(text.contains(r#""ok":false"#));
         assert!(text.contains("unsupported operation"));
+    }
+
+    #[test]
+    fn ffi_generates_bilingual_mnemonic() {
+        let input = CString::new(
+            r#"{"op":"generateMnemonic","payload":{"language":"simplifiedChinese","wordCount":20}}"#,
+        )
+        .unwrap();
+        let ptr = keylesspass_ffi_json(input.as_ptr());
+        assert!(!ptr.is_null());
+        let text = unsafe { CStr::from_ptr(ptr).to_string_lossy().to_string() };
+        keylesspass_ffi_free(ptr);
+        let value: Value = serde_json::from_str(&text).unwrap();
+        assert_eq!(value["ok"], true);
+        assert_eq!(value["data"]["language"], "simplifiedChinese");
+        assert_eq!(
+            value["data"]["mnemonic"]
+                .as_str()
+                .unwrap()
+                .split_whitespace()
+                .count(),
+            20
+        );
     }
 }

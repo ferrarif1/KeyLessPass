@@ -87,14 +87,14 @@ class DangerPanel extends StatelessWidget {
     required this.title,
     required this.body,
     required this.actionLabel,
-    required this.onPressed,
+    this.onPressed,
     super.key,
   });
 
   final String title;
   final String body;
   final String actionLabel;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +231,14 @@ class StatusPill extends StatelessWidget {
             decoration: BoxDecoration(color: tone, shape: BoxShape.circle),
           ),
           const SizedBox(width: 8),
-          Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: KpColors.bodyStrong)),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: KpColors.bodyStrong),
+            ),
+          ),
         ],
       ),
     );
