@@ -1,5 +1,5 @@
 use keylesspass_core::crypto::{self, encoder, kdf};
-use keylesspass_core::domain::{CredentialState, EncodingDescriptor};
+use keylesspass_core::domain::{CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm};
 use keylesspass_core::platform::fallback::FallbackPlatformFactorProvider;
 use keylesspass_core::service::credentials::{
     add_credential_with_provider, update_credential_display_with_provider, AddCredentialRequest,
@@ -110,6 +110,7 @@ fn setup() -> Harness {
         EnrollmentRequest {
             mnemonic: MNEMONIC.to_string(),
             usb_path: usb_dir.path().to_string_lossy().to_string(),
+            password_derivation_algorithm: PasswordDerivationAlgorithm::HkdfSha256,
         },
     )
     .expect("enrollment");
@@ -742,6 +743,7 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
                 EnrollmentRequest {
                     mnemonic: MNEMONIC.to_string(),
                     usb_path: usb_dir.path().to_string_lossy().to_string(),
+                    password_derivation_algorithm: PasswordDerivationAlgorithm::HkdfSha256,
                 },
             )
             .map_err(|err| err.to_string())?;

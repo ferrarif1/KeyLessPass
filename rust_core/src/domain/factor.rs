@@ -2,6 +2,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::domain::PasswordDerivationAlgorithm;
+
 pub const FACTOR_PACKAGE_SCHEMA_VERSION: u32 = 1;
 pub const FACTOR_PACKAGE_VERSION: u32 = 1;
 
@@ -121,6 +123,8 @@ pub struct LocalFactorPayload {
     pub device_secret: String,
     pub usb_secret: String,
     pub mnemonic_salt: String,
+    #[serde(default)]
+    pub password_derivation_algorithm: PasswordDerivationAlgorithm,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mnemonic_verifier: Option<String>,
     pub recovery_generation: u64,
@@ -133,6 +137,8 @@ pub struct UsbFactorPayload {
     pub usb_secret: String,
     pub device_secret: String,
     pub mnemonic_salt: String,
+    #[serde(default)]
+    pub password_derivation_algorithm: PasswordDerivationAlgorithm,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mnemonic_verifier: Option<String>,
     pub recovery_generation: u64,

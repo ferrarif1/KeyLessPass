@@ -1,3 +1,4 @@
+use keylesspass_core::domain::PasswordDerivationAlgorithm;
 use keylesspass_core::platform::current_platform_provider;
 use keylesspass_core::service::credentials::{add_credential_with_provider, AddCredentialRequest};
 use keylesspass_core::service::enrollment::{enroll_with_provider, EnrollmentRequest};
@@ -25,6 +26,7 @@ fn main() -> Result<(), String> {
         EnrollmentRequest {
             mnemonic: DEMO_MNEMONIC.to_string(),
             usb_path: usb,
+            password_derivation_algorithm: PasswordDerivationAlgorithm::HkdfSha256,
         },
     )
     .map_err(String::from)?;

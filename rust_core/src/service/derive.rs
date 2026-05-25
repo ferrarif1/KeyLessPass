@@ -73,8 +73,17 @@ pub fn derive_password_with_provider(
         &config.platform,
     )?;
     let f_u = crate::crypto::b64_decode(&usb_payload.usb_secret)?;
+    let algorithm = config.password_derivation_algorithm;
+    if algorithm != local_payload.password_derivation_algorithm
+        || algorithm != usb_payload.password_derivation_algorithm
+    {
+        return Err(KeylessPassError::Integrity(
+            "derivation algorithm metadata mismatch".to_string(),
+        ));
+    }
     let derivation_key = kdf::derive_password_root_from_master(&master_key, &f_c, &f_u)?;
-    let service_secret = kdf::derive_service_secret(
+    let service_secret = kdf::derive_service_secret_with_algorithm(
+        algorithm,
         &derivation_key,
         &config.user_id,
         record.record_seq,

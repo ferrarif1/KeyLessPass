@@ -1,8 +1,22 @@
 use crate::error::{KeylessPassError, Result};
+use argon2::{Algorithm, Argon2, Params as Argon2Params, Version};
 use hkdf::Hkdf;
+use pbkdf2::pbkdf2_hmac;
+use scrypt::{scrypt, Params as ScryptParams};
 use sha2::Sha256;
+use sha2::{Digest, Sha256 as Sha256Digest};
 use unicode_normalization::UnicodeNormalization;
 use uuid::Uuid;
+
+use crate::domain::PasswordDerivationAlgorithm;
+
+const ARGON2ID_MEMORY_KIB: u32 = 19 * 1024;
+const ARGON2ID_ITERATIONS: u32 = 2;
+const ARGON2ID_PARALLELISM: u32 = 1;
+const SCRYPT_LOG_N: u8 = 15;
+const SCRYPT_R: u32 = 8;
+const SCRYPT_P: u32 = 1;
+const PBKDF2_ITERATIONS: u32 = 210_000;
 
 pub fn hkdf_sha256(
     input_key_material: &[u8],
@@ -110,6 +124,79 @@ pub fn derive_service_secret(
     info.extend_from_slice(&version.to_be_bytes());
     info.extend_from_slice(salt);
     hkdf_32(derivation_key, b"KeylessPass service password salt", &info)
+}
+
+pub fn derive_service_secret_with_algorithm(
+    algorithm: PasswordDerivationAlgorithm,
+    derivation_key: &[u8],
+    user_id: &Uuid,
+    record_seq: u64,
+    record_id: &Uuid,
+    version: u32,
+    salt: &[u8],
+) -> Result<[u8; 32]> {
+    let path = service_path_material(user_id, record_seq, record_id, version, salt);
+    match algorithm {
+        PasswordDerivationAlgorithm::HkdfSha256 => {
+            hkdf_32(derivation_key, b"KeylessPass service password salt", &path)
+        }
+        PasswordDerivationAlgorithm::Argon2id => {
+            let params = Argon2Params::new(
+                ARGON2ID_MEMORY_KIB,
+                ARGON2ID_ITERATIONS,
+                ARGON2ID_PARALLELISM,
+                Some(32),
+            )
+            .map_err(|_| KeylessPassError::Crypto("Argon2id parameter error".to_string()))?;
+            let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
+            let mut out = [0_u8; 32];
+            argon2
+                .hash_password_into(derivation_key, &service_kdf_salt(&path), &mut out)
+                .map_err(|_| KeylessPassError::Crypto("Argon2id derivation failed".to_string()))?;
+            Ok(out)
+        }
+        PasswordDerivationAlgorithm::Scrypt => {
+            let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P, 32)
+                .map_err(|_| KeylessPassError::Crypto("scrypt parameter error".to_string()))?;
+            let mut out = [0_u8; 32];
+            scrypt(derivation_key, &service_kdf_salt(&path), &params, &mut out)
+                .map_err(|_| KeylessPassError::Crypto("scrypt derivation failed".to_string()))?;
+            Ok(out)
+        }
+        PasswordDerivationAlgorithm::Pbkdf2HmacSha256 => {
+            let mut out = [0_u8; 32];
+            pbkdf2_hmac::<Sha256>(
+                derivation_key,
+                &service_kdf_salt(&path),
+                PBKDF2_ITERATIONS,
+                &mut out,
+            );
+            Ok(out)
+        }
+    }
+}
+
+fn service_path_material(
+    user_id: &Uuid,
+    record_seq: u64,
+    record_id: &Uuid,
+    version: u32,
+    salt: &[u8],
+) -> Vec<u8> {
+    let mut info = Vec::new();
+    info.extend_from_slice(user_id.as_bytes());
+    info.extend_from_slice(&record_seq.to_be_bytes());
+    info.extend_from_slice(record_id.as_bytes());
+    info.extend_from_slice(&version.to_be_bytes());
+    info.extend_from_slice(salt);
+    info
+}
+
+fn service_kdf_salt(path_material: &[u8]) -> [u8; 32] {
+    let mut hasher = Sha256Digest::new();
+    hasher.update(b"KeyLessPass service derivation salt v1");
+    hasher.update(path_material);
+    hasher.finalize().into()
 }
 
 pub fn derive_usb_package_key(f_m: &[u8]) -> Result<[u8; 32]> {

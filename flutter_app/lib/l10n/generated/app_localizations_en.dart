@@ -516,6 +516,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultCharacterPolicy => 'Default character policy';
 
   @override
+  String get derivationAlgorithm => 'Derivation algorithm';
+
+  @override
+  String get algorithmAppliesOnNextSetup =>
+      'This choice is used when you initialize a new local profile.';
+
+  @override
+  String get algorithmLockedUntilReset =>
+      'Current data uses this algorithm. To change it, reset local data and initialize again.';
+
+  @override
+  String get legacyHkdfDetected =>
+      'Current data does not store an algorithm field; KeyLessPass treats it as legacy HKDF-SHA256.';
+
+  @override
   String get advancedMode => 'Advanced mode';
 
   @override

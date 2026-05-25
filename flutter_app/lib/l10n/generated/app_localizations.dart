@@ -1076,6 +1076,30 @@ abstract class AppLocalizations {
   /// **'Default character policy'**
   String get defaultCharacterPolicy;
 
+  /// No description provided for @derivationAlgorithm.
+  ///
+  /// In en, this message translates to:
+  /// **'Derivation algorithm'**
+  String get derivationAlgorithm;
+
+  /// No description provided for @algorithmAppliesOnNextSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'This choice is used when you initialize a new local profile.'**
+  String get algorithmAppliesOnNextSetup;
+
+  /// No description provided for @algorithmLockedUntilReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Current data uses this algorithm. To change it, reset local data and initialize again.'**
+  String get algorithmLockedUntilReset;
+
+  /// No description provided for @legacyHkdfDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Current data does not store an algorithm field; KeyLessPass treats it as legacy HKDF-SHA256.'**
+  String get legacyHkdfDetected;
+
   /// No description provided for @advancedMode.
   ///
   /// In en, this message translates to:

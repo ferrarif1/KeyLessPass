@@ -70,6 +70,7 @@ This makes it useful when an organization must keep using legacy password-based 
 - English and Simplified Chinese mnemonic generation on the local device.
 - Mnemonic reset using this device plus the paired USB package, without changing existing derived passwords.
 - Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
+- Selectable service derivation algorithm for new profiles: HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256.
 - Editable display metadata that does not change derived passwords.
 - Two-phase password rotation with pending, commit, and cancel states.
 - Local recovery workflows for rebuilding missing USB or local factor packages.
@@ -91,6 +92,8 @@ This makes it useful when an organization must keep using legacy password-based 
 
 During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is transformed into an independent mnemonic factor `F_M`, which participates with the local factor `F_C` and USB factor `F_U` in the local 2-of-3 unwrap/recovery model for `Kmaster`. Service password derivation then uses the recovered `Kmaster` plus stable CDR path fields.
 
+For compatibility, existing profiles without an algorithm field are treated as legacy HKDF-SHA256. New profiles can choose HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256 before enrollment; the choice is locked for that local profile and can be changed only after resetting local application data and initializing again.
+
 For each credential record, KeyLessPass stores only non-secret CDR metadata. Display fields such as name, service hint, account hint, and notes are searchable and editable, but they are not part of the derivation path. Password rule changes create a new CDR version and are treated as rotation.
 
 When a paired USB drive is present, KeyLessPass can write a signed CDR metadata backup to the USB drive. On refresh or insertion detection, the app compares local CDR metadata with the USB backup and prompts the user to either sync local records to USB or restore local records from the USB backup.
@@ -103,7 +106,7 @@ flowchart LR
     FM --> R
     FU["USB factor F_U<br/>USB factor package"] --> R
     R --> KM["Recovered Kmaster"]
-    KM --> D["HKDF + deterministic encoding"]
+    KM --> D["Selected KDF + deterministic encoding"]
     C["CDR stable fields<br/>recordSeq + recordId + version + salt + Rule"] --> D
     D --> P["Service password<br/>shown briefly / clipboard timeout"]
     FU --> U["USB stores<br/>USB factor package<br/>optional CDR replica<br/>no plaintext passwords<br/>no mnemonic<br/>no plaintext Kmaster"]

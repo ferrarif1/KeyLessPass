@@ -184,6 +184,7 @@ class _HomeWindowState extends State<_HomeWindow> {
   int _clipboardTimeout = 30;
   int _defaultLength = 18;
   bool _advancedMode = false;
+  String _passwordDerivationAlgorithm = 'hkdf-sha256';
 
   @override
   void initState() {
@@ -236,11 +237,16 @@ class _HomeWindowState extends State<_HomeWindow> {
       }
       setState(() {
         _status = status;
+        if (status.enrolled) {
+          _passwordDerivationAlgorithm = status.passwordDerivationAlgorithm;
+        }
         _records = records;
         _usbCandidates = candidates;
         _usbCdrStatus = usbCdrStatus;
         _selected = _pickSelected(records);
-        if (!status.enrolled) _section = _Section.setup;
+        if (!status.enrolled && !_allowedBeforeSetup(_section)) {
+          _section = _Section.setup;
+        }
       });
     } catch (_) {
       setState(() => _message = context.t.operationFailed);
@@ -282,6 +288,14 @@ class _HomeWindowState extends State<_HomeWindow> {
       _RecordFilter.conflict => state == 'conflict',
       _RecordFilter.error => state == 'error',
     };
+  }
+
+  bool _allowedBeforeSetup(_Section section) {
+    return {
+      _Section.setup,
+      _Section.settings,
+      _Section.about,
+    }.contains(section);
   }
 
   Future<void> _completeSetup() async {
@@ -511,6 +525,7 @@ class _HomeWindowState extends State<_HomeWindow> {
           status: _status,
           api: _api,
           usbCandidates: _usbCandidates,
+          passwordDerivationAlgorithm: _passwordDerivationAlgorithm,
           onDone: _completeSetup),
       _Section.records => _recordsPage(),
       _Section.add => _status?.enrolled == true
@@ -520,6 +535,7 @@ class _HomeWindowState extends State<_HomeWindow> {
               status: _status,
               api: _api,
               usbCandidates: _usbCandidates,
+              passwordDerivationAlgorithm: _passwordDerivationAlgorithm,
               onDone: _completeSetup),
       _Section.derive => _DerivePage(
           records: _records,
@@ -999,6 +1015,9 @@ class _HomeWindowState extends State<_HomeWindow> {
                   (value) => setState(() => _clipboardTimeout = value.round())),
               _slider(t.defaultPasswordLength, _defaultLength.toDouble(), 8, 64,
                   (value) => setState(() => _defaultLength = value.round())),
+              const SizedBox(height: 8),
+              _derivationAlgorithmSelector(),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(child: Text(t.advancedMode)),
@@ -1071,6 +1090,7 @@ class _HomeWindowState extends State<_HomeWindow> {
       'readableUsbPackageCount':
           _usbCandidates.where((item) => item.readable).length,
       'clipboardTimeoutSeconds': _clipboardTimeout,
+      'passwordDerivationAlgorithm': _effectivePasswordDerivationAlgorithm(),
       'analytics': false,
     });
     final copied = await showDialog<bool>(
@@ -1177,6 +1197,54 @@ class _HomeWindowState extends State<_HomeWindow> {
                 onChanged: onChanged)),
       ],
     );
+  }
+
+  Widget _derivationAlgorithmSelector() {
+    final t = context.t;
+    final enrolled = _status?.enrolled == true;
+    final value = _effectivePasswordDerivationAlgorithm();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<String>(
+          key: ValueKey('derivation-$value-$enrolled'),
+          initialValue: value,
+          decoration: InputDecoration(labelText: t.derivationAlgorithm),
+          items: const [
+            'hkdf-sha256',
+            'argon2id',
+            'scrypt',
+            'pbkdf2-hmac-sha256',
+          ]
+              .map((algorithm) => DropdownMenuItem(
+                    value: algorithm,
+                    child: Text(_algorithmLabelStatic(algorithm)),
+                  ))
+              .toList(),
+          onChanged: enrolled
+              ? null
+              : (value) => setState(
+                  () => _passwordDerivationAlgorithm = value ?? 'hkdf-sha256'),
+        ),
+        const SizedBox(height: 8),
+        InlineNotice(
+          text: enrolled
+              ? (_status?.hasStoredPasswordDerivationAlgorithm == true
+                  ? t.algorithmLockedUntilReset
+                  : t.legacyHkdfDetected)
+              : t.algorithmAppliesOnNextSetup,
+          icon: Icons.info_outline_rounded,
+        ),
+      ],
+    );
+  }
+
+  String _effectivePasswordDerivationAlgorithm() {
+    final status = _status;
+    if (status?.enrolled == true) {
+      return status!.passwordDerivationAlgorithm;
+    }
+    return _passwordDerivationAlgorithm;
   }
 
   Widget _aboutPage() {
@@ -1291,6 +1359,15 @@ Future<void> _chooseUsbPath(TextEditingController controller) async {
   }
 }
 
+String _algorithmLabelStatic(String value) {
+  return switch (value) {
+    'argon2id' => 'Argon2id',
+    'scrypt' => 'scrypt',
+    'pbkdf2-hmac-sha256' => 'PBKDF2-HMAC-SHA256',
+    _ => 'HKDF-SHA256',
+  };
+}
+
 class _RecordDraft {
   const _RecordDraft({
     required this.displayName,
@@ -1322,12 +1399,14 @@ class _SetupPage extends StatefulWidget {
     required this.status,
     required this.api,
     required this.usbCandidates,
+    required this.passwordDerivationAlgorithm,
     required this.onDone,
   });
 
   final AppStatus? status;
   final CoreApi? api;
   final List<UsbCandidate> usbCandidates;
+  final String passwordDerivationAlgorithm;
   final Future<void> Function() onDone;
 
   @override
@@ -1384,7 +1463,11 @@ class _SetupPageState extends State<_SetupPage> {
       _message = null;
     });
     try {
-      await api.enroll(mnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
+      await api.enroll(
+        mnemonic: _mnemonic.text,
+        usbPath: _usbPath.text.trim(),
+        passwordDerivationAlgorithm: widget.passwordDerivationAlgorithm,
+      );
       _mnemonic.clear();
       await widget.onDone();
       if (mounted) setState(() => _message = context.t.setupComplete);
@@ -1441,6 +1524,11 @@ class _SetupPageState extends State<_SetupPage> {
                       const SizedBox(height: 12),
                       InfoRow(label: t.status, value: t.initialized),
                       InfoRow(label: t.localOnly, value: t.enabled),
+                      InfoRow(
+                          label: t.derivationAlgorithm,
+                          value: _algorithmLabelStatic(
+                              widget.status?.passwordDerivationAlgorithm ??
+                                  'hkdf-sha256')),
                     ],
                   )
                 : Column(
@@ -1506,6 +1594,11 @@ class _SetupPageState extends State<_SetupPage> {
                       InlineNotice(
                           text: t.mnemonicGeneratedLocally,
                           icon: Icons.lock_outline_rounded),
+                      const SizedBox(height: 12),
+                      InfoRow(
+                          label: t.derivationAlgorithm,
+                          value: _algorithmLabelStatic(
+                              widget.passwordDerivationAlgorithm)),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _mnemonic,

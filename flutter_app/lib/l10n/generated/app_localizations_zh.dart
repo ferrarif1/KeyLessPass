@@ -498,6 +498,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get defaultCharacterPolicy => '默认字符策略';
 
   @override
+  String get derivationAlgorithm => '派生算法';
+
+  @override
+  String get algorithmAppliesOnNextSetup => '该选择会用于下一次初始化新的本机配置。';
+
+  @override
+  String get algorithmLockedUntilReset => '当前数据使用此算法。如需更改，请重置本机数据后重新初始化。';
+
+  @override
+  String get legacyHkdfDetected =>
+      '当前数据没有保存算法字段，KeyLessPass 按旧版 HKDF-SHA256 处理。';
+
+  @override
   String get advancedMode => '高级模式';
 
   @override

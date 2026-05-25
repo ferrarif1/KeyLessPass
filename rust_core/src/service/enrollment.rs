@@ -1,5 +1,5 @@
 use crate::crypto::{b64_encode, kdf, recovery as crypto_recovery, SecretBytes};
-use crate::domain::{AppConfig, LocalFactorPayload, UsbFactorPayload};
+use crate::domain::{AppConfig, LocalFactorPayload, PasswordDerivationAlgorithm, UsbFactorPayload};
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{
     current_platform_provider, current_security_status, PlatformFactorProvider,
@@ -19,6 +19,8 @@ use uuid::Uuid;
 pub struct EnrollmentRequest {
     pub mnemonic: String,
     pub usb_path: String,
+    #[serde(default)]
+    pub password_derivation_algorithm: PasswordDerivationAlgorithm,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -57,12 +59,14 @@ pub fn enroll_with_provider(
     let mnemonic_salt_b64 = b64_encode(&mnemonic_salt);
     let f_m = kdf::derive_mnemonic_factor(&request.mnemonic, &user_id, &mnemonic_salt)?;
     let mnemonic_verifier = kdf::derive_mnemonic_verifier(&f_m)?;
+    let password_derivation_algorithm = request.password_derivation_algorithm;
 
     let local_payload = LocalFactorPayload {
         k_master: b64_encode(&k_master),
         device_secret: b64_encode(device_secret.expose()),
         usb_secret: b64_encode(&usb_secret),
         mnemonic_salt: mnemonic_salt_b64.clone(),
+        password_derivation_algorithm,
         mnemonic_verifier: Some(mnemonic_verifier.clone()),
         recovery_generation: 1,
     };
@@ -71,6 +75,7 @@ pub fn enroll_with_provider(
         usb_secret: b64_encode(&usb_secret),
         device_secret: b64_encode(device_secret.expose()),
         mnemonic_salt: mnemonic_salt_b64,
+        password_derivation_algorithm,
         mnemonic_verifier: Some(mnemonic_verifier),
         recovery_generation: 1,
     };
@@ -98,6 +103,7 @@ pub fn enroll_with_provider(
         device_id,
         paths.db_path.clone(),
         paths.local_factor_path.clone(),
+        password_derivation_algorithm,
     );
     write_config(paths, &config)?;
 

@@ -38,6 +38,12 @@ class AppStatus {
   final Map<String, Object?>? config;
   final Map<String, Object?>? recovery;
 
+  String get passwordDerivationAlgorithm =>
+      config?['passwordDerivationAlgorithm'] as String? ?? 'hkdf-sha256';
+
+  bool get hasStoredPasswordDerivationAlgorithm =>
+      config?.containsKey('passwordDerivationAlgorithm') ?? false;
+
   factory AppStatus.fromJson(Object? value) {
     final json = (value as Map).cast<String, Object?>();
     return AppStatus(

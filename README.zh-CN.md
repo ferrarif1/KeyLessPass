@@ -70,6 +70,7 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 - 支持本机生成英文或简体中文助记短语，生成后不保存。
 - 支持使用本机设备和配对 U 盘重置助记短语，且不改变已有派生密码。
 - 派生路径基于稳定的 `recordSeq`、`recordId`、`version`、`salt` 和 `encodingDescriptor`。
+- 新 profile 可选择服务派生算法：HKDF-SHA256、Argon2id、scrypt 或 PBKDF2-HMAC-SHA256。
 - `displayName`、`serviceHint`、`accountHint`、备注仅用于展示和检索，修改后不改变密码。
 - 支持 pending / commit / cancel 的两阶段密码轮换。
 - 支持使用两个可用因子重建缺失的 U 盘包或本机包。
@@ -91,6 +92,8 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 
 初始化时，KeyLessPass 生成随机 256-bit 每用户主密钥。助记短语不是服务密码根种子，也不会被保存。它会先通过 KDF 形成独立的助记短语因子 `F_M`，再和本机因子 `F_C`、U 盘因子 `F_U` 一起参与本地 2-of-3 解封装/恢复模型，用于恢复 `Kmaster`。服务密码派生阶段使用恢复出的 `Kmaster` 和稳定的 CDR 路径字段。
 
+为兼容旧数据，缺少算法字段的既有 profile 会按 legacy HKDF-SHA256 处理。新的 profile 可在初始化前选择 HKDF-SHA256、Argon2id、scrypt 或 PBKDF2-HMAC-SHA256；初始化完成后该选择会随本机配置和因子包锁定，如需更改，需要重置本机应用数据并重新初始化。
+
 每条记录只保存非秘密 CDR 元数据。显示名称、服务提示、账号提示和备注可搜索、可编辑，但不参与派生路径。修改密码规则必须创建新版本，并被视为一次密码轮换。
 
 当配对 U 盘可用时，KeyLessPass 可以把签名后的 CDR 元数据备份写入 U 盘。刷新或检测到 U 盘插入时，应用会比较本机 CDR 元数据和 U 盘备份，并提示用户选择将本机记录同步到 U 盘，或从 U 盘备份恢复本机记录。
@@ -103,7 +106,7 @@ flowchart LR
     FM --> R
     FU["U 盘因子 F_U<br/>U 盘因子包"] --> R
     R --> KM["恢复出的 Kmaster"]
-    KM --> D["HKDF + 确定性编码"]
+    KM --> D["已选 KDF + 确定性编码"]
     C["CDR 稳定字段<br/>recordSeq + recordId + version + salt + Rule"] --> D
     D --> P["服务密码<br/>短暂显示 / 自动清剪贴板"]
     FU --> U["U 盘保存<br/>U 盘因子包<br/>可选 CDR 副本<br/>无明文密码<br/>无助记短语<br/>无明文 Kmaster"]

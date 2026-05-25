@@ -1,5 +1,5 @@
 use crate::crypto::kdf;
-use crate::domain::{CredentialState, EncodingDescriptor};
+use crate::domain::{CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm};
 use crate::platform::fallback::FallbackPlatformFactorProvider;
 use crate::platform::linux::LinuxPlatformFactorProvider;
 use crate::platform::macos::MacOSPlatformFactorProvider;
@@ -42,6 +42,10 @@ struct Harness {
 }
 
 fn setup() -> Harness {
+    setup_with_algorithm(PasswordDerivationAlgorithm::HkdfSha256)
+}
+
+fn setup_with_algorithm(password_derivation_algorithm: PasswordDerivationAlgorithm) -> Harness {
     let app_dir = tempfile::tempdir().unwrap();
     let usb_dir = tempfile::tempdir().unwrap();
     let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
@@ -52,6 +56,7 @@ fn setup() -> Harness {
         EnrollmentRequest {
             mnemonic: MNEMONIC.to_string(),
             usb_path: usb_dir.path().to_string_lossy().to_string(),
+            password_derivation_algorithm,
         },
     )
     .unwrap();
@@ -298,6 +303,7 @@ fn reenrollment_is_blocked_after_local_state_exists() {
         EnrollmentRequest {
             mnemonic: MNEMONIC.to_string(),
             usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+            password_derivation_algorithm: PasswordDerivationAlgorithm::HkdfSha256,
         },
     )
     .unwrap_err();
@@ -351,6 +357,45 @@ fn derivation_path_fields_change_service_secret() {
         base,
         kdf::derive_service_secret(&derivation_key, &user_id, 1, &record_id, 1, &[5_u8; 16])
             .unwrap()
+    );
+}
+
+#[test]
+fn selectable_service_derivation_algorithms_are_stable() {
+    let algorithms = [
+        PasswordDerivationAlgorithm::HkdfSha256,
+        PasswordDerivationAlgorithm::Argon2id,
+        PasswordDerivationAlgorithm::Scrypt,
+        PasswordDerivationAlgorithm::Pbkdf2HmacSha256,
+    ];
+    let mut outputs = std::collections::BTreeSet::new();
+    for algorithm in algorithms {
+        let harness = setup_with_algorithm(algorithm);
+        let config = crate::storage::read_config(&harness.paths).unwrap();
+        assert_eq!(config.password_derivation_algorithm, algorithm);
+        let first = derive(&harness);
+        let second = derive(&harness);
+        assert_eq!(first, second);
+        assert!(outputs.insert(first));
+    }
+}
+
+#[test]
+fn legacy_config_without_algorithm_defaults_to_hkdf() {
+    let value = serde_json::json!({
+        "appVersion": "0.1.0",
+        "userId": Uuid::new_v4(),
+        "platform": "test",
+        "deviceId": "device",
+        "cdrStorePath": "/tmp/keylesspass-test.sqlite3",
+        "localFactorPath": "/tmp/keylesspass-local-factor.json",
+        "createdAt": "2026-01-01T00:00:00Z",
+        "updatedAt": "2026-01-01T00:00:00Z"
+    });
+    let config: crate::domain::AppConfig = serde_json::from_value(value).unwrap();
+    assert_eq!(
+        config.password_derivation_algorithm,
+        PasswordDerivationAlgorithm::HkdfSha256
     );
 }
 

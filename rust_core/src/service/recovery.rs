@@ -80,6 +80,7 @@ pub fn recover_usb_with_provider(
         usb_secret: local_payload.usb_secret.clone(),
         device_secret: local_payload.device_secret.clone(),
         mnemonic_salt: local_payload.mnemonic_salt.clone(),
+        password_derivation_algorithm: local_payload.password_derivation_algorithm,
         mnemonic_verifier: local_payload.mnemonic_verifier.clone(),
         recovery_generation: generation,
     };
@@ -120,6 +121,7 @@ pub fn recover_local_with_provider(
         device_secret: usb_payload.device_secret.clone(),
         usb_secret: usb_payload.usb_secret.clone(),
         mnemonic_salt: usb_payload.mnemonic_salt.clone(),
+        password_derivation_algorithm: usb_payload.password_derivation_algorithm,
         mnemonic_verifier,
         recovery_generation: generation,
     };
@@ -139,6 +141,7 @@ pub fn recover_local_with_provider(
         usb_package.device_id,
         paths.db_path.clone(),
         paths.local_factor_path.clone(),
+        usb_payload.password_derivation_algorithm,
     );
     write_config(paths, &config)?;
 
@@ -189,6 +192,7 @@ pub fn reset_mnemonic_with_provider(
         device_secret: local_payload.device_secret.clone(),
         usb_secret: local_payload.usb_secret.clone(),
         mnemonic_salt: mnemonic_salt_b64.clone(),
+        password_derivation_algorithm: local_payload.password_derivation_algorithm,
         mnemonic_verifier: Some(mnemonic_verifier.clone()),
         recovery_generation: generation,
     };
@@ -206,6 +210,7 @@ pub fn reset_mnemonic_with_provider(
         usb_secret: local_payload.usb_secret,
         device_secret: local_payload.device_secret,
         mnemonic_salt: mnemonic_salt_b64,
+        password_derivation_algorithm: local_payload.password_derivation_algorithm,
         mnemonic_verifier: Some(mnemonic_verifier),
         recovery_generation: generation,
     };

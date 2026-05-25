@@ -22,9 +22,19 @@ class CoreApi {
     });
   }
 
-  Future<void> enroll({required String mnemonic, required String usbPath}) {
+  Future<void> enroll({
+    required String mnemonic,
+    required String usbPath,
+    required String passwordDerivationAlgorithm,
+  }) {
     return _core.invoke(
-        'enroll', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
+        'enroll',
+        {
+          'mnemonic': mnemonic,
+          'usbPath': usbPath,
+          'passwordDerivationAlgorithm': passwordDerivationAlgorithm,
+        },
+        (_) {});
   }
 
   Future<Map<String, Object?>> generateMnemonic({
