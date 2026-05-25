@@ -23,7 +23,8 @@ class CoreApi {
   }
 
   Future<void> enroll({required String mnemonic, required String usbPath}) {
-    return _core.invoke('enroll', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
+    return _core.invoke(
+        'enroll', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
   }
 
   Future<Map<String, Object?>> generateMnemonic({
@@ -108,7 +109,8 @@ class CoreApi {
     required CredentialRecord record,
     required int length,
   }) {
-    final descriptor = Map<String, Object?>.from(record.encodingDescriptor)..['length'] = length;
+    final descriptor = Map<String, Object?>.from(record.encodingDescriptor)
+      ..['length'] = length;
     return _core.invoke(
       'rotateCredential',
       {
@@ -119,26 +121,66 @@ class CoreApi {
     );
   }
 
-  Future<void> confirmRotation({required String recordId, required int version}) {
-    return _core.invoke('confirmRotation', {'recordId': recordId, 'version': version}, (_) {});
+  Future<void> confirmRotation(
+      {required String recordId, required int version}) {
+    return _core.invoke(
+        'confirmRotation', {'recordId': recordId, 'version': version}, (_) {});
   }
 
-  Future<void> cancelRotation({required String recordId, required int version}) {
-    return _core.invoke('cancelRotation', {'recordId': recordId, 'version': version}, (_) {});
+  Future<void> cancelRotation(
+      {required String recordId, required int version}) {
+    return _core.invoke(
+        'cancelRotation', {'recordId': recordId, 'version': version}, (_) {});
   }
 
   Future<void> recoverUsb({required String mnemonic, required String usbPath}) {
-    return _core.invoke('recoverUsb', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
+    return _core.invoke(
+        'recoverUsb', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
   }
 
-  Future<void> recoverLocal({required String mnemonic, required String usbPath}) {
-    return _core.invoke('recoverLocal', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
+  Future<void> recoverLocal(
+      {required String mnemonic, required String usbPath}) {
+    return _core.invoke(
+        'recoverLocal', {'mnemonic': mnemonic, 'usbPath': usbPath}, (_) {});
   }
 
-  Future<Map<String, Object?>> verifyUsbPackage({required String mnemonic, required String usbPath}) {
+  Future<void> resetMnemonic(
+      {required String newMnemonic, required String usbPath}) {
+    return _core.invoke('resetMnemonic',
+        {'newMnemonic': newMnemonic, 'usbPath': usbPath}, (_) {});
+  }
+
+  Future<void> resetApplicationData({required String confirmation}) {
+    return _core.invoke(
+        'resetApplicationData', {'confirmation': confirmation}, (_) {});
+  }
+
+  Future<Map<String, Object?>> verifyUsbPackage(
+      {required String mnemonic, required String usbPath}) {
     return _core.invoke(
       'verifyUsbPackage',
       {'mnemonic': mnemonic, 'usbPath': usbPath},
+      (value) => (value as Map).cast<String, Object?>(),
+    );
+  }
+
+  Future<UsbCdrStatus> getUsbCdrStatus({required String usbPath}) {
+    return _core.invoke(
+        'getUsbCdrStatus', {'usbPath': usbPath}, UsbCdrStatus.fromJson);
+  }
+
+  Future<Map<String, Object?>> syncCdrToUsb({required String usbPath}) {
+    return _core.invoke(
+      'syncCdrToUsb',
+      {'usbPath': usbPath},
+      (value) => (value as Map).cast<String, Object?>(),
+    );
+  }
+
+  Future<Map<String, Object?>> restoreCdrFromUsb({required String usbPath}) {
+    return _core.invoke(
+      'restoreCdrFromUsb',
+      {'usbPath': usbPath},
       (value) => (value as Map).cast<String, Object?>(),
     );
   }
@@ -160,7 +202,8 @@ Map<String, Object?> defaultEncodingDescriptor({
     requiredClasses.add({
       'name': name,
       'alphabet': alphabet,
-      'position': positions[index < positions.length ? index : positions.length - 1],
+      'position':
+          positions[index < positions.length ? index : positions.length - 1],
     });
     index += 1;
   }
@@ -173,7 +216,8 @@ Map<String, Object?> defaultEncodingDescriptor({
   return {
     'length': length,
     'alphabetProfile': 'enterprise-balanced',
-    'allowedAlphabet': 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#\$%*-_=+',
+    'allowedAlphabet':
+        'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#\$%*-_=+',
     'requiredClasses': requiredClasses,
     'fixedPositions': <Object>[],
     'normalization': 'none',

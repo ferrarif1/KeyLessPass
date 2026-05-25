@@ -7,8 +7,8 @@ use crate::platform::{
 };
 use crate::storage::{
     create_local_factor_package, create_usb_factor_package, write_config,
-    write_local_factor_package, write_recovery_metadata, write_usb_factor_package, CdrStore,
-    StoragePaths,
+    write_local_factor_package, write_recovery_metadata, write_usb_cdr_backup,
+    write_usb_factor_package, CdrStore, StoragePaths,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -89,6 +89,7 @@ pub fn enroll_with_provider(
     let usb_package_path = write_usb_factor_package(&request.usb_path, &usb_package)?;
 
     CdrStore::new(&paths.db_path).init()?;
+    write_usb_cdr_backup(&request.usb_path, user_id, &k_master, &[])?;
 
     let config = AppConfig::new(
         env!("CARGO_PKG_VERSION"),

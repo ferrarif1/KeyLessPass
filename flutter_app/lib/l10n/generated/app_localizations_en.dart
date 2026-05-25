@@ -290,6 +290,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deriveAndCopy => 'Derive and copy';
 
   @override
+  String get deriveMode => 'Verification mode';
+
+  @override
+  String get deriveModeThisDevice => 'This device';
+
+  @override
+  String get deriveModeUsbRecovery => 'USB recovery';
+
+  @override
+  String get deriveModeThisDeviceHelp =>
+      'Use this device, the selected USB package, and the mnemonic.';
+
+  @override
+  String get deriveModeUsbRecoveryHelp =>
+      'Rebuild local material from USB and mnemonic before deriving.';
+
+  @override
   String get passwordCopied =>
       'Password copied. It will be cleared automatically.';
 
@@ -339,6 +356,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recoverUsb => 'Rebuild USB package';
 
   @override
+  String get resetMnemonic => 'Reset mnemonic';
+
+  @override
+  String get newMnemonicPhrase => 'New mnemonic phrase';
+
+  @override
+  String get resetMnemonicHelp =>
+      'Use this device and the selected USB package to set a new mnemonic. Existing derived passwords remain unchanged.';
+
+  @override
+  String get mnemonicResetComplete => 'Mnemonic reset completed.';
+
+  @override
   String get recoveryComplete => 'Recovery completed.';
 
   @override
@@ -362,6 +392,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usbPackage => 'USB package';
+
+  @override
+  String get cdrBackup => 'CDR backup';
+
+  @override
+  String get cdrBackupStatus => 'CDR backup status';
+
+  @override
+  String get localRecordCount => 'Local records';
+
+  @override
+  String get usbRecordCount => 'USB records';
+
+  @override
+  String get syncLocalToUsb => 'Sync local to USB';
+
+  @override
+  String get restoreLocalFromUsb => 'Restore local from USB';
+
+  @override
+  String get cdrBackupConsistent =>
+      'Local records and USB backup are consistent.';
+
+  @override
+  String get cdrBackupNeedsAction =>
+      'Local records and USB backup differ. Choose which copy to trust.';
+
+  @override
+  String get cdrSyncedToUsb => 'CDR backup synced to USB.';
+
+  @override
+  String get cdrRestoredFromUsb => 'Local records restored from USB backup.';
+
+  @override
+  String get confirmRestoreCdrTitle => 'Restore local records';
+
+  @override
+  String get confirmRestoreCdrBody =>
+      'This replaces local CDR metadata with the USB backup. Derived passwords are not stored in either copy.';
 
   @override
   String get usbActions => 'USB actions';
@@ -469,7 +538,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resetWarning =>
-      'Reset is disabled in this build. Use documented administrative procedures.';
+      'Deletes local KeyLessPass data on this device. USB packages are not erased.';
+
+  @override
+  String get resetConfirmTitle => 'Reset local data';
+
+  @override
+  String get resetConfirmationPrompt => 'Type RESET to confirm.';
+
+  @override
+  String get resetConfirmationMismatch => 'Confirmation did not match.';
+
+  @override
+  String get resetComplete =>
+      'Local application data reset. Initialize again to continue.';
 
   @override
   String get setup => 'Setup';

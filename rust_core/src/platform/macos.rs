@@ -162,3 +162,16 @@ fn write_keychain_password(secret: &str) -> Result<()> {
         ))
     }
 }
+
+#[cfg(target_os = "macos")]
+pub fn delete_keychain_password() {
+    let _ = Command::new("/usr/bin/security")
+        .args([
+            "delete-generic-password",
+            "-a",
+            "keylesspass",
+            "-s",
+            "com.keylesspass.local-factor",
+        ])
+        .output();
+}

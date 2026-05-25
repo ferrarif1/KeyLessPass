@@ -12,7 +12,8 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('settings language switch updates visible labels', (WidgetTester tester) async {
+  testWidgets('settings language switch updates visible labels',
+      (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     await tester.pumpWidget(const KeylessPassDesktopApp());
     await tester.pumpAndSettle();
@@ -32,12 +33,21 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('main navigation exposes product workflows', (WidgetTester tester) async {
+  testWidgets('main navigation exposes product workflows',
+      (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     await tester.pumpWidget(const KeylessPassDesktopApp());
     await tester.pumpAndSettle();
 
-    for (final label in ['Dashboard', 'Setup', 'Records', 'USB Device', 'Security', 'Settings', 'About']) {
+    for (final label in [
+      'Dashboard',
+      'Setup',
+      'Records',
+      'USB Device',
+      'Security',
+      'Settings',
+      'About'
+    ]) {
       await _showNavLabel(tester, label);
       expect(find.text(label), findsWidgets);
     }
@@ -47,7 +57,9 @@ void main() {
 
 Future<void> _showNavLabel(WidgetTester tester, String label) async {
   final nav = find.byKey(const ValueKey('main-navigation'));
-  for (var i = 0; i < 8 && find.text(label).hitTestable().evaluate().isEmpty; i++) {
+  for (var i = 0;
+      i < 8 && find.text(label).hitTestable().evaluate().isEmpty;
+      i++) {
     await tester.drag(nav, const Offset(0, -160));
     await tester.pumpAndSettle();
   }
@@ -55,7 +67,10 @@ Future<void> _showNavLabel(WidgetTester tester, String label) async {
 
 Future<void> _tapNavLabel(WidgetTester tester, String label) async {
   await _showNavLabel(tester, label);
-  final tile = find.ancestor(of: find.text(label).hitTestable(), matching: find.byType(ListTile)).first;
+  final tile = find
+      .ancestor(
+          of: find.text(label).hitTestable(), matching: find.byType(ListTile))
+      .first;
   await tester.tap(tile);
   await tester.pumpAndSettle();
 }

@@ -30,20 +30,6 @@ KeyLessPass is a native desktop client for deriving text passwords on demand for
 
 It is not a web app, not a browser extension, not a cloud password manager, and not a password vault. KeyLessPass does not store target-system plaintext passwords, does not maintain an encrypted service-password database, and does not store the mnemonic phrase.
 
-## Screenshots
-
-| Enrollment | Records |
-| --- | --- |
-| ![Enrollment](docs/readme-assets/screenshots/01-enrollment.png) | ![Records](docs/readme-assets/screenshots/02-records.png) |
-
-| Derive Password | Rotation |
-| --- | --- |
-| ![Derive password](docs/readme-assets/screenshots/03-derive-password.png) | ![Rotation](docs/readme-assets/screenshots/04-rotation.png) |
-
-| USB Device and Recovery |
-| --- |
-| ![USB device and recovery](docs/readme-assets/screenshots/05-usb-recovery.png) |
-
 ## Why KeyLessPass
 
 Traditional password managers protect a vault of stored secrets. KeyLessPass takes a different path: it stores only protected local state, USB factor material, Credential Description Records, and recovery metadata. The service password is derived only when the user provides the required local factors.
@@ -55,8 +41,10 @@ This makes it useful when an organization must keep using legacy password-based 
 - Native Flutter Desktop UI with a Rust security core.
 - Local SQLite storage for non-secret CDR metadata and integrity tags.
 - Ordinary removable USB drive support for USB factor packages.
+- CDR metadata backup on the USB drive, with local/USB consistency checks and explicit sync/restore choices.
 - Random per-user master key generated during enrollment.
 - English and Simplified Chinese mnemonic generation on the local device.
+- Mnemonic reset using this device plus the paired USB package, without changing existing derived passwords.
 - Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
 - Editable display metadata that does not change derived passwords.
 - Two-phase password rotation with pending, commit, and cancel states.
@@ -72,22 +60,26 @@ This makes it useful when an organization must keep using legacy password-based 
 | --- | --- |
 | Protected local factor package | Target-system plaintext passwords |
 | USB factor package on a user-selected USB drive | Encrypted service-password vault |
-| CDR metadata, salts, versions, and MAC tags | Mnemonic phrase |
+| CDR metadata, salts, versions, MAC tags, and optional USB CDR backup | Mnemonic phrase |
 | Recovery metadata for local two-factor recovery operations | Cloud account, sync state, analytics |
 
 ## How It Works
 
-During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is used only as one factor; it is not the root seed for service passwords. The local platform factor, USB factor, and mnemonic-derived factor are combined through HKDF to derive a service-specific secret.
+During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is used to authenticate and unlock the USB factor package and recovery workflows. Service derivation is anchored by the random master key plus the local platform factor and USB factor, then bound to stable CDR path fields.
 
 For each credential record, KeyLessPass stores only non-secret CDR metadata. Display fields such as name, service hint, account hint, and notes are searchable and editable, but they are not part of the derivation path. Password rule changes create a new CDR version and are treated as rotation.
 
+When a paired USB drive is present, KeyLessPass can write a signed CDR metadata backup to the USB drive. On refresh or insertion detection, the app compares local CDR metadata with the USB backup and prompts the user to either sync local records to USB or restore local records from the USB backup.
+
 ```mermaid
 flowchart LR
-    M["Mnemonic phrase<br/>not stored"] --> D["Local derivation"]
+    M["Mnemonic phrase<br/>not stored"] --> U["Unlock USB package"]
+    K["Random Kmaster"] --> D["Local derivation"]
     L["Platform local factor"] --> D
-    U["USB factor package"] --> D
+    U --> D
     C["CDR metadata<br/>recordSeq + recordId + version + salt"] --> D
     D --> P["Service password<br/>shown briefly / clipboard timeout"]
+    C --> B["USB CDR backup<br/>metadata only"]
 ```
 
 ## Security Model
@@ -98,6 +90,7 @@ flowchart LR
 - No cloud sync, remote backend, browser autofill, or account login is included.
 - All random values come from the operating system CSPRNG.
 - CDR and factor packages are integrity checked before use.
+- USB CDR backups are MAC-protected and contain metadata only, never service passwords.
 - Derived passwords are masked by default and cleared from the clipboard after a configurable timeout.
 - Sensitive values such as mnemonic text, master key, factor secrets, raw HKDF output, AEAD keys, HMAC keys, and derived passwords must not be logged.
 
@@ -115,7 +108,7 @@ The product UI is organized around stable desktop modules:
 - Settings
 - About
 
-Record-centric actions such as add, derive, and rotation are launched from Records. Recovery tools are grouped under USB Device.
+Record-centric actions such as add, derive, and rotation are launched from Records. Recovery tools, USB factor verification, CDR backup sync, and local restore from USB are grouped under USB Device.
 
 ## Architecture
 
@@ -187,7 +180,7 @@ The app follows the system language by default and supports manual English / Sim
 
 macOS is the primary tested desktop target. The architecture and packaging scripts reserve Windows and Linux support, including platform factor provider separation for future hardening.
 
-The Rust test suite covers derivation stability, metadata immutability boundaries, path-field sensitivity, tamper failures, missing factors, rotation behavior, recovery behavior, and platform provider trait tests. Flutter tests cover UI construction, navigation, language switching, i18n resource completeness, and documentation screenshots.
+The Rust test suite covers derivation stability, metadata immutability boundaries, path-field sensitivity, tamper failures, missing factors, rotation behavior, recovery behavior, USB CDR backup sync/restore, mnemonic reset, and platform provider trait tests. Flutter tests cover UI construction, navigation, language switching, and i18n resource completeness.
 
 ## Roadmap
 

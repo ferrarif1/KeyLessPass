@@ -22,16 +22,50 @@ class KpColors {
 
 ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
   final isDark = brightness == Brightness.dark;
-  final base = isDark ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true);
+  final base = isDark
+      ? ThemeData.dark(useMaterial3: true)
+      : ThemeData.light(useMaterial3: true);
   const textTheme = TextTheme(
-    headlineSmall: TextStyle(fontSize: 32, fontWeight: FontWeight.w700, height: 1.2, color: KpColors.ink),
-    titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.3, color: KpColors.ink),
-    titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, height: 1.4, color: KpColors.bodyStrong),
-    titleSmall: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, height: 1.4, color: KpColors.bodyStrong),
-    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.55, color: KpColors.body),
-    bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.55, color: KpColors.body),
-    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, height: 1, color: KpColors.canvas),
-    labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.4, color: KpColors.muted),
+    headlineSmall: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+        height: 1.2,
+        color: KpColors.ink),
+    titleLarge: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+        height: 1.3,
+        color: KpColors.ink),
+    titleMedium: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        height: 1.4,
+        color: KpColors.bodyStrong),
+    titleSmall: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        height: 1.4,
+        color: KpColors.bodyStrong),
+    bodyLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        height: 1.55,
+        color: KpColors.body),
+    bodyMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        height: 1.55,
+        color: KpColors.body),
+    labelLarge: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        height: 1,
+        color: KpColors.canvas),
+    labelMedium: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        height: 1.4,
+        color: KpColors.muted),
   );
 
   final inputBorder = OutlineInputBorder(
@@ -72,7 +106,8 @@ ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
         minimumSize: const Size(0, 40),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, height: 1),
+        textStyle: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w700, height: 1),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -103,9 +138,12 @@ ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
       labelStyle: const TextStyle(color: KpColors.muted),
       hintStyle: const TextStyle(color: KpColors.mutedSoft),
       enabledBorder: inputBorder,
-      focusedBorder: inputBorder.copyWith(borderSide: const BorderSide(color: KpColors.primary)),
-      errorBorder: inputBorder.copyWith(borderSide: const BorderSide(color: KpColors.error)),
-      focusedErrorBorder: inputBorder.copyWith(borderSide: const BorderSide(color: KpColors.error)),
+      focusedBorder: inputBorder.copyWith(
+          borderSide: const BorderSide(color: KpColors.primary)),
+      errorBorder: inputBorder.copyWith(
+          borderSide: const BorderSide(color: KpColors.error)),
+      focusedErrorBorder: inputBorder.copyWith(
+          borderSide: const BorderSide(color: KpColors.error)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
     listTileTheme: ListTileThemeData(
@@ -118,8 +156,10 @@ ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
       backgroundColor: KpColors.canvas,
       selectedIconTheme: IconThemeData(color: KpColors.primary),
       unselectedIconTheme: IconThemeData(color: KpColors.muted),
-      selectedLabelTextStyle: TextStyle(color: KpColors.ink, fontSize: 14, fontWeight: FontWeight.w600),
-      unselectedLabelTextStyle: TextStyle(color: KpColors.muted, fontSize: 14, fontWeight: FontWeight.w500),
+      selectedLabelTextStyle: TextStyle(
+          color: KpColors.ink, fontSize: 14, fontWeight: FontWeight.w600),
+      unselectedLabelTextStyle: TextStyle(
+          color: KpColors.muted, fontSize: 14, fontWeight: FontWeight.w500),
       indicatorColor: KpColors.surfaceCard,
     ),
     chipTheme: base.chipTheme.copyWith(
@@ -136,8 +176,10 @@ ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
         side: const BorderSide(color: KpColors.hairlineStrong),
         borderRadius: BorderRadius.circular(12),
       ),
-      titleTextStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: KpColors.ink),
-      contentTextStyle: const TextStyle(fontSize: 14, height: 1.5, color: KpColors.body),
+      titleTextStyle: const TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w700, color: KpColors.ink),
+      contentTextStyle:
+          const TextStyle(fontSize: 14, height: 1.5, color: KpColors.body),
     ),
     sliderTheme: base.sliderTheme.copyWith(
       activeTrackColor: KpColors.primary,
@@ -148,13 +190,19 @@ ThemeData buildKeylessPassTheme([Brightness brightness = Brightness.dark]) {
     segmentedButtonTheme: SegmentedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? KpColors.primary : KpColors.surfaceCard,
+          (states) => states.contains(WidgetState.selected)
+              ? KpColors.primary
+              : KpColors.surfaceCard,
         ),
         foregroundColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? KpColors.canvas : KpColors.body,
+          (states) => states.contains(WidgetState.selected)
+              ? KpColors.canvas
+              : KpColors.body,
         ),
-        side: WidgetStateProperty.all(const BorderSide(color: KpColors.hairlineStrong)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+        side: WidgetStateProperty.all(
+            const BorderSide(color: KpColors.hairlineStrong)),
+        shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
       ),
     ),
   );

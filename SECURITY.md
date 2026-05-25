@@ -8,6 +8,8 @@ Display metadata such as record name, service hint, account hint, and notes is n
 
 New factor packages include package/schema version fields. New enrollments also include a protected mnemonic verifier so USB package rebuild from local material can reject an incorrect mnemonic without storing the mnemonic itself.
 
+USB CDR metadata backups are MAC-protected and are intended only for local consistency checks and explicit restore operations. They do not contain derived service passwords or mnemonic phrases.
+
 ## Sensitive Data Handling
 
 The following values must never be logged, exported in diagnostics, or displayed longer than needed:

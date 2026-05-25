@@ -98,6 +98,36 @@ impl CdrStore {
         Ok(())
     }
 
+    pub fn replace_all(&self, records: &[CredentialDescriptionRecord]) -> Result<()> {
+        self.init()?;
+        let mut conn = self.connection()?;
+        let tx = conn.transaction()?;
+        tx.execute("DELETE FROM cdr_records", [])?;
+        for record in records {
+            tx.execute(
+                r#"
+                INSERT INTO cdr_records (
+                    record_id, version, record_seq, state, display_name, service_hint,
+                    account_hint, payload_json, updated_at
+                ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+                "#,
+                params![
+                    record.record_id.to_string(),
+                    record.version,
+                    record.record_seq,
+                    state_to_str(&record.state),
+                    record.display_name,
+                    record.service_hint,
+                    record.account_hint,
+                    serde_json::to_string(record)?,
+                    record.updated_at.to_rfc3339(),
+                ],
+            )?;
+        }
+        tx.commit()?;
+        Ok(())
+    }
+
     pub fn delete_version(&self, record_id: Uuid, version: u32) -> Result<()> {
         let conn = self.connection()?;
         let affected = conn.execute(

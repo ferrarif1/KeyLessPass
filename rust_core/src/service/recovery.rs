@@ -1,11 +1,12 @@
-use crate::crypto::{b64_decode, kdf, mac, recovery as crypto_recovery};
-use crate::domain::{AppConfig, LocalFactorPayload, UsbFactorPayload};
-use crate::error::Result;
+use crate::crypto::{b64_decode, b64_encode, kdf, mac, recovery as crypto_recovery};
+use crate::domain::{AppConfig, LocalFactorPayload, PackageType, UsbFactorPayload};
+use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
 use crate::storage::{
     create_local_factor_package, create_usb_factor_package, load_local_factor_payload,
-    load_usb_factor_payload, read_config, write_config, write_local_factor_package,
-    write_recovery_metadata, write_usb_factor_package, StoragePaths,
+    load_usb_factor_payload, read_config, read_usb_factor_package, verify_usb_cdr_backup,
+    write_config, write_local_factor_package, write_recovery_metadata, write_usb_cdr_backup,
+    write_usb_factor_package, CdrStore, StoragePaths,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -21,6 +22,13 @@ pub struct RecoverUsbRequest {
 #[serde(rename_all = "camelCase")]
 pub struct RecoverLocalRequest {
     pub mnemonic: String,
+    pub usb_path: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResetMnemonicRequest {
+    pub new_mnemonic: String,
     pub usb_path: String,
 }
 
@@ -43,6 +51,14 @@ pub fn recover_local(
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     recover_local_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
+}
+
+pub fn reset_mnemonic(
+    request: ResetMnemonicRequest,
+) -> std::result::Result<RecoveryResponse, String> {
+    let paths = StoragePaths::default().map_err(String::from)?;
+    let provider = current_platform_provider(&paths.app_dir);
+    reset_mnemonic_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn recover_usb_with_provider(
@@ -76,6 +92,9 @@ pub fn recover_usb_with_provider(
     )?;
     let path = write_usb_factor_package(&request.usb_path, &package)?;
     let master_key = b64_decode(&local_payload.k_master)?;
+    let store = CdrStore::new(&config.cdr_store_path);
+    let records = store.list_all()?;
+    write_usb_cdr_backup(&request.usb_path, config.user_id, &master_key, &records)?;
     let recovery = crypto_recovery::build_recovery_metadata(&master_key, generation)?;
     write_recovery_metadata(&paths.recovery_path, &recovery)?;
     Ok(RecoveryResponse { generation, path })
@@ -126,10 +145,85 @@ pub fn recover_local_with_provider(
     let master_key = b64_decode(&usb_payload.k_master)?;
     let recovery = crypto_recovery::build_recovery_metadata(&master_key, generation)?;
     write_recovery_metadata(&paths.recovery_path, &recovery)?;
+    let store = CdrStore::new(&paths.db_path);
+    match verify_usb_cdr_backup(&request.usb_path, usb_package.user_id, &master_key) {
+        Ok(backup) => store.replace_all(&backup.records)?,
+        Err(KeylessPassError::MissingFactor(_)) => store.init()?,
+        Err(error) => return Err(error),
+    }
     Ok(RecoveryResponse {
         generation,
         path: paths.local_factor_path.clone(),
     })
+}
+
+pub fn reset_mnemonic_with_provider(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    request: ResetMnemonicRequest,
+) -> Result<RecoveryResponse> {
+    if request.new_mnemonic.trim().is_empty() {
+        return Err(KeylessPassError::MissingFactor(
+            "new mnemonic phrase is required".to_string(),
+        ));
+    }
+
+    let config = read_config(paths)?;
+    let usb_package = read_usb_factor_package(&request.usb_path)?;
+    if usb_package.package_type != PackageType::Usb || usb_package.user_id != config.user_id {
+        return Err(KeylessPassError::Integrity(
+            "USB factor package does not match this device".to_string(),
+        ));
+    }
+
+    let (_, local_payload) = load_local_factor_payload(provider, &config.local_factor_path)?;
+    let master_key = b64_decode(&local_payload.k_master)?;
+    let generation = local_payload.recovery_generation + 1;
+    let mnemonic_salt = crate::crypto::random_bytes(16);
+    let mnemonic_salt_b64 = b64_encode(&mnemonic_salt);
+    let f_m = kdf::derive_mnemonic_factor(&request.new_mnemonic, &config.user_id, &mnemonic_salt)?;
+    let mnemonic_verifier = kdf::derive_mnemonic_verifier(&f_m)?;
+
+    let updated_local_payload = LocalFactorPayload {
+        k_master: local_payload.k_master.clone(),
+        device_secret: local_payload.device_secret.clone(),
+        usb_secret: local_payload.usb_secret.clone(),
+        mnemonic_salt: mnemonic_salt_b64.clone(),
+        mnemonic_verifier: Some(mnemonic_verifier.clone()),
+        recovery_generation: generation,
+    };
+    let local_package = create_local_factor_package(
+        provider,
+        config.user_id,
+        &config.device_id,
+        &config.platform,
+        &updated_local_payload,
+    )?;
+    write_local_factor_package(&config.local_factor_path, &local_package)?;
+
+    let updated_usb_payload = UsbFactorPayload {
+        k_master: local_payload.k_master,
+        usb_secret: local_payload.usb_secret,
+        device_secret: local_payload.device_secret,
+        mnemonic_salt: mnemonic_salt_b64,
+        mnemonic_verifier: Some(mnemonic_verifier),
+        recovery_generation: generation,
+    };
+    let usb_package = create_usb_factor_package(
+        &request.new_mnemonic,
+        config.user_id,
+        &config.device_id,
+        &config.platform,
+        &updated_usb_payload,
+    )?;
+    let path = write_usb_factor_package(&request.usb_path, &usb_package)?;
+    let store = CdrStore::new(&config.cdr_store_path);
+    let records = store.list_all()?;
+    write_usb_cdr_backup(&request.usb_path, config.user_id, &master_key, &records)?;
+
+    let recovery = crypto_recovery::build_recovery_metadata(&master_key, generation)?;
+    write_recovery_metadata(&paths.recovery_path, &recovery)?;
+    Ok(RecoveryResponse { generation, path })
 }
 
 fn verify_mnemonic_against_payload(

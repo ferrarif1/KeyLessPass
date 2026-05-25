@@ -4,9 +4,11 @@ KeyLessPass is designed as a local-only desktop application.
 
 ## Data That Stays On Your Device
 
-KeyLessPass stores protected local state, CDR metadata, USB factor packages, and recovery metadata. These files are used only to support local password derivation and recovery.
+KeyLessPass stores protected local state, CDR metadata, USB factor packages, optional USB CDR metadata backups, and recovery metadata. These files are used only to support local password derivation and recovery.
 
 KeyLessPass does not store target-system plaintext passwords and does not maintain an encrypted service-password vault.
+
+USB CDR backups contain credential metadata such as record sequence, record ID, version, salt, display labels, account hints, and integrity tags. They do not contain derived service passwords or mnemonic phrases.
 
 ## Data Not Collected
 

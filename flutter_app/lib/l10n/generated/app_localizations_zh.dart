@@ -285,6 +285,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deriveAndCopy => '派生并复制';
 
   @override
+  String get deriveMode => '验证方式';
+
+  @override
+  String get deriveModeThisDevice => '本机验证';
+
+  @override
+  String get deriveModeUsbRecovery => 'U 盘恢复验证';
+
+  @override
+  String get deriveModeThisDeviceHelp => '使用本机、所选 U 盘包和助记短语。';
+
+  @override
+  String get deriveModeUsbRecoveryHelp => '先通过 U 盘和助记短语重建本机材料，再派生密码。';
+
+  @override
   String get passwordCopied => '密码已复制，将自动清除。';
 
   @override
@@ -330,6 +345,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recoverUsb => '重建 U 盘包';
 
   @override
+  String get resetMnemonic => '重置助记短语';
+
+  @override
+  String get newMnemonicPhrase => '新的助记短语';
+
+  @override
+  String get resetMnemonicHelp => '使用本机和所选 U 盘包设置新的助记短语。已有派生密码保持不变。';
+
+  @override
+  String get mnemonicResetComplete => '助记短语已重置。';
+
+  @override
   String get recoveryComplete => '恢复已完成。';
 
   @override
@@ -352,6 +379,42 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usbPackage => 'U 盘包';
+
+  @override
+  String get cdrBackup => '记录备份';
+
+  @override
+  String get cdrBackupStatus => '记录备份状态';
+
+  @override
+  String get localRecordCount => '本机记录';
+
+  @override
+  String get usbRecordCount => 'U 盘记录';
+
+  @override
+  String get syncLocalToUsb => '同步本机到 U 盘';
+
+  @override
+  String get restoreLocalFromUsb => '用 U 盘恢复本机';
+
+  @override
+  String get cdrBackupConsistent => '本机记录与 U 盘备份一致。';
+
+  @override
+  String get cdrBackupNeedsAction => '本机记录与 U 盘备份不一致。请选择信任哪一份。';
+
+  @override
+  String get cdrSyncedToUsb => '记录备份已同步到 U 盘。';
+
+  @override
+  String get cdrRestoredFromUsb => '已从 U 盘备份恢复本机记录。';
+
+  @override
+  String get confirmRestoreCdrTitle => '恢复本机记录';
+
+  @override
+  String get confirmRestoreCdrBody => '这会用 U 盘备份替换本机 CDR 元数据。两份数据都不包含派生密码。';
 
   @override
   String get usbActions => 'U 盘操作';
@@ -456,7 +519,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get resetApplicationData => '重置应用数据';
 
   @override
-  String get resetWarning => '当前版本禁用重置。请按管理员文档执行。';
+  String get resetWarning => '删除此设备上的 KeyLessPass 本地数据。不会擦除 U 盘包。';
+
+  @override
+  String get resetConfirmTitle => '重置本机数据';
+
+  @override
+  String get resetConfirmationPrompt => '请输入 RESET 以确认。';
+
+  @override
+  String get resetConfirmationMismatch => '确认文本不匹配。';
+
+  @override
+  String get resetComplete => '本机应用数据已重置。请重新初始化后继续。';
 
   @override
   String get setup => '初始化';

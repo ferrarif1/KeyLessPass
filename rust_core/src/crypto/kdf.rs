@@ -83,6 +83,18 @@ pub fn derive_password_root(f_m: &[u8], f_c: &[u8], f_u: &[u8]) -> Result<[u8; 3
     hkdf_32(&ikm, b"", b"KeylessPass derivation key")
 }
 
+pub fn derive_password_root_from_master(
+    master_key: &[u8],
+    f_c: &[u8],
+    f_u: &[u8],
+) -> Result<[u8; 32]> {
+    let mut ikm = Vec::with_capacity(master_key.len() + f_c.len() + f_u.len());
+    ikm.extend_from_slice(master_key);
+    ikm.extend_from_slice(f_c);
+    ikm.extend_from_slice(f_u);
+    hkdf_32(&ikm, b"", b"KeyLessPass v2 derivation key")
+}
+
 pub fn derive_service_secret(
     derivation_key: &[u8],
     user_id: &Uuid,

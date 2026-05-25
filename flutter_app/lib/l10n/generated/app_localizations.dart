@@ -650,6 +650,36 @@ abstract class AppLocalizations {
   /// **'Derive and copy'**
   String get deriveAndCopy;
 
+  /// No description provided for @deriveMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification mode'**
+  String get deriveMode;
+
+  /// No description provided for @deriveModeThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get deriveModeThisDevice;
+
+  /// No description provided for @deriveModeUsbRecovery.
+  ///
+  /// In en, this message translates to:
+  /// **'USB recovery'**
+  String get deriveModeUsbRecovery;
+
+  /// No description provided for @deriveModeThisDeviceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this device, the selected USB package, and the mnemonic.'**
+  String get deriveModeThisDeviceHelp;
+
+  /// No description provided for @deriveModeUsbRecoveryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebuild local material from USB and mnemonic before deriving.'**
+  String get deriveModeUsbRecoveryHelp;
+
   /// No description provided for @passwordCopied.
   ///
   /// In en, this message translates to:
@@ -740,6 +770,30 @@ abstract class AppLocalizations {
   /// **'Rebuild USB package'**
   String get recoverUsb;
 
+  /// No description provided for @resetMnemonic.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset mnemonic'**
+  String get resetMnemonic;
+
+  /// No description provided for @newMnemonicPhrase.
+  ///
+  /// In en, this message translates to:
+  /// **'New mnemonic phrase'**
+  String get newMnemonicPhrase;
+
+  /// No description provided for @resetMnemonicHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this device and the selected USB package to set a new mnemonic. Existing derived passwords remain unchanged.'**
+  String get resetMnemonicHelp;
+
+  /// No description provided for @mnemonicResetComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mnemonic reset completed.'**
+  String get mnemonicResetComplete;
+
   /// No description provided for @recoveryComplete.
   ///
   /// In en, this message translates to:
@@ -787,6 +841,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'USB package'**
   String get usbPackage;
+
+  /// No description provided for @cdrBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'CDR backup'**
+  String get cdrBackup;
+
+  /// No description provided for @cdrBackupStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'CDR backup status'**
+  String get cdrBackupStatus;
+
+  /// No description provided for @localRecordCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Local records'**
+  String get localRecordCount;
+
+  /// No description provided for @usbRecordCount.
+  ///
+  /// In en, this message translates to:
+  /// **'USB records'**
+  String get usbRecordCount;
+
+  /// No description provided for @syncLocalToUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync local to USB'**
+  String get syncLocalToUsb;
+
+  /// No description provided for @restoreLocalFromUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore local from USB'**
+  String get restoreLocalFromUsb;
+
+  /// No description provided for @cdrBackupConsistent.
+  ///
+  /// In en, this message translates to:
+  /// **'Local records and USB backup are consistent.'**
+  String get cdrBackupConsistent;
+
+  /// No description provided for @cdrBackupNeedsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Local records and USB backup differ. Choose which copy to trust.'**
+  String get cdrBackupNeedsAction;
+
+  /// No description provided for @cdrSyncedToUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'CDR backup synced to USB.'**
+  String get cdrSyncedToUsb;
+
+  /// No description provided for @cdrRestoredFromUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'Local records restored from USB backup.'**
+  String get cdrRestoredFromUsb;
+
+  /// No description provided for @confirmRestoreCdrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore local records'**
+  String get confirmRestoreCdrTitle;
+
+  /// No description provided for @confirmRestoreCdrBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces local CDR metadata with the USB backup. Derived passwords are not stored in either copy.'**
+  String get confirmRestoreCdrBody;
 
   /// No description provided for @usbActions.
   ///
@@ -995,8 +1121,32 @@ abstract class AppLocalizations {
   /// No description provided for @resetWarning.
   ///
   /// In en, this message translates to:
-  /// **'Reset is disabled in this build. Use documented administrative procedures.'**
+  /// **'Deletes local KeyLessPass data on this device. USB packages are not erased.'**
   String get resetWarning;
+
+  /// No description provided for @resetConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset local data'**
+  String get resetConfirmTitle;
+
+  /// No description provided for @resetConfirmationPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Type RESET to confirm.'**
+  String get resetConfirmationPrompt;
+
+  /// No description provided for @resetConfirmationMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation did not match.'**
+  String get resetConfirmationMismatch;
+
+  /// No description provided for @resetComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Local application data reset. Initialize again to continue.'**
+  String get resetComplete;
 
   /// No description provided for @setup.
   ///

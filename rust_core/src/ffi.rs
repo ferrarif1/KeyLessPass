@@ -1,9 +1,10 @@
 use crate::service::{
     add_credential, cancel_rotation, confirm_rotation, derive_password, enroll, get_app_status,
-    get_security_status, list_credentials, recover_local, recover_usb, rotate_credential,
-    update_credential_display, AddCredentialRequest, CancelRotationRequest, ConfirmRotationRequest,
-    DerivePasswordRequest, EnrollmentRequest, GenerateMnemonicRequest, RecoverLocalRequest,
-    RecoverUsbRequest, RotateCredentialRequest, UpdateCredentialDisplayRequest,
+    get_security_status, list_credentials, recover_local, recover_usb, reset_application_data,
+    reset_mnemonic, rotate_credential, update_credential_display, AddCredentialRequest,
+    CancelRotationRequest, ConfirmRotationRequest, DerivePasswordRequest, EnrollmentRequest,
+    GenerateMnemonicRequest, RecoverLocalRequest, RecoverUsbRequest, ResetApplicationDataRequest,
+    ResetMnemonicRequest, RotateCredentialRequest, UpdateCredentialDisplayRequest, UsbCdrRequest,
     VerifyUsbPackageRequest,
 };
 use serde::Deserialize;
@@ -62,6 +63,15 @@ fn dispatch(request: FfiRequest) -> String {
         "verifyUsbPackage" => parse::<VerifyUsbPackageRequest>(request.payload)
             .and_then(crate::service::verify_usb_package)
             .map(to_value),
+        "getUsbCdrStatus" => parse::<UsbCdrRequest>(request.payload)
+            .and_then(crate::service::get_usb_cdr_status)
+            .map(to_value),
+        "syncCdrToUsb" => parse::<UsbCdrRequest>(request.payload)
+            .and_then(crate::service::sync_cdr_to_usb)
+            .map(to_value),
+        "restoreCdrFromUsb" => parse::<UsbCdrRequest>(request.payload)
+            .and_then(crate::service::restore_cdr_from_usb)
+            .map(to_value),
         "generateMnemonic" => parse::<GenerateMnemonicRequest>(request.payload)
             .and_then(crate::service::generate_mnemonic)
             .map(to_value),
@@ -92,6 +102,12 @@ fn dispatch(request: FfiRequest) -> String {
         "recoverLocal" => parse::<RecoverLocalRequest>(request.payload)
             .and_then(recover_local)
             .map(to_value),
+        "resetMnemonic" => parse::<ResetMnemonicRequest>(request.payload)
+            .and_then(reset_mnemonic)
+            .map(to_value),
+        "resetApplicationData" => parse::<ResetApplicationDataRequest>(request.payload)
+            .and_then(reset_application_data)
+            .map(|_| Value::Null),
         _ => Err("unsupported operation".to_string()),
     };
 
@@ -121,7 +137,8 @@ fn error_response(message: &str) -> String {
 
 fn safe_error(op: &str, detail: &str) -> String {
     match op {
-        "derivePassword" | "recoverUsb" | "recoverLocal" | "verifyUsbPackage" => {
+        "derivePassword" | "recoverUsb" | "recoverLocal" | "verifyUsbPackage" | "resetMnemonic"
+        | "getUsbCdrStatus" | "syncCdrToUsb" | "restoreCdrFromUsb" => {
             "无法完成操作：所需本机材料、USB 因子或输入口令未通过安全校验。".to_string()
         }
         "enroll" if detail.contains("USB") || detail.contains("usb") => {

@@ -65,8 +65,6 @@ pub fn derive_password_with_provider(
     let record = store.get(request.record_id, request.version)?;
     record.verify_mac(&master_key)?;
 
-    let mnemonic_salt = crate::crypto::b64_decode(&local_payload.mnemonic_salt)?;
-    let f_m = kdf::derive_mnemonic_factor(&request.mnemonic, &config.user_id, &mnemonic_salt)?;
     let device_secret = crate::crypto::b64_decode(&local_payload.device_secret)?;
     let f_c = kdf::derive_platform_factor(
         &device_secret,
@@ -75,7 +73,7 @@ pub fn derive_password_with_provider(
         &config.platform,
     )?;
     let f_u = crate::crypto::b64_decode(&usb_payload.usb_secret)?;
-    let derivation_key = kdf::derive_password_root(&f_m, &f_c, &f_u)?;
+    let derivation_key = kdf::derive_password_root_from_master(&master_key, &f_c, &f_u)?;
     let service_secret = kdf::derive_service_secret(
         &derivation_key,
         &config.user_id,

@@ -34,3 +34,8 @@ pub fn cdr_mac_key(master_key: &[u8]) -> Vec<u8> {
 pub fn package_mac_key(key: &[u8]) -> Vec<u8> {
     hmac_sha256(key, b"KeylessPass factor package MAC key").unwrap_or_else(|_| vec![0_u8; 32])
 }
+
+pub fn cdr_backup_mac_key(master_key: &[u8]) -> Vec<u8> {
+    hmac_sha256(master_key, b"KeyLessPass USB CDR backup MAC key")
+        .unwrap_or_else(|_| vec![0_u8; 32])
+}

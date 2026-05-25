@@ -17,7 +17,8 @@ class PlatformSecurityStatus {
     return PlatformSecurityStatus(
       platform: json['platform'] as String? ?? '-',
       provider: json['provider'] as String? ?? '-',
-      systemKeystoreAvailable: json['systemKeystoreAvailable'] as bool? ?? false,
+      systemKeystoreAvailable:
+          json['systemKeystoreAvailable'] as bool? ?? false,
       degraded: json['degraded'] as bool? ?? true,
       message: json['message'] as String? ?? '',
     );
@@ -90,7 +91,8 @@ class CredentialRecord {
       notes: json['notes'] as String? ?? '',
       version: (json['version'] as num).toInt(),
       salt: json['salt'] as String? ?? '',
-      encodingDescriptor: (json['encodingDescriptor'] as Map).cast<String, Object?>(),
+      encodingDescriptor:
+          (json['encodingDescriptor'] as Map).cast<String, Object?>(),
       state: json['state'] as String? ?? 'active',
       createdAt: json['createdAt'] as String? ?? '',
       updatedAt: json['updatedAt'] as String? ?? '',
@@ -139,6 +141,35 @@ class UsbCandidate {
       rootPath: json['rootPath'] as String? ?? '',
       packagePath: json['packagePath'] as String? ?? '',
       readable: json['readable'] as bool? ?? false,
+      message: json['message'] as String? ?? '',
+    );
+  }
+}
+
+class UsbCdrStatus {
+  const UsbCdrStatus({
+    required this.status,
+    required this.backupPath,
+    required this.localRecordCount,
+    required this.usbRecordCount,
+    required this.message,
+  });
+
+  final String status;
+  final String backupPath;
+  final int localRecordCount;
+  final int usbRecordCount;
+  final String message;
+
+  bool get needsAction => status != 'consistent';
+
+  factory UsbCdrStatus.fromJson(Object? value) {
+    final json = (value as Map).cast<String, Object?>();
+    return UsbCdrStatus(
+      status: json['status'] as String? ?? 'invalid',
+      backupPath: json['backupPath'] as String? ?? '',
+      localRecordCount: (json['localRecordCount'] as num?)?.toInt() ?? 0,
+      usbRecordCount: (json['usbRecordCount'] as num?)?.toInt() ?? 0,
       message: json['message'] as String? ?? '',
     );
   }

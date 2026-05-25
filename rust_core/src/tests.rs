@@ -12,19 +12,25 @@ use crate::service::credentials::{
 use crate::service::derive::{derive_password_with_provider, DerivePasswordRequest};
 use crate::service::enrollment::{enroll_with_provider, EnrollmentRequest};
 use crate::service::recovery::{
-    recover_local_with_provider, recover_usb_with_provider, RecoverLocalRequest, RecoverUsbRequest,
+    recover_local_with_provider, recover_usb_with_provider, reset_mnemonic_with_provider,
+    RecoverLocalRequest, RecoverUsbRequest, ResetMnemonicRequest,
 };
 use crate::service::rotation::{
     cancel_rotation_with_provider, confirm_rotation_with_provider, rotate_credential_with_provider,
     CancelRotationRequest, ConfirmRotationRequest, RotateCredentialRequest,
 };
-use crate::service::usb::{verify_usb_package, VerifyUsbPackageRequest};
+use crate::service::usb::{
+    get_usb_cdr_status_with_provider, restore_cdr_from_usb_with_provider,
+    sync_cdr_to_usb_with_provider, verify_usb_package, UsbCdrRequest, VerifyUsbPackageRequest,
+};
 use crate::storage::{usb_package_file, CdrStore, StoragePaths};
 use tempfile::TempDir;
 use uuid::Uuid;
 
 const MNEMONIC: &str =
     "alpha bridge cable delta ember forest galaxy harbor ivory jungle kinetic lemon";
+const NEW_MNEMONIC: &str =
+    "anchor bridge cedar delta ember forest galaxy harbor ivory jasmine kernel lantern";
 
 struct Harness {
     _app_dir: TempDir,
@@ -174,6 +180,113 @@ fn recovery_requires_two_valid_factors() {
         },
     )
     .is_err());
+}
+
+#[test]
+fn local_and_usb_can_reset_mnemonic_without_changing_passwords() {
+    let harness = setup();
+    let before = derive(&harness);
+
+    reset_mnemonic_with_provider(
+        &harness.paths,
+        &harness.provider,
+        ResetMnemonicRequest {
+            new_mnemonic: NEW_MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap();
+
+    let after = derive_password_with_provider(
+        &harness.paths,
+        &harness.provider,
+        DerivePasswordRequest {
+            record_id: harness.record_id,
+            version: Some(harness.version),
+            mnemonic: NEW_MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap()
+    .password;
+    assert_eq!(before, after);
+
+    assert!(derive_password_with_provider(
+        &harness.paths,
+        &harness.provider,
+        DerivePasswordRequest {
+            record_id: harness.record_id,
+            version: Some(harness.version),
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+}
+
+#[test]
+fn usb_cdr_backup_sync_and_restore_round_trip() {
+    let harness = setup();
+    let usb_path = harness.usb_dir.path().to_string_lossy().to_string();
+
+    let status = get_usb_cdr_status_with_provider(
+        &harness.paths,
+        &harness.provider,
+        UsbCdrRequest {
+            usb_path: usb_path.clone(),
+        },
+    )
+    .unwrap();
+    assert_eq!(status.status, "local_newer");
+
+    sync_cdr_to_usb_with_provider(
+        &harness.paths,
+        &harness.provider,
+        UsbCdrRequest {
+            usb_path: usb_path.clone(),
+        },
+    )
+    .unwrap();
+    let status = get_usb_cdr_status_with_provider(
+        &harness.paths,
+        &harness.provider,
+        UsbCdrRequest {
+            usb_path: usb_path.clone(),
+        },
+    )
+    .unwrap();
+    assert_eq!(status.status, "consistent");
+
+    add_credential_with_provider(
+        &harness.paths,
+        &harness.provider,
+        AddCredentialRequest {
+            display_name: "Admin Gateway".to_string(),
+            service_hint: "gateway.internal".to_string(),
+            account_hint: "root".to_string(),
+            notes: String::new(),
+            encoding_descriptor: Some(EncodingDescriptor::default()),
+        },
+    )
+    .unwrap();
+    let status = get_usb_cdr_status_with_provider(
+        &harness.paths,
+        &harness.provider,
+        UsbCdrRequest {
+            usb_path: usb_path.clone(),
+        },
+    )
+    .unwrap();
+    assert_eq!(status.status, "local_newer");
+
+    restore_cdr_from_usb_with_provider(
+        &harness.paths,
+        &harness.provider,
+        UsbCdrRequest { usb_path },
+    )
+    .unwrap();
+    let records = CdrStore::new(&harness.paths.db_path).list_all().unwrap();
+    assert_eq!(records.len(), 1);
 }
 
 #[test]

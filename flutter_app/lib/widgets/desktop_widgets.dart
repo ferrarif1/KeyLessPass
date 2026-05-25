@@ -14,7 +14,8 @@ class SectionPanel extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: accent ? KpColors.primary : KpColors.surfaceCard,
-        border: Border.all(color: accent ? KpColors.primary : KpColors.hairlineStrong),
+        border: Border.all(
+            color: accent ? KpColors.primary : KpColors.hairlineStrong),
         borderRadius: BorderRadius.circular(8),
       ),
       child: child,
@@ -23,7 +24,8 @@ class SectionPanel extends StatelessWidget {
 }
 
 class WorkflowStepper extends StatelessWidget {
-  const WorkflowStepper({required this.steps, required this.current, super.key});
+  const WorkflowStepper(
+      {required this.steps, required this.current, super.key});
 
   final List<String> steps;
   final int current;
@@ -37,16 +39,24 @@ class WorkflowStepper extends StatelessWidget {
         for (var index = 0; index < steps.length; index++)
           Chip(
             avatar: CircleAvatar(
-              backgroundColor: index <= current ? KpColors.canvas : KpColors.surfaceElevated,
+              backgroundColor:
+                  index <= current ? KpColors.canvas : KpColors.surfaceElevated,
               child: Text(
                 '${index + 1}',
-                style: TextStyle(color: index <= current ? KpColors.primary : KpColors.muted, fontSize: 12),
+                style: TextStyle(
+                    color: index <= current ? KpColors.primary : KpColors.muted,
+                    fontSize: 12),
               ),
             ),
             label: Text(steps[index]),
-            labelStyle: TextStyle(color: index <= current ? KpColors.canvas : KpColors.body),
-            backgroundColor: index <= current ? KpColors.primary : KpColors.surfaceCard,
-            side: BorderSide(color: index <= current ? KpColors.primary : KpColors.hairlineStrong),
+            labelStyle: TextStyle(
+                color: index <= current ? KpColors.canvas : KpColors.body),
+            backgroundColor:
+                index <= current ? KpColors.primary : KpColors.surfaceCard,
+            side: BorderSide(
+                color: index <= current
+                    ? KpColors.primary
+                    : KpColors.hairlineStrong),
           ),
       ],
     );
@@ -68,12 +78,16 @@ class InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 150,
-            child: Text(label.toUpperCase(), style: Theme.of(context).textTheme.labelMedium),
+            child: Text(label.toUpperCase(),
+                style: Theme.of(context).textTheme.labelMedium),
           ),
           Expanded(
             child: SelectableText(
               value.isEmpty ? '-' : value,
-              style: const TextStyle(fontFamily: 'monospace', color: KpColors.bodyStrong, fontSize: 13),
+              style: const TextStyle(
+                  fontFamily: 'monospace',
+                  color: KpColors.bodyStrong,
+                  fontSize: 13),
             ),
           ),
         ],
@@ -167,7 +181,11 @@ class PageTitle extends StatelessWidget {
 }
 
 class SignalTile extends StatelessWidget {
-  const SignalTile({required this.label, required this.value, this.tone = KpColors.primary, super.key});
+  const SignalTile(
+      {required this.label,
+      required this.value,
+      this.tone = KpColors.primary,
+      super.key});
 
   final String label;
   final String value;
@@ -186,7 +204,8 @@ class SignalTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label.toUpperCase(), style: Theme.of(context).textTheme.labelMedium),
+          Text(label.toUpperCase(),
+              style: Theme.of(context).textTheme.labelMedium),
           const SizedBox(height: 8),
           FittedBox(
             fit: BoxFit.scaleDown,
@@ -194,7 +213,11 @@ class SignalTile extends StatelessWidget {
             child: Text(
               value,
               maxLines: 1,
-              style: TextStyle(color: tone, fontSize: 26, fontWeight: FontWeight.w700, height: 1),
+              style: TextStyle(
+                  color: tone,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  height: 1),
             ),
           ),
         ],
@@ -236,7 +259,10 @@ class StatusPill extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: KpColors.bodyStrong),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium
+                  ?.copyWith(color: KpColors.bodyStrong),
             ),
           ),
         ],

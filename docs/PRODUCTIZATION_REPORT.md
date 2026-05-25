@@ -15,8 +15,11 @@ KeyLessPass was upgraded from an early desktop build into a product-oriented Flu
 - Upgraded the USB Device page from read-only status display to device management: choose path, verify USB package authentication, and rebuild USB package.
 - Expanded Add Record with password-rule controls for required character classes and forbidden characters.
 - Added local English and Simplified Chinese mnemonic generation during setup, with generated phrases kept in memory only.
+- Added mnemonic reset using this device plus the paired USB package. The operation refreshes mnemonic salt/verifier and USB encryption without storing the mnemonic or changing existing derived service passwords.
 - Added schema/package version fields to factor packages and schema version to recovery metadata while keeping legacy MAC verification compatibility.
 - Added mnemonic recovery verification for new enrollments so mnemonic + local USB rebuild rejects an incorrect mnemonic instead of creating a different derivation set.
+- Added a USB CDR metadata backup file with HMAC verification, local/USB consistency detection, sync local to USB, and restore local from USB.
+- Added typed-confirmation local data reset in Settings so a user can intentionally return the app to setup.
 - Replaced diagnostics placeholder with a redacted diagnostics dialog and copy action.
 - Blocked ordinary re-enrollment at the Rust Core level when local state already exists.
 - Added English and Simplified Chinese ARB resources and generated Flutter localizations.
@@ -42,8 +45,9 @@ KeyLessPass was upgraded from an early desktop build into a product-oriented Flu
 - Left-side desktop navigation is now scroll-safe and avoids small-window overflow.
 - Dashboard shows record count, USB status, integrity status, and quick actions.
 - Records view supports search, filtering, details, derive, rotate, and metadata editing.
-- Derive view masks passwords by default and clears mnemonic input after derivation attempts.
-- Settings exposes language, theme mode, clipboard timeout, default password length, advanced mode, diagnostics, and reset placeholder.
+- Derive view masks passwords by default, clears mnemonic input after derivation attempts, and offers this-device or USB-recovery verification mode.
+- Settings exposes language, theme mode, clipboard timeout, default password length, advanced mode, diagnostics, and typed-confirmation local reset.
+- USB Device exposes factor verification, USB factor rebuild, CDR backup status, sync local to USB, restore local from USB, recovery, and mnemonic reset.
 
 ## Security Hardening
 
@@ -51,6 +55,7 @@ KeyLessPass was upgraded from an early desktop build into a product-oriented Flu
 - Derived passwords are masked by default and copied to clipboard with automatic clearing.
 - Rust Core tests cover derivation stability, metadata immutability, path-field sensitivity, CDR tamper failure, USB package tamper failure, missing factors, platform provider trait smoke tests, and rotation commit/cancel states.
 - Rust Core tests also cover factor/recovery schema fields, USB package authentication verification, and two-factor recovery behavior.
+- Rust Core tests also cover USB CDR backup sync/restore and mnemonic reset without changing derived passwords.
 - USB discovery no longer logs mount details.
 
 ## Release Preparation
@@ -67,4 +72,4 @@ KeyLessPass was upgraded from an early desktop build into a product-oriented Flu
 - Full light-mode visual pass; the structure exists, while dark mode is the polished default.
 - Windows DPAPI validation on physical Windows 10/11 machines.
 - Linux Secret Service/libsecret option and UOS/Kylin packaging validation.
-- Production-grade reset workflow with typed confirmation and backup warnings.
+- Real App Store-style onboarding/help copy for the new CDR backup choices.

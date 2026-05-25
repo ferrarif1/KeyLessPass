@@ -6,12 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:keylesspass_desktop/l10n/generated/app_localizations.dart';
 
 void main() {
-  test('English and Simplified Chinese resources expose the same message keys', () {
+  test('English and Simplified Chinese resources expose the same message keys',
+      () {
     final en = _messageKeys('lib/l10n/app_en.arb');
     final zh = _messageKeys('lib/l10n/app_zh.arb');
 
-    expect(zh.difference(en), isEmpty, reason: 'Chinese ARB has keys not present in English.');
-    expect(en.difference(zh), isEmpty, reason: 'English ARB has keys missing from Chinese.');
+    expect(zh.difference(en), isEmpty,
+        reason: 'Chinese ARB has keys not present in English.');
+    expect(en.difference(zh), isEmpty,
+        reason: 'English ARB has keys missing from Chinese.');
   });
 
   test('generated localizations load core product labels', () async {
@@ -28,6 +31,7 @@ void main() {
 }
 
 Set<String> _messageKeys(String path) {
-  final data = jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
+  final data =
+      jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
   return data.keys.where((key) => !key.startsWith('@')).toSet();
 }

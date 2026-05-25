@@ -20,8 +20,10 @@ class KeylessPassException implements Exception {
 
 class RustCore {
   RustCore._(this._lib)
-      : _call = _lib.lookupFunction<_CoreCallNative, _CoreCallDart>('keylesspass_ffi_json'),
-        _free = _lib.lookupFunction<_CoreFreeNative, _CoreFreeDart>('keylesspass_ffi_free');
+      : _call = _lib.lookupFunction<_CoreCallNative, _CoreCallDart>(
+            'keylesspass_ffi_json'),
+        _free = _lib.lookupFunction<_CoreFreeNative, _CoreFreeDart>(
+            'keylesspass_ffi_free');
 
   // Keep the dynamic library handle alive for the lifetime of the function pointers.
   // ignore: unused_field
@@ -36,7 +38,8 @@ class RustCore {
     return _instance!;
   }
 
-  Future<T> invoke<T>(String op, Map<String, Object?> payload, T Function(Object? value) decode) async {
+  Future<T> invoke<T>(String op, Map<String, Object?> payload,
+      T Function(Object? value) decode) async {
     final request = jsonEncode({'op': op, 'payload': payload});
     final input = request.toNativeUtf8();
     Pointer<Utf8> output = nullptr;

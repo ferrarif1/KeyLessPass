@@ -32,11 +32,7 @@ fn main() -> Result<(), String> {
     for (display_name, service_hint, account_hint) in [
         ("Operations Console", "ops.internal.local", "operator"),
         ("Vendor Portal", "vendor.internal.local", "reviewer"),
-        (
-            "Database Gateway",
-            "database.internal.local",
-            "admin",
-        ),
+        ("Database Gateway", "database.internal.local", "admin"),
     ] {
         add_credential_with_provider(
             &paths,

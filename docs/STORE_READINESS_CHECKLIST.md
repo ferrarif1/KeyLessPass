@@ -11,12 +11,14 @@
 - Privacy, security, release, and support placeholder documents are present.
 - Native macOS USB folder selection is implemented without third-party plugins.
 - Release entitlement check has been validated for removable media and user-selected read/write access.
+- Typed-confirmation local data reset is implemented in Settings.
+- USB CDR metadata backup sync/restore is implemented for paired removable drives.
 
 ### Partially Complete
 
 - App icon assets exist, but final App Store/DMG icon review is still required.
 - Sandbox compatibility is prepared for removable media, but needs notarized distribution testing.
-- Reset application data remains disabled until a production confirmation and backup flow is implemented.
+- USB CDR backup conflict copy should receive a final UX writing pass before public release.
 
 ### Needs Manual Configuration
 
