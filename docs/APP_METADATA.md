@@ -22,9 +22,9 @@ password derivation, enterprise security, desktop security, local-only, USB fact
 
 Productivity / Security / Utilities
 
-## Support Email Placeholder
+## Support Email
 
-support@example.com
+revanton@icloud.com
 
 ## Privacy Policy URL Placeholder
 

@@ -549,7 +549,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get setupComplete => '初始化已完成。';
 
   @override
-  String get supportEmail => '支持邮箱：support@example.com';
+  String get supportEmail => '支持邮箱：revanton@icloud.com';
 
   @override
   String get privacySummary => '无云同步、无分析采集、无服务密码库。';

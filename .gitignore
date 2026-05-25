@@ -20,3 +20,4 @@ packaging/.DS_Store
 KeylessPass_core_evidence_package/
 KeylessPass_core_evidence_package.zip
 *.log
+/docs/user-guide-render

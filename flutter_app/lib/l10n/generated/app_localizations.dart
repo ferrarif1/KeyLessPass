@@ -1181,7 +1181,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportEmail.
   ///
   /// In en, this message translates to:
-  /// **'Support: support@example.com'**
+  /// **'Support: revanton@icloud.com'**
   String get supportEmail;
 
   /// No description provided for @privacySummary.

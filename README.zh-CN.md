@@ -1,5 +1,13 @@
 # KeyLessPass
 
+> Keypassless is source-available, not open-source.
+> The code is provided for evaluation, security review, learning, and non-commercial testing only.
+> Commercial use, enterprise deployment, redistribution, OEM integration, white-label use, managed service use, or channel resale requires a separate written commercial license.
+
+> Keypassless 采用“源码可见但非开源”的授权模式。
+> 本仓库代码仅供评估、安全审查、学习和非商业测试使用。
+> 企业部署、商业使用、二次分发、OEM 集成、白标使用、托管服务或渠道销售，均需另行取得书面商业授权。
+
 <p align="center">
   <img src="docs/readme-assets/logo.png" width="112" alt="KeyLessPass logo" />
 </p>
@@ -12,6 +20,8 @@
   <a href="README.md">English</a>
   ·
   <a href="SECURITY.md">Security</a>
+  ·
+  <a href="COMMERCIAL.md">Commercial</a>
   ·
   <a href="PRIVACY.md">Privacy</a>
   ·
@@ -168,4 +178,6 @@ macOS 是当前主要验证平台。Windows 和 Linux 的架构、平台因子�
 
 ## License
 
-见 [LICENSE](LICENSE)。
+Keypassless 采用源码可见但非开源的授权模式。详见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [COMMERCIAL.md](COMMERCIAL.md)。
+
+允许个人学习、评估、安全审查和非商业测试。企业生产部署、商业使用、二次分发、OEM 或白标集成、托管服务、安全服务打包、渠道销售，以及处理真实生产凭据，均需另行取得书面商业授权。

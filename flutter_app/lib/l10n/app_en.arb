@@ -180,7 +180,7 @@
   "setupLocked": "Setup is locked",
   "setupLockedMessage": "This device is already set up. Use Recovery to rebuild missing factor packages.",
   "setupComplete": "Setup completed.",
-  "supportEmail": "Support: support@example.com",
+  "supportEmail": "Support: revanton@icloud.com",
   "privacySummary": "No cloud sync, no analytics, no service-password vault.",
   "aboutBody": "KeyLessPass is a local desktop client for enterprise password derivation. It is designed for controlled environments that still depend on legacy passwords.",
   "operationFailed": "The operation could not be completed. Check the required factors and try again.",

@@ -34,4 +34,4 @@ Diagnostics export is intended to exclude sensitive data. Do not attach real USB
 
 ## Contact
 
-Support email placeholder: support@example.com
+Support email: revanton@icloud.com

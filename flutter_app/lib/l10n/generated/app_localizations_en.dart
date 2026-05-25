@@ -570,7 +570,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupComplete => 'Setup completed.';
 
   @override
-  String get supportEmail => 'Support: support@example.com';
+  String get supportEmail => 'Support: revanton@icloud.com';
 
   @override
   String get privacySummary =>

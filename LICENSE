@@ -1,21 +1,36 @@
-MIT License
+Keypassless Source-Available License
 
-Copyright (c) 2026 ferrarif1
+Copyright (c) 2026 Keypassless Project Contributors.
+All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and its source code are made available for review, evaluation,
+security research, and non-commercial testing purposes only.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is granted to view, clone, and run this software solely for personal,
+educational, evaluation, security review, or internal proof-of-concept purposes,
+subject to the following restrictions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. You may not use this software for commercial purposes without prior written authorization.
+2. You may not deploy this software in a production environment without a separate commercial license.
+3. You may not sell, sublicense, rent, lease, host, provide, or otherwise make this software available as a service to third parties.
+4. You may not redistribute modified or unmodified copies of this software without prior written authorization.
+5. You may not use this software as part of a managed service, consulting service, channel resale, security service package, OEM product, white-label product, or bundled commercial offering without a separate written agreement.
+6. You may not remove, alter, or obscure copyright notices, license notices, product names, trademarks, or attribution information.
+7. You may not use the name "Keypassless" or related marks to promote derivative products without permission.
+8. You may not reverse engineer, bypass, disable, or modify licensing, authorization, or usage-control mechanisms.
+9. You may not use this software to process real production credentials, enterprise secrets, or customer-sensitive authentication data during evaluation unless expressly authorized in writing.
+
+Commercial use, enterprise deployment, OEM integration, redistribution,
+managed service use, security product bundling, channel resale, and production
+use require a separate written commercial license.
+
+This software is provided "as is", without warranty of any kind, express or implied,
+including but not limited to warranties of merchantability, fitness for a particular
+purpose, non-infringement, availability, security, or error-free operation.
+
+The authors, contributors, and copyright holders shall not be liable for any claim,
+damages, data loss, credential loss, security incident, business interruption,
+or other liability arising from the use of, misuse of, or inability to use this software.
+
+For commercial licensing, enterprise deployment, OEM, white-label, reseller,
+or partnership inquiries, please contact revanton@icloud.com.

@@ -1,5 +1,13 @@
 # KeyLessPass
 
+> Keypassless is source-available, not open-source.
+> The code is provided for evaluation, security review, learning, and non-commercial testing only.
+> Commercial use, enterprise deployment, redistribution, OEM integration, white-label use, managed service use, or channel resale requires a separate written commercial license.
+
+> Keypassless 采用“源码可见但非开源”的授权模式。
+> 本仓库代码仅供评估、安全审查、学习和非商业测试使用。
+> 企业部署、商业使用、二次分发、OEM 集成、白标使用、托管服务或渠道销售，均需另行取得书面商业授权。
+
 <p align="center">
   <img src="docs/readme-assets/logo.png" width="112" alt="KeyLessPass logo" />
 </p>
@@ -12,6 +20,8 @@
   <a href="README.zh-CN.md">简体中文</a>
   ·
   <a href="SECURITY.md">Security</a>
+  ·
+  <a href="COMMERCIAL.md">Commercial</a>
   ·
   <a href="PRIVACY.md">Privacy</a>
   ·
@@ -202,4 +212,6 @@ The Rust test suite covers derivation stability, metadata immutability boundarie
 
 ## License
 
-See [LICENSE](LICENSE).
+Keypassless is source-available, not open-source. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [COMMERCIAL.md](COMMERCIAL.md).
+
+Personal learning, evaluation, security review, and non-commercial testing are permitted under the license terms. Commercial use, enterprise production deployment, redistribution, OEM or white-label integration, managed service use, security service bundling, channel resale, and processing real production credentials require a separate written commercial license.

@@ -1,34 +1,38 @@
 # Security Policy
 
-## Security Boundaries
+Keypassless is designed as a local password derivation tool. It does not aim to store service passwords, but users are still responsible for protecting their mnemonic phrase, local device, USB authentication factor, recovery materials, and operating environment.
 
-KeyLessPass derives passwords locally and does not store target-system plaintext passwords, encrypted service-password vaults, or mnemonic phrases. The master key is randomly generated during enrollment and protected through local factor packages.
+## Reporting a Vulnerability
 
-Display metadata such as record name, service hint, account hint, and notes is not part of the password derivation path. The stable derivation path uses `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
+If you discover a security vulnerability, please do not disclose it publicly before it has been reviewed and addressed.
 
-New factor packages include package/schema version fields. New enrollments also include a protected mnemonic verifier so USB package rebuild from local material can reject an incorrect mnemonic without storing the mnemonic itself.
+Please report security issues to revanton@icloud.com with:
 
-USB CDR metadata backups are MAC-protected and are intended only for local consistency checks and explicit restore operations. They do not contain derived service passwords or mnemonic phrases.
+- A clear description of the issue
+- Affected version or commit
+- Steps to reproduce
+- Potential impact
+- Suggested mitigation, if available
 
-## Sensitive Data Handling
+Do not include real production passwords, enterprise secrets, customer credentials, private keys, or sensitive business data in vulnerability reports.
 
-The following values must never be logged, exported in diagnostics, or displayed longer than needed:
+## Evaluation and PoC Safety
 
-- Mnemonic phrase
-- Master key
-- Local factor secret
-- USB factor secret
-- Recovery fragment plaintext
-- Raw HKDF output
-- AEAD/HMAC keys
-- Derived password
+During evaluation or proof-of-concept testing:
 
-## Supported Reports
+- Use test accounts and test data only.
+- Do not use real enterprise production credentials unless expressly authorized.
+- Do not deploy the software as a production credential management system without a commercial license and formal approval.
+- Validate the security model before using it in sensitive environments.
 
-Please report issues involving local storage integrity, factor package authentication, clipboard clearing, platform factor protection, or accidental exposure of sensitive data.
+## Security Boundary
 
-Support email placeholder: security@example.com
+Keypassless may reduce risks associated with stored password vaults by avoiding storage of service passwords. However, security still depends on:
 
-## Disclosure
-
-This repository is currently prepared for productization and internal validation. For external distribution, configure a monitored security contact before publication.
+- Strength and secrecy of the mnemonic phrase
+- Protection of the USB authentication factor
+- Security of the local device
+- Integrity of the application binary
+- Secure backup and recovery procedures
+- User operational discipline
+- Enterprise endpoint and access control policies
