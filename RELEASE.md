@@ -2,6 +2,10 @@
 
 ## macOS
 
+Start with the full macOS setup guide:
+
+- [docs/MACOS_INSTALL.md](docs/MACOS_INSTALL.md)
+
 Build the Rust core and Flutter app:
 
 ```bash
@@ -79,6 +83,10 @@ Production release still requires:
 - Installer upgrade and uninstall tests.
 
 ## Linux
+
+Start with the full Linux setup guide:
+
+- [docs/LINUX_INSTALL.md](docs/LINUX_INSTALL.md)
 
 The current packaging script builds the Rust shared library and Flutter Linux bundle:
 

@@ -160,11 +160,11 @@ The Rust core is intentionally independent from platform-specific secure storage
 
 - Flutter Desktop SDK
 - Rust toolchain
-- macOS: Xcode for desktop builds
-- Windows: Visual Studio Build Tools for desktop builds
-- Linux: Flutter Linux desktop dependencies
+- macOS: Xcode for desktop builds. See [docs/MACOS_INSTALL.md](docs/MACOS_INSTALL.md).
+- Windows: Visual Studio Build Tools for desktop builds. See [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md).
+- Linux: Flutter Linux desktop dependencies. See [docs/LINUX_INSTALL.md](docs/LINUX_INSTALL.md).
 
-For Windows, start with the step-by-step setup guide: [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md).
+Each platform guide starts from Flutter installation and continues through Rust, local run, release build, and packaging notes.
 
 ### Build and Test the Core
 

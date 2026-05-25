@@ -160,11 +160,11 @@ Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过
 
 - Flutter Desktop SDK
 - Rust toolchain
-- macOS: Xcode
-- Windows: Visual Studio Build Tools
-- Linux: Flutter Linux desktop dependencies
+- macOS: Xcode，详见 [docs/MACOS_INSTALL.md](docs/MACOS_INSTALL.md)。
+- Windows: Visual Studio Build Tools，详见 [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md)。
+- Linux: Flutter Linux desktop dependencies，详见 [docs/LINUX_INSTALL.md](docs/LINUX_INSTALL.md)。
 
-Windows 请从安装 Flutter 开始按步骤配置，详见：[docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md)。
+每个平台说明都从安装 Flutter 开始，覆盖 Rust、运行、release 构建和打包注意事项。
 
 ### 测试 Rust Core
 
