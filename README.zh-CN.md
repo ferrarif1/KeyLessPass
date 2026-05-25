@@ -28,6 +28,14 @@
   <a href="RELEASE.md">Release</a>
 </p>
 
+<p align="center">
+  <img alt="默认本机模式" src="https://img.shields.io/badge/local--only-by%20default-101010">
+  <img alt="桌面客户端" src="https://img.shields.io/badge/desktop-macOS%20%7C%20Windows%20%7C%20Linux-101010">
+  <img alt="Rust Core" src="https://img.shields.io/badge/core-Rust-101010">
+  <img alt="Flutter Desktop" src="https://img.shields.io/badge/UI-Flutter%20Desktop-101010">
+  <img alt="无云同步" src="https://img.shields.io/badge/cloud-none-101010">
+</p>
+
 KeyLessPass 是一个真正的本机桌面客户端，用于企业内部仍依赖文本密码登录的遗留系统、运维控制台、厂商门户、数据库网关和网络设备。它按需派生服务密码，而不是保存服务密码库。
 
 KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器，也不是传统 vault。它不保存目标系统明文密码，不维护加密服务密码库，也不保存助记短语。
@@ -36,23 +44,31 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 
 | 初始化 | 记录 |
 | --- | --- |
-| ![初始化](docs/readme-assets/screenshots/01-enrollment.png) | ![记录](docs/readme-assets/screenshots/02-records.png) |
+| ![初始化](docs/readme-assets/screenshots-zh/初始设置1.png) | ![记录](docs/readme-assets/screenshots-zh/口令派生3.png) |
 
 | 派生密码 | 轮换 |
 | --- | --- |
-| ![派生密码](docs/readme-assets/screenshots/03-derive-password.png) | ![轮换](docs/readme-assets/screenshots/04-rotation.png) |
+| ![派生密码](docs/readme-assets/screenshots-zh/口令派生4.png) | ![轮换](docs/readme-assets/screenshots-zh/轮换1.png) |
 
 | U 盘设备与恢复 |
 | --- |
-| ![U 盘设备与恢复](docs/readme-assets/screenshots/05-usb-recovery.png) |
+| ![U 盘设备与恢复](docs/readme-assets/screenshots-zh/记录备份同步.png) |
+
+## 为什么选择 KeyLessPass
+
+传统密码管理器保护的是一个已保存秘密的 vault。KeyLessPass 采用不同方式：只保存受保护的本机状态、U 盘因子材料、Credential Description Records 和恢复元数据。服务密码只在用户提供所需本地因子时临时派生。
+
+这适合仍必须使用遗留密码系统的组织，同时避免在终端上沉淀一个可恢复的服务密码库。
 
 ## 核心能力
 
 - Flutter Desktop 原生桌面 UI + Rust 安全核心。
 - SQLite 仅保存非秘密 CDR 元数据和完整性标签。
 - 普通 U 盘作为 USB 因子包载体。
+- U 盘可备份 CDR 元数据，并支持本机与 U 盘记录一致性检查、显式同步或恢复。
 - 初始化时随机生成每用户主密钥。
 - 支持本机生成英文或简体中文助记短语，生成后不保存。
+- 支持使用本机设备和配对 U 盘重置助记短语，且不改变已有派生密码。
 - 派生路径基于稳定的 `recordSeq`、`recordId`、`version`、`salt` 和 `encodingDescriptor`。
 - `displayName`、`serviceHint`、`accountHint`、备注仅用于展示和检索，修改后不改变密码。
 - 支持 pending / commit / cancel 的两阶段密码轮换。
@@ -68,7 +84,7 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 | --- | --- |
 | 受保护的本机因子包 | 目标系统明文密码 |
 | 用户选择的 U 盘因子包 | 加密服务密码库 |
-| CDR 元数据、盐值、版本和 MAC 标签 | 助记短语 |
+| CDR 元数据、盐值、版本、MAC 标签和可选 U 盘 CDR 备份 | 助记短语 |
 | 本地恢复元数据 | 云账号、同步状态、分析数据 |
 
 ## 简要工作原理
@@ -76,6 +92,8 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 初始化时，KeyLessPass 生成随机 256-bit 每用户主密钥。助记短语不是服务密码根种子，也不会被保存。它会先通过 KDF 形成独立的助记短语因子 `F_M`，再和本机因子 `F_C`、U 盘因子 `F_U` 一起参与本地 2-of-3 解封装/恢复模型，用于恢复 `Kmaster`。服务密码派生阶段使用恢复出的 `Kmaster` 和稳定的 CDR 路径字段。
 
 每条记录只保存非秘密 CDR 元数据。显示名称、服务提示、账号提示和备注可搜索、可编辑，但不参与派生路径。修改密码规则必须创建新版本，并被视为一次密码轮换。
+
+当配对 U 盘可用时，KeyLessPass 可以把签名后的 CDR 元数据备份写入 U 盘。刷新或检测到 U 盘插入时，应用会比较本机 CDR 元数据和 U 盘备份，并提示用户选择将本机记录同步到 U 盘，或从 U 盘备份恢复本机记录。
 
 ```mermaid
 flowchart LR
@@ -100,6 +118,7 @@ flowchart LR
 - 不包含云同步、远程后台、浏览器自动填充或账号登录体系。
 - 随机数来自操作系统 CSPRNG。
 - 使用前校验 CDR 和因子包完整性。
+- U 盘 CDR 备份受 MAC 保护，只包含元数据，不包含服务密码。
 - 派生密码默认遮罩显示，并在配置时间后清空剪贴板。
 - 日志不得包含助记短语、主密钥、因子秘密、HKDF 原始输出、AEAD key、HMAC key 或派生密码。
 
@@ -129,6 +148,8 @@ KeyLessPass
 ├── docs/                 # 产品化、安全、发布和设计文档
 └── releases/             # 本地发布产物，git 忽略
 ```
+
+Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过统一接口实现，macOS Keychain、Windows DPAPI、Linux 本地/回退存储，以及后续 TPM/Secure Enclave 能力都隔离在 provider 层。
 
 ## 快速开始
 
@@ -168,9 +189,28 @@ packaging/macos/build_dmg.sh
 
 分发前需要使用 Developer ID Application 证书签名并 notarize。详见 [RELEASE.md](RELEASE.md)。
 
+## 国际化
+
+界面文案来自 Flutter ARB 资源：
+
+- `flutter_app/lib/l10n/app_en.arb`
+- `flutter_app/lib/l10n/app_zh.arb`
+
+应用默认跟随系统语言，也可以在设置中手动切换 English / 简体中文。
+
 ## 当前状态
 
 macOS 是当前主要验证平台。Windows 和 Linux 的架构、平台因子接口和打包入口已经预留，后续需要在真实系统上完成硬化和发布验证。
+
+Rust 测试覆盖派生稳定性、元数据不可变边界、路径字段敏感性、篡改失败、缺失因子、轮换行为、恢复行为、U 盘 CDR 备份同步/恢复、助记短语重置和平台 provider trait。Flutter 测试覆盖 UI 构建、导航、语言切换和 i18n 资源完整性。
+
+## 路线图
+
+- Developer ID 签名和 notarized macOS DMG。
+- Windows DPAPI 加固和 MSI 打包验证。
+- Linux Secret Service/libsecret 可选支持，以及 deb/rpm/AppImage 打包验证。
+- 可选外部版本摘要或 append-only 审计集成。
+- 企业诊断导出和更严格的脱敏审查。
 
 ## 文档
 
@@ -182,7 +222,7 @@ macOS 是当前主要验证平台。Windows 和 Linux 的架构、平台因子�
 - [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
 - [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)
 
-## License
+## 授权许可
 
 Keypassless 采用源码可见但非开源的授权模式。详见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [COMMERCIAL.md](COMMERCIAL.md)。
 

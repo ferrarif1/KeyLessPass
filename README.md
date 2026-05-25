@@ -40,6 +40,20 @@ KeyLessPass is a native desktop client for deriving text passwords on demand for
 
 It is not a web app, not a browser extension, not a cloud password manager, and not a password vault. KeyLessPass does not store target-system plaintext passwords, does not maintain an encrypted service-password database, and does not store the mnemonic phrase.
 
+## Product Screenshots
+
+| Setup | Records |
+| --- | --- |
+| ![Setup](docs/readme-assets/screenshots/01-enrollment.png) | ![Records](docs/readme-assets/screenshots/02-records.png) |
+
+| Derive Password | Rotation |
+| --- | --- |
+| ![Derive Password](docs/readme-assets/screenshots/03-derive-password.png) | ![Rotation](docs/readme-assets/screenshots/04-rotation.png) |
+
+| USB Device and Recovery |
+| --- |
+| ![USB Device and Recovery](docs/readme-assets/screenshots/05-usb-recovery.png) |
+
 ## Why KeyLessPass
 
 Traditional password managers protect a vault of stored secrets. KeyLessPass takes a different path: it stores only protected local state, USB factor material, Credential Description Records, and recovery metadata. The service password is derived only when the user provides the required local factors.
