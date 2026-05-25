@@ -75,7 +75,7 @@ This makes it useful when an organization must keep using legacy password-based 
 
 ## How It Works
 
-During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is used to authenticate and unlock the USB factor package and recovery workflows. Service derivation is anchored by the random master key plus the local platform factor and USB factor, then bound to stable CDR path fields.
+During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is transformed into an independent mnemonic factor `F_M`, which participates with the local factor `F_C` and USB factor `F_U` in the local 2-of-3 unwrap/recovery model for `Kmaster`. Service password derivation then uses the recovered `Kmaster` plus stable CDR path fields.
 
 For each credential record, KeyLessPass stores only non-secret CDR metadata. Display fields such as name, service hint, account hint, and notes are searchable and editable, but they are not part of the derivation path. Password rule changes create a new CDR version and are treated as rotation.
 
@@ -83,13 +83,17 @@ When a paired USB drive is present, KeyLessPass can write a signed CDR metadata 
 
 ```mermaid
 flowchart LR
-    M["Mnemonic phrase<br/>not stored"] --> U["Unlock USB package"]
-    K["Random Kmaster"] --> D["Local derivation"]
-    L["Platform local factor"] --> D
-    U --> D
-    C["CDR metadata<br/>recordSeq + recordId + version + salt"] --> D
+    M["Mnemonic phrase<br/>not stored"] --> KDF["KDF"]
+    KDF --> FM["Mnemonic factor F_M"]
+    FC["Local factor F_C<br/>platform protected"] --> R["2-of-3 unwrap / recovery"]
+    FM --> R
+    FU["USB factor F_U<br/>USB factor package"] --> R
+    R --> KM["Recovered Kmaster"]
+    KM --> D["HKDF + deterministic encoding"]
+    C["CDR stable fields<br/>recordSeq + recordId + version + salt + Rule"] --> D
     D --> P["Service password<br/>shown briefly / clipboard timeout"]
-    C --> B["USB CDR backup<br/>metadata only"]
+    FU --> U["USB stores<br/>USB factor package<br/>optional CDR replica<br/>no plaintext passwords<br/>no mnemonic<br/>no plaintext Kmaster"]
+    C --> U
 ```
 
 ## Security Model
