@@ -47,10 +47,28 @@ Distribution checklist:
 
 ## Windows
 
+Start with the full Windows setup guide:
+
+- [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md)
+
+At a minimum, install Flutter for Windows desktop development, Visual Studio 2022 with the `Desktop development with C++` workload, and the Rust MSVC toolchain. Verify the environment first:
+
+```powershell
+flutter doctor -v
+rustc --version
+cargo --version
+```
+
 The current packaging script builds the Rust DLL and Flutter Windows release directory:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File packaging/windows/build_installer.ps1
+```
+
+The runnable output is expected at:
+
+```text
+flutter_app\build\windows\x64\runner\Release
 ```
 
 Production release still requires:

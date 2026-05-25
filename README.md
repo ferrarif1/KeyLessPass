@@ -164,6 +164,8 @@ The Rust core is intentionally independent from platform-specific secure storage
 - Windows: Visual Studio Build Tools for desktop builds
 - Linux: Flutter Linux desktop dependencies
 
+For Windows, start with the step-by-step setup guide: [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md).
+
 ### Build and Test the Core
 
 ```bash

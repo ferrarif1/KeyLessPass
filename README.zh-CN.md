@@ -164,6 +164,8 @@ Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过
 - Windows: Visual Studio Build Tools
 - Linux: Flutter Linux desktop dependencies
 
+Windows 请从安装 Flutter 开始按步骤配置，详见：[docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md)。
+
 ### 测试 Rust Core
 
 ```bash
