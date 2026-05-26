@@ -70,16 +70,16 @@ impl PlatformFactorProvider for WindowsPlatformFactorProvider {
 fn dpapi_protect(plaintext: &[u8]) -> Result<Vec<u8>> {
     use crate::error::KeylessPassError;
     use std::ptr::{null, null_mut};
+    use windows_sys::Win32::Foundation::LocalFree;
     use windows_sys::Win32::Security::Cryptography::{
-        CryptProtectData, CRYPTPROTECT_UI_FORBIDDEN, DATA_BLOB,
+        CryptProtectData, CRYPTPROTECT_UI_FORBIDDEN, CRYPT_INTEGER_BLOB,
     };
-    use windows_sys::Win32::System::Memory::LocalFree;
 
-    let mut input = DATA_BLOB {
+    let mut input = CRYPT_INTEGER_BLOB {
         cbData: plaintext.len() as u32,
         pbData: plaintext.as_ptr() as *mut u8,
     };
-    let mut output = DATA_BLOB {
+    let mut output = CRYPT_INTEGER_BLOB {
         cbData: 0,
         pbData: null_mut(),
     };
@@ -102,7 +102,7 @@ fn dpapi_protect(plaintext: &[u8]) -> Result<Vec<u8>> {
     let protected =
         unsafe { std::slice::from_raw_parts(output.pbData, output.cbData as usize).to_vec() };
     unsafe {
-        LocalFree(output.pbData as isize);
+        LocalFree(output.pbData as _);
     }
     Ok(protected)
 }
@@ -111,16 +111,16 @@ fn dpapi_protect(plaintext: &[u8]) -> Result<Vec<u8>> {
 fn dpapi_unprotect(protected: &[u8]) -> Result<Vec<u8>> {
     use crate::error::KeylessPassError;
     use std::ptr::null_mut;
+    use windows_sys::Win32::Foundation::LocalFree;
     use windows_sys::Win32::Security::Cryptography::{
-        CryptUnprotectData, CRYPTPROTECT_UI_FORBIDDEN, DATA_BLOB,
+        CryptUnprotectData, CRYPTPROTECT_UI_FORBIDDEN, CRYPT_INTEGER_BLOB,
     };
-    use windows_sys::Win32::System::Memory::LocalFree;
 
-    let mut input = DATA_BLOB {
+    let mut input = CRYPT_INTEGER_BLOB {
         cbData: protected.len() as u32,
         pbData: protected.as_ptr() as *mut u8,
     };
-    let mut output = DATA_BLOB {
+    let mut output = CRYPT_INTEGER_BLOB {
         cbData: 0,
         pbData: null_mut(),
     };
@@ -143,7 +143,7 @@ fn dpapi_unprotect(protected: &[u8]) -> Result<Vec<u8>> {
     let plaintext =
         unsafe { std::slice::from_raw_parts(output.pbData, output.cbData as usize).to_vec() };
     unsafe {
-        LocalFree(output.pbData as isize);
+        LocalFree(output.pbData as _);
     }
     Ok(plaintext)
 }
