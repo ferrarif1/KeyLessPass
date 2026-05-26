@@ -11,6 +11,10 @@ if ($CargoExitCode -ne 0) {
 }
 
 Push-Location "$Root\flutter_app"
+$WindowsBuildDir = "$Root\flutter_app\build\windows"
+if (Test-Path $WindowsBuildDir) {
+    Remove-Item $WindowsBuildDir -Recurse -Force
+}
 & $FlutterBin build windows --release
 $FlutterExitCode = $LASTEXITCODE
 Pop-Location
