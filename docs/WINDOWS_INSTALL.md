@@ -138,7 +138,7 @@ flutter doctor -v
 
 并修复 `Windows version` 或 `Visual Studio - develop Windows apps` 下的错误。
 
-## 9. 构建 Windows Release
+## 9. 构建 Windows 安装包
 
 在仓库根目录运行：
 
@@ -151,8 +151,15 @@ powershell -ExecutionPolicy Bypass -File packaging\windows\build_installer.ps1
 1. `cargo build --release`
 2. `flutter build windows --release`
 3. 把 Rust Core DLL 复制到 Flutter Windows release 目录
+4. 使用 Inno Setup 生成 Windows 安装包
 
-输出目录为：
+运行脚本前需要安装 Inno Setup 6，或通过 `ISCC` 环境变量指定 `ISCC.exe`：
+
+```powershell
+$env:ISCC = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+```
+
+Release 运行目录为：
 
 ```text
 flutter_app\build\windows\x64\runner\Release
@@ -166,15 +173,15 @@ keylesspass_core.dll
 data\
 ```
 
-可以直接双击 `KeyLessPass.exe` 做本机测试。
+最终安装包输出为：
 
-## 10. 生成安装包
+```text
+dist\windows\KeyLessPass-Setup-0.1.0.exe
+```
 
-当前仓库的 Windows 脚本先输出 release 运行目录。用于分发时，还需要接入安装包工具，例如：
+PoC 测试时，把这个 `KeyLessPass-Setup-*.exe` 发给新电脑安装即可，不需要单独拷贝 `dll` 或 `data` 文件夹。
 
-- WiX Toolset 生成 MSI；
-- Inno Setup 生成 EXE installer；
-- 企业内部软件分发系统打包。
+## 10. 正式发布前检查
 
 正式发布前还需要：
 
@@ -199,6 +206,15 @@ powershell -ExecutionPolicy Bypass -File packaging\windows\build_installer.ps1
 ```
 
 不要只运行 `flutter build windows`，否则 Rust Core DLL 可能没有被复制到 release 目录。
+
+### 找不到 Inno Setup 或 ISCC.exe
+
+安装 Inno Setup 6，或设置 `ISCC` 环境变量后重新运行脚本：
+
+```powershell
+$env:ISCC = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+powershell -ExecutionPolicy Bypass -File packaging\windows\build_installer.ps1
+```
 
 ### 路径中有空格或中文导致构建异常
 

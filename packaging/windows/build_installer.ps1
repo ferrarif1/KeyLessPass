@@ -2,6 +2,31 @@ $ErrorActionPreference = "Stop"
 $FlutterBin = if ($env:FLUTTER_BIN) { $env:FLUTTER_BIN } else { "flutter" }
 
 $Root = Resolve-Path "$PSScriptRoot\..\.."
+$Pubspec = Join-Path $Root "flutter_app\pubspec.yaml"
+$VersionLine = Get-Content $Pubspec | Where-Object { $_ -match "^version:\s*(.+)$" } | Select-Object -First 1
+$AppVersion = "0.1.0"
+if ($VersionLine -match "^version:\s*([^\+]+)") {
+    $AppVersion = $Matches[1].Trim()
+}
+
+$Iscc = $env:ISCC
+if (!$Iscc) {
+    $Candidates = @(
+        "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+        "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+    )
+    foreach ($Candidate in $Candidates) {
+        if ($Candidate -and (Test-Path $Candidate)) {
+            $Iscc = $Candidate
+            break
+        }
+    }
+}
+
+if (!$Iscc) {
+    throw "Inno Setup compiler was not found. Install Inno Setup 6 or set ISCC to ISCC.exe, then rerun this script."
+}
+
 Push-Location "$Root\rust_core"
 cargo build --release
 $CargoExitCode = $LASTEXITCODE
@@ -32,5 +57,26 @@ if (!(Test-Path $CoreDll)) {
 }
 Copy-Item $CoreDll "$Output\" -Force
 
-Write-Host "Windows output: flutter_app\build\windows\x64\runner\Release"
-Write-Host "Use WiX Toolset or Inno Setup to produce MSI/EXE installers."
+$InstallerOutput = "$Root\dist\windows"
+New-Item -ItemType Directory -Force -Path $InstallerOutput | Out-Null
+
+$env:KEYLESSPASS_APP_VERSION = $AppVersion
+$env:KEYLESSPASS_RELEASE_DIR = $Output
+$env:KEYLESSPASS_OUTPUT_DIR = $InstallerOutput
+$env:KEYLESSPASS_ICON_FILE = "$Root\flutter_app\windows\runner\resources\app_icon.ico"
+$env:KEYLESSPASS_LICENSE_FILE = "$Root\LICENSE"
+
+$IssFile = "$Root\packaging\windows\KeyLessPass.iss"
+& $Iscc $IssFile
+$IsccExitCode = $LASTEXITCODE
+if ($IsccExitCode -ne 0) {
+    throw "Inno Setup installer build failed"
+}
+
+$Installer = "$InstallerOutput\KeyLessPass-Setup-$AppVersion.exe"
+if (!(Test-Path $Installer)) {
+    throw "Windows installer was not created: $Installer"
+}
+
+Write-Host "Windows release directory: flutter_app\build\windows\x64\runner\Release"
+Write-Host "Windows installer output: dist\windows\KeyLessPass-Setup-$AppVersion.exe"

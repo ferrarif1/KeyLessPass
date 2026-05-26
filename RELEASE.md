@@ -63,7 +63,8 @@ rustc --version
 cargo --version
 ```
 
-The current packaging script builds the Rust DLL and Flutter Windows release directory:
+The current packaging script builds the Rust DLL, Flutter Windows release
+directory, and an Inno Setup installer:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File packaging/windows/build_installer.ps1
@@ -75,10 +76,16 @@ The runnable output is expected at:
 flutter_app\build\windows\x64\runner\Release
 ```
 
+The installer output is expected at:
+
+```text
+dist\windows\KeyLessPass-Setup-0.1.0.exe
+```
+
 Production release still requires:
 
 - Code signing certificate.
-- MSI or EXE installer tooling such as WiX Toolset or Inno Setup.
+- Installer signing and SmartScreen validation.
 - Windows DPAPI validation on Windows 10/11.
 - Installer upgrade and uninstall tests.
 
