@@ -1,10 +1,10 @@
 # KeyLessPass
 
-> Keypassless is source-available, not open-source.
+> KeyLessPass is source-available, not open-source.
 > The code is provided for evaluation, security review, learning, and non-commercial testing only.
 > Commercial use, enterprise deployment, redistribution, OEM integration, white-label use, managed service use, or channel resale requires a separate written commercial license.
 
-> Keypassless 采用“源码可见但非开源”的授权模式。
+> KeyLessPass 采用“源码可见但非开源”的授权模式。
 > 本仓库代码仅供评估、安全审查、学习和非商业测试使用。
 > 企业部署、商业使用、二次分发、OEM 集成、白标使用、托管服务或渠道销售，均需另行取得书面商业授权。
 
@@ -34,6 +34,19 @@
   <img alt="Core" src="https://img.shields.io/badge/core-Rust-101010">
   <img alt="UI" src="https://img.shields.io/badge/UI-Flutter%20Desktop-101010">
   <img alt="No cloud" src="https://img.shields.io/badge/cloud-none-101010">
+</p>
+
+<p align="center">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-0.1.0-macos.dmg">
+    <img alt="Download macOS DMG" src="https://img.shields.io/badge/Download-macOS%20DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white">
+  </a>
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-Setup-0.1.0.exe">
+    <img alt="Download Windows installer" src="https://img.shields.io/badge/Download-Windows%20Installer-0078D4?style=for-the-badge&logo=windows11&logoColor=white">
+  </a>
+</p>
+
+<p align="center">
+  <sub>Download the latest desktop test builds from <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest">GitHub Releases</a>.</sub>
 </p>
 
 KeyLessPass is a native desktop client for deriving text passwords on demand for internal systems that still depend on legacy password login. It is intended for operations consoles, vendor portals, database gateways, network appliances, and small enterprise environments where a local-only security posture is required.
@@ -235,6 +248,6 @@ The Rust test suite covers derivation stability, metadata immutability boundarie
 
 ## License
 
-Keypassless is source-available, not open-source. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [COMMERCIAL.md](COMMERCIAL.md).
+KeyLessPass is source-available, not open-source. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [COMMERCIAL.md](COMMERCIAL.md).
 
 Personal learning, evaluation, security review, and non-commercial testing are permitted under the license terms. Commercial use, enterprise production deployment, redistribution, OEM or white-label integration, managed service use, security service bundling, channel resale, and processing real production credentials require a separate written commercial license.

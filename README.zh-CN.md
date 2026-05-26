@@ -1,10 +1,10 @@
 # KeyLessPass
 
-> Keypassless is source-available, not open-source.
+> KeyLessPass is source-available, not open-source.
 > The code is provided for evaluation, security review, learning, and non-commercial testing only.
 > Commercial use, enterprise deployment, redistribution, OEM integration, white-label use, managed service use, or channel resale requires a separate written commercial license.
 
-> Keypassless 采用“源码可见但非开源”的授权模式。
+> KeyLessPass 采用“源码可见但非开源”的授权模式。
 > 本仓库代码仅供评估、安全审查、学习和非商业测试使用。
 > 企业部署、商业使用、二次分发、OEM 集成、白标使用、托管服务或渠道销售，均需另行取得书面商业授权。
 
@@ -34,6 +34,19 @@
   <img alt="Rust Core" src="https://img.shields.io/badge/core-Rust-101010">
   <img alt="Flutter Desktop" src="https://img.shields.io/badge/UI-Flutter%20Desktop-101010">
   <img alt="无云同步" src="https://img.shields.io/badge/cloud-none-101010">
+</p>
+
+<p align="center">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-0.1.0-macos.dmg">
+    <img alt="下载 macOS DMG" src="https://img.shields.io/badge/下载-macOS%20DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white">
+  </a>
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-Setup-0.1.0.exe">
+    <img alt="下载 Windows 安装包" src="https://img.shields.io/badge/下载-Windows%20安装包-0078D4?style=for-the-badge&logo=windows11&logoColor=white">
+  </a>
+</p>
+
+<p align="center">
+  <sub>从 <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest">GitHub Releases</a> 下载最新桌面测试版客户端。</sub>
 </p>
 
 KeyLessPass 是一个真正的本机桌面客户端，用于企业内部仍依赖文本密码登录的遗留系统、运维控制台、厂商门户、数据库网关和网络设备。它按需派生服务密码，而不是保存服务密码库。
@@ -229,6 +242,6 @@ Rust 测试覆盖派生稳定性、元数据不可变边界、路径字段敏感
 
 ## 授权许可
 
-Keypassless 采用源码可见但非开源的授权模式。详见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [COMMERCIAL.md](COMMERCIAL.md)。
+KeyLessPass 采用源码可见但非开源的授权模式。详见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [COMMERCIAL.md](COMMERCIAL.md)。
 
 允许个人学习、评估、安全审查和非商业测试。企业生产部署、商业使用、二次分发、OEM 或白标集成、托管服务、安全服务打包、渠道销售，以及处理真实生产凭据，均需另行取得书面商业授权。

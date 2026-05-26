@@ -1,8 +1,8 @@
-# KeylessPass Desktop Design
+# KeyLessPass Desktop Design
 
 ## Architecture
 
-KeylessPass is a desktop-only client:
+KeyLessPass is a desktop-only client:
 
 - Flutter Desktop renders the native desktop UI.
 - Rust Core implements cryptography, CDR storage, USB factor packages, recovery,

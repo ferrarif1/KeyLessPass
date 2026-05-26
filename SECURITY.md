@@ -1,6 +1,6 @@
 # Security Policy
 
-Keypassless is designed as a local password derivation tool. It does not aim to store service passwords, but users are still responsible for protecting their mnemonic phrase, local device, USB authentication factor, recovery materials, and operating environment.
+KeyLessPass is designed as a local password derivation tool. It does not aim to store service passwords, but users are still responsible for protecting their mnemonic phrase, local device, USB authentication factor, recovery materials, and operating environment.
 
 ## Reporting a Vulnerability
 
@@ -27,7 +27,7 @@ During evaluation or proof-of-concept testing:
 
 ## Security Boundary
 
-Keypassless may reduce risks associated with stored password vaults by avoiding storage of service passwords. However, security still depends on:
+KeyLessPass may reduce risks associated with stored password vaults by avoiding storage of service passwords. However, security still depends on:
 
 - Strength and secrecy of the mnemonic phrase
 - Protection of the USB authentication factor
