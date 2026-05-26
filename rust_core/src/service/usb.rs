@@ -330,6 +330,7 @@ fn is_macos_usb_candidate_mount(mount_on: &str) -> bool {
     true
 }
 
+#[cfg(unix)]
 fn children_of(path: &Path) -> Vec<PathBuf> {
     let Ok(entries) = std::fs::read_dir(path) else {
         return Vec::new();
