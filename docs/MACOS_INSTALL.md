@@ -113,7 +113,7 @@ cd ..
 
 测试 U 盘时，建议插入一个可写 U 盘，例如路径 `/Volumes/WD`。如果应用能看到 U 盘但不能写入，请在界面中使用文件夹按钮选择 U 盘根目录，触发 macOS 用户授权。
 
-## 9. 构建 macOS Release App
+## 9. 构建 macOS 分发包
 
 在仓库根目录运行：
 
@@ -130,28 +130,25 @@ packaging/macos/build_dmg.sh
 2. `flutter build macos --release`
 3. 把 Rust Core dylib 复制到 `.app/Contents/Frameworks/`
 4. 使用指定证书或 ad-hoc 签名重新签名 `.app`
+5. 生成包含 `KeyLessPass.app` 和 `Applications` 快捷方式的 DMG
 
-输出路径：
+`.app` 输出路径：
 
 ```text
 flutter_app/build/macos/Build/Products/Release/KeyLessPass.app
 ```
 
-如果要同时生成本地 DMG：
+DMG 分发包输出路径：
 
-```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-FLUTTER_BIN="$HOME/development/flutter/bin/flutter" \
-CODESIGN_IDENTITY="-" \
-CREATE_DMG=1 \
-packaging/macos/build_dmg.sh
+```text
+dist/macos/KeyLessPass-0.1.0-macos.dmg
 ```
 
-本地 unsigned/ad-hoc DMG 仅用于测试，不适合正式分发。
+小范围 PoC 测试时，把这个 DMG 发给测试电脑即可。测试者打开 DMG 后把 `KeyLessPass.app` 拖到 `Applications`。本地 unsigned/ad-hoc DMG 仅用于测试，不适合公开发布。
 
 ## 10. 正式分发准备
 
-正式发布 `.app` 或 `.dmg` 前需要：
+正式发布 `.dmg` 前需要：
 
 - Apple Developer 账号；
 - Developer ID Application 证书；

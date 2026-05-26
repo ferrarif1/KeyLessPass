@@ -22,7 +22,8 @@ The release app is expected at:
 flutter_app/build/macos/Build/Products/Release/KeyLessPass.app
 ```
 
-The packaging script copies and signs the Rust dynamic library:
+The packaging script copies and signs the Rust dynamic library and creates a
+DMG distribution package:
 
 ```bash
 CODESIGN_IDENTITY="Developer ID Application: Example Team" packaging/macos/build_dmg.sh
@@ -34,6 +35,12 @@ For local unsigned validation:
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 FLUTTER_BIN=/Users/zhangyuanyi/development/flutter/bin/flutter \
 CODESIGN_IDENTITY="-" CREATE_DMG=1 packaging/macos/build_dmg.sh
+```
+
+The local test DMG is expected at:
+
+```text
+dist/macos/KeyLessPass-0.1.0-macos.dmg
 ```
 
 Do not re-sign the `.app` without entitlements. Re-signing without
@@ -95,15 +102,26 @@ Start with the full Linux setup guide:
 
 - [docs/LINUX_INSTALL.md](docs/LINUX_INSTALL.md)
 
-The current packaging script builds the Rust shared library and Flutter Linux bundle:
+The current packaging script builds the Rust shared library, Flutter Linux
+bundle, and distributable packages:
 
 ```bash
 packaging/linux/build_packages.sh
 ```
 
+Expected Linux outputs:
+
+```text
+dist/linux/KeyLessPass-linux-x64-0.1.0.tar.gz
+dist/linux/keylesspass_0.1.0_amd64.deb
+dist/linux/KeyLessPass-linux-x64-0.1.0.AppImage
+```
+
+The AppImage is generated only when `appimagetool` is available.
+
 Production release still requires:
 
-- deb/rpm/AppImage packaging.
+- Signing/checksum publication for generated packages.
 - Desktop entry and icon validation.
 - Permission validation on Ubuntu/Debian/UOS/Kylin.
 - Optional Secret Service/libsecret integration tests.

@@ -132,7 +132,7 @@ flutter devices
 
 并根据提示补齐系统依赖。
 
-## 10. 构建 Linux Release Bundle
+## 10. 构建 Linux 分发包
 
 在仓库根目录运行：
 
@@ -146,8 +146,11 @@ packaging/linux/build_packages.sh
 1. `cargo build --release`
 2. `flutter build linux --release`
 3. 把 Rust Core `.so` 复制到 Flutter Linux release bundle
+4. 生成完整 tar.gz 分发包
+5. 如果系统安装了 `dpkg-deb`，生成 `.deb`
+6. 如果系统安装了 `appimagetool` 或设置了 `APPIMAGETOOL`，生成 AppImage
 
-输出目录：
+Flutter bundle 输出目录：
 
 ```text
 flutter_app/build/linux/x64/release/bundle
@@ -168,24 +171,38 @@ cd flutter_app/build/linux/x64/release/bundle
 ./keylesspass_desktop
 ```
 
-## 11. 打包为 deb/rpm/AppImage
+完整分发包输出目录：
 
-当前脚本先输出 release bundle。正式分发时还需要接入发行版打包工具，例如：
+```text
+dist/linux/
+```
 
-- deb：`dpkg-deb`、`fpm` 或 Debian packaging；
-- rpm：`rpmbuild`、`fpm`；
-- AppImage：`linuxdeploy` / `appimagetool`；
-- 国产 Linux / 信创环境：可按客户环境制作 deb/rpm 或离线安装包。
+常见输出：
 
-正式包建议包含：
+```text
+KeyLessPass-linux-x64-0.1.0.tar.gz
+keylesspass_0.1.0_amd64.deb
+KeyLessPass-linux-x64-0.1.0.AppImage
+```
 
-- desktop entry；
-- 应用图标；
-- 安装路径规范；
-- 卸载脚本；
-- 依赖声明；
-- U 盘访问验证；
-- 企业内网离线安装说明。
+其中：
+
+- `tar.gz`：通用测试包，解压后运行 `run-keylesspass.sh`；
+- `.deb`：适合 Ubuntu/Debian/统信 UOS/麒麟 Debian 系测试；
+- `AppImage`：适合不想安装系统包的桌面测试，但需要本机安装 `appimagetool` 才会生成。
+
+## 11. AppImage 工具
+
+如果要生成 AppImage，先安装或下载 `appimagetool`，然后运行：
+
+```bash
+APPIMAGETOOL=/path/to/appimagetool-x86_64.AppImage \
+packaging/linux/build_packages.sh
+```
+
+如果没有 `appimagetool`，脚本仍会生成 `tar.gz` 和可用时的 `.deb`。
+
+正式渠道发布前，仍建议针对目标发行版补充 rpm、企业离线包或软件中心包。
 
 ## 12. 国产 Linux / 信创环境注意事项
 
@@ -199,7 +216,7 @@ cd flutter_app/build/linux/x64/release/bundle
 - 是否需要离线依赖包；
 - 是否需要国产化适配测试报告。
 
-第一版建议优先输出 x86_64 deb/rpm，并在真实 UOS/麒麟机器上验证：
+第一版建议优先输出 x86_64 `.deb` 和 `tar.gz`，并在真实 UOS/麒麟机器上验证：
 
 - 初始化；
 - 创建 U 盘因子包；
@@ -227,6 +244,18 @@ packaging/linux/build_packages.sh
 ```
 
 不要只运行 `flutter build linux`，否则 Rust Core `.so` 可能没有复制到 bundle。
+
+### 没有生成 deb
+
+确认系统安装了 `dpkg-deb`。Ubuntu/Debian 通常自带，最小系统可安装：
+
+```bash
+sudo apt install -y dpkg-dev
+```
+
+### 没有生成 AppImage
+
+脚本只有在找到 `appimagetool` 或设置 `APPIMAGETOOL` 时才会生成 AppImage。没有该工具时可先使用 `tar.gz` 或 `.deb` 做小范围测试。
 
 ### U 盘无法写入
 
