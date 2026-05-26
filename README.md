@@ -37,16 +37,16 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-0.1.0-macos.dmg">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v0.1-jisa-2026-submission">
     <img alt="Download macOS DMG" src="https://img.shields.io/badge/Download-macOS%20DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white">
   </a>
-  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-Setup-0.1.0.exe">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v0.1-jisa-2026-submission">
     <img alt="Download Windows installer" src="https://img.shields.io/badge/Download-Windows%20Installer-0078D4?style=for-the-badge&logo=windows11&logoColor=white">
   </a>
 </p>
 
 <p align="center">
-  <sub>Download the latest desktop test builds from <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest">GitHub Releases</a>.</sub>
+  <sub>Open the release page and choose the macOS or Windows client asset for your device.</sub>
 </p>
 
 KeyLessPass is a native desktop client for deriving text passwords on demand for internal systems that still depend on legacy password login. It is intended for operations consoles, vendor portals, database gateways, network appliances, and small enterprise environments where a local-only security posture is required.

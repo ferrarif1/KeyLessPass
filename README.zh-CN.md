@@ -37,16 +37,16 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-0.1.0-macos.dmg">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v0.1-jisa-2026-submission">
     <img alt="下载 macOS DMG" src="https://img.shields.io/badge/下载-macOS%20DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white">
   </a>
-  <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest/download/KeyLessPass-Setup-0.1.0.exe">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v0.1-jisa-2026-submission">
     <img alt="下载 Windows 安装包" src="https://img.shields.io/badge/下载-Windows%20安装包-0078D4?style=for-the-badge&logo=windows11&logoColor=white">
   </a>
 </p>
 
 <p align="center">
-  <sub>从 <a href="https://github.com/ferrarif1/KeyLessPass/releases/latest">GitHub Releases</a> 下载最新桌面测试版客户端。</sub>
+  <sub>打开发布页面，根据自己的设备选择 macOS 或 Windows 客户端下载。</sub>
 </p>
 
 KeyLessPass 是一个真正的本机桌面客户端，用于企业内部仍依赖文本密码登录的遗留系统、运维控制台、厂商门户、数据库网关和网络设备。它按需派生服务密码，而不是保存服务密码库。
