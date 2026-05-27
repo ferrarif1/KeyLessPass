@@ -1,5 +1,8 @@
-use crate::crypto::{aead, b64_decode, b64_encode, kdf, mac};
-use crate::domain::{CredentialDescriptionRecord, FactorPackage, PackageType, UsbFactorPayload};
+use crate::crypto::{b64_decode, b64_encode, kdf, mac};
+use crate::domain::{
+    CredentialDescriptionRecord, FactorPackage, PackageType, UsbFactorPayload,
+    FACTOR_PACKAGE_SCHEMA_VERSION, FACTOR_PAYLOAD_SCHEMA_VERSION,
+};
 use crate::error::{KeylessPassError, Result};
 use crate::storage::{read_json, write_json_private};
 use chrono::{DateTime, Utc};
@@ -60,30 +63,30 @@ impl UsbCdrBackup {
 }
 
 pub fn create_usb_factor_package(
-    mnemonic: &str,
     user_id: Uuid,
     device_id: &str,
     platform: &str,
     payload: &UsbFactorPayload,
 ) -> Result<FactorPackage> {
-    let salt = b64_decode(&payload.mnemonic_salt)?;
-    let f_m = kdf::derive_mnemonic_factor(mnemonic, &user_id, &salt)?;
-    let key = kdf::derive_usb_package_key(&f_m)?;
+    if payload.user_id != user_id {
+        return Err(KeylessPassError::Integrity(
+            "USB factor payload user id mismatch".to_string(),
+        ));
+    }
     let plaintext = serde_json::to_vec(payload)?;
-    let aad = usb_aad(user_id);
-    let (nonce, ciphertext, tag) = aead::encrypt(&key, &plaintext, aad.as_bytes())?;
     let mut package = FactorPackage::new(
         PackageType::Usb,
         user_id,
         device_id,
         platform,
-        payload.mnemonic_salt.clone(),
-        b64_encode(&ciphertext),
-        b64_encode(&nonce),
-        b64_encode(&tag),
+        payload.salt_u.clone(),
+        b64_encode(&plaintext),
+        "",
+        "",
     );
+    let f_u = usb_factor_from_payload(&package, payload)?;
     package.package_mac =
-        mac::hmac_sha256_base64(&mac::package_mac_key(&f_m), &package.mac_payload()?)?;
+        mac::hmac_sha256_base64(&mac::package_mac_key(&f_u), &package.mac_payload()?)?;
     Ok(package)
 }
 
@@ -160,7 +163,6 @@ pub fn verify_usb_cdr_backup(
 }
 
 pub fn load_usb_factor_payload(
-    mnemonic: &str,
     path: impl AsRef<Path>,
 ) -> Result<(FactorPackage, UsbFactorPayload)> {
     let package = read_usb_factor_package(path)?;
@@ -169,30 +171,43 @@ pub fn load_usb_factor_payload(
             "factor package is not USB".to_string(),
         ));
     }
-    let salt = b64_decode(&package.kdf_salt)?;
-    let f_m = kdf::derive_mnemonic_factor(mnemonic, &package.user_id, &salt)?;
-    let expected = mac::hmac_sha256_base64(&mac::package_mac_key(&f_m), &package.mac_payload()?)?;
-    let legacy_expected =
-        mac::hmac_sha256_base64(&mac::package_mac_key(&f_m), &package.legacy_mac_payload()?)?;
-    if !mac::constant_time_eq_b64(&expected, &package.package_mac)?
-        && !mac::constant_time_eq_b64(&legacy_expected, &package.package_mac)?
-    {
+    if package.schema_version < FACTOR_PACKAGE_SCHEMA_VERSION {
+        return Err(KeylessPassError::Validation(
+            "legacy factor package stores master-key payload and does not support strict pairwise-wrapper recovery; please migrate with the old mnemonic available.".to_string(),
+        ));
+    }
+    let plaintext = b64_decode(&package.encrypted_payload)?;
+    let payload: UsbFactorPayload = serde_json::from_slice(&plaintext)?;
+    if payload.schema_version != FACTOR_PAYLOAD_SCHEMA_VERSION {
+        return Err(KeylessPassError::Validation(
+            "unsupported USB factor payload schema version".to_string(),
+        ));
+    }
+    if payload.user_id != package.user_id {
+        return Err(KeylessPassError::Integrity(
+            "USB factor user id mismatch".to_string(),
+        ));
+    }
+    if payload.salt_u != package.kdf_salt {
+        return Err(KeylessPassError::Integrity(
+            "USB factor salt mismatch".to_string(),
+        ));
+    }
+    let f_u = usb_factor_from_payload(&package, &payload)?;
+    let expected = mac::hmac_sha256_base64(&mac::package_mac_key(&f_u), &package.mac_payload()?)?;
+    if !mac::constant_time_eq_b64(&expected, &package.package_mac)? {
         return Err(KeylessPassError::Integrity(
             "USB package MAC mismatch".to_string(),
         ));
     }
-    let key = kdf::derive_usb_package_key(&f_m)?;
-    let plaintext = aead::decrypt(
-        &key,
-        &b64_decode(&package.nonce)?,
-        &b64_decode(&package.encrypted_payload)?,
-        &b64_decode(&package.aead_tag)?,
-        usb_aad(package.user_id).as_bytes(),
-    )?;
-    let payload: UsbFactorPayload = serde_json::from_slice(&plaintext)?;
     Ok((package, payload))
 }
 
-fn usb_aad(user_id: Uuid) -> String {
-    format!("KeylessPass USB factor package:{user_id}")
+fn usb_factor_from_payload(
+    package: &FactorPackage,
+    payload: &UsbFactorPayload,
+) -> Result<[u8; 32]> {
+    let usb_secret = b64_decode(&payload.usb_secret)?;
+    let salt_u = b64_decode(&payload.salt_u)?;
+    kdf::derive_usb_factor(&usb_secret, &payload.usb_id, &package.user_id, &salt_u)
 }

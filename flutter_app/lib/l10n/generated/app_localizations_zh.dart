@@ -339,6 +339,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get oldVersionRemainsActive => '提交前，当前活动版本仍然有效。';
 
   @override
+  String get rotationCreateHelp => '先创建待确认版本。提交前，当前活动密码仍然有效。';
+
+  @override
+  String get rotationPendingHelp =>
+      '已存在待确认版本。请先派生并在目标系统验证新密码，确认目标系统密码已完成变更后再提交轮换。';
+
+  @override
+  String get derivePendingPassword => '派生待确认密码';
+
+  @override
+  String get rotationNoRecord => '请先选择要轮换的记录。';
+
+  @override
   String get recoverLocal => '恢复本机';
 
   @override
@@ -351,7 +364,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newMnemonicPhrase => '新的助记短语';
 
   @override
-  String get resetMnemonicHelp => '使用本机和所选 U 盘包设置新的助记短语。已有派生密码保持不变。';
+  String get resetMnemonicHelp =>
+      '使用本机 + U 盘包恢复并设置新的助记短语；不需要旧助记短语，已有派生密码保持不变。';
+
+  @override
+  String get usbLostHelp => '使用本机 + 助记短语重建 U 盘包。单独本机因子不能恢复主密钥。';
 
   @override
   String get mnemonicResetComplete => '助记短语已重置。';
@@ -551,6 +568,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get createFactors => '创建因子';
+
+  @override
+  String get setupStartTitle => '在这台电脑上开始';
+
+  @override
+  String get setupStartSubtitle => '可以创建新的资料，也可以使用 U 盘包和助记短语恢复已有资料。';
+
+  @override
+  String get createNewProfile => '创建新资料';
+
+  @override
+  String get recoverExistingProfile => '恢复已有资料';
+
+  @override
+  String get recoverLocalHelp =>
+      '在更换本机时使用助记短语 + U 盘重建这台电脑的本机因子，并在 U 盘记录备份可用时恢复本机记录。';
 
   @override
   String get setupLocked => '初始化已锁定';

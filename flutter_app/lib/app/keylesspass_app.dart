@@ -31,6 +31,8 @@ enum _RecordFilter { all, active, pending, retired, conflict, error }
 
 enum _DeriveMode { thisDevice, usbRecovery }
 
+enum _SetupMode { create, recover }
+
 enum _RecoveryMode { usbLost, newDevice, resetMnemonic }
 
 class _ResponsiveGrid extends StatelessWidget {
@@ -244,9 +246,6 @@ class _HomeWindowState extends State<_HomeWindow> {
         _usbCandidates = candidates;
         _usbCdrStatus = usbCdrStatus;
         _selected = _pickSelected(records);
-        if (!status.enrolled && !_allowedBeforeSetup(_section)) {
-          _section = _Section.setup;
-        }
       });
     } catch (_) {
       setState(() => _message = context.t.operationFailed);
@@ -288,14 +287,6 @@ class _HomeWindowState extends State<_HomeWindow> {
       _RecordFilter.conflict => state == 'conflict',
       _RecordFilter.error => state == 'error',
     };
-  }
-
-  bool _allowedBeforeSetup(_Section section) {
-    return {
-      _Section.setup,
-      _Section.settings,
-      _Section.about,
-    }.contains(section);
   }
 
   Future<void> _completeSetup() async {
@@ -550,6 +541,10 @@ class _HomeWindowState extends State<_HomeWindow> {
           defaultLength: _defaultLength,
           api: _api,
           onSelect: (record) => setState(() => _selected = record),
+          onDerivePending: (record) => setState(() {
+                _selected = record;
+                _section = _Section.derive;
+              }),
           onDone: () async {
             await _refresh();
             await _syncCdrToFirstUsb(silent: true);
@@ -1418,6 +1413,7 @@ class _SetupPageState extends State<_SetupPage> {
   final _usbPath = TextEditingController();
   String _mnemonicLanguage = 'english';
   int _mnemonicWordCount = 20;
+  _SetupMode _setupMode = _SetupMode.create;
   bool _showMnemonic = false;
   bool _busy = false;
   bool _generatingMnemonic = false;
@@ -1511,7 +1507,7 @@ class _SetupPageState extends State<_SetupPage> {
         children: [
           PageTitle(
               title: t.setup,
-              subtitle: enrolled ? t.setupLocked : t.createFactors),
+              subtitle: enrolled ? t.setupLocked : t.setupStartSubtitle),
           const SizedBox(height: 18),
           SectionPanel(
             child: enrolled
@@ -1534,115 +1530,156 @@ class _SetupPageState extends State<_SetupPage> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      WorkflowStepper(steps: [
-                        t.mnemonicPhrase,
-                        t.createFactors,
-                        t.usbDevice,
-                        t.recovery
-                      ], current: 0),
-                      const SizedBox(height: 16),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 330,
-                            child: SegmentedButton<String>(
-                              segments: [
-                                ButtonSegment(
-                                    value: 'english',
-                                    label: Text(t.englishMnemonic)),
-                                ButtonSegment(
-                                    value: 'simplifiedChinese',
-                                    label: Text(t.chineseMnemonic)),
-                              ],
-                              selected: {_mnemonicLanguage},
-                              onSelectionChanged: _busy || _generatingMnemonic
-                                  ? null
-                                  : (value) => setState(
-                                      () => _mnemonicLanguage = value.first),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 150,
-                            child: DropdownButtonFormField<int>(
-                              initialValue: _mnemonicWordCount,
-                              decoration:
-                                  InputDecoration(labelText: t.wordCount),
-                              items: const [
-                                DropdownMenuItem(value: 20, child: Text('20')),
-                                DropdownMenuItem(value: 24, child: Text('24')),
-                                DropdownMenuItem(value: 28, child: Text('28')),
-                              ],
-                              onChanged: _busy || _generatingMnemonic
-                                  ? null
-                                  : (value) => setState(
-                                      () => _mnemonicWordCount = value ?? 20),
-                            ),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: _busy || _generatingMnemonic
-                                ? null
-                                : _generateMnemonic,
-                            icon: const Icon(Icons.auto_awesome_rounded),
-                            label: Text(t.generateMnemonic),
-                          ),
+                      Text(t.setupStartTitle,
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 12),
+                      SegmentedButton<_SetupMode>(
+                        segments: [
+                          ButtonSegment(
+                              value: _SetupMode.create,
+                              label: Text(t.createNewProfile),
+                              icon: const Icon(Icons.add_rounded)),
+                          ButtonSegment(
+                              value: _SetupMode.recover,
+                              label: Text(t.recoverExistingProfile),
+                              icon: const Icon(
+                                  Icons.settings_backup_restore_rounded)),
                         ],
+                        selected: {_setupMode},
+                        onSelectionChanged: _busy || _generatingMnemonic
+                            ? null
+                            : (value) =>
+                                setState(() => _setupMode = value.first),
                       ),
-                      const SizedBox(height: 12),
-                      InlineNotice(
-                          text: t.mnemonicGeneratedLocally,
-                          icon: Icons.lock_outline_rounded),
-                      const SizedBox(height: 12),
-                      InfoRow(
-                          label: t.derivationAlgorithm,
-                          value: _algorithmLabelStatic(
-                              widget.passwordDerivationAlgorithm)),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _mnemonic,
-                        obscureText: !_showMnemonic,
-                        decoration: InputDecoration(
-                          labelText: t.mnemonicPhrase,
-                          suffixIcon: IconButton(
-                            tooltip:
-                                _showMnemonic ? t.hideMnemonic : t.showMnemonic,
-                            onPressed: () =>
-                                setState(() => _showMnemonic = !_showMnemonic),
-                            icon: Icon(_showMnemonic
-                                ? Icons.visibility_off_rounded
-                                : Icons.visibility_rounded),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _usbPath,
-                        decoration: InputDecoration(
-                          labelText: t.usbPath,
-                          suffixIcon: IconButton(
-                            tooltip: t.chooseUsb,
-                            onPressed: () => _chooseUsbPath(_usbPath),
-                            icon: const Icon(Icons.folder_open_rounded),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      InlineNotice(
-                          text: t.manualUsbHint, icon: Icons.usb_rounded),
-                      if (_message != null) ...[
-                        const SizedBox(height: 12),
-                        InlineNotice(text: _message!)
-                      ],
                       const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: FilledButton.icon(
-                            onPressed: _busy ? null : _submit,
-                            icon: const Icon(Icons.verified_user_rounded),
-                            label: Text(t.createFactors)),
-                      ),
+                      if (_setupMode == _SetupMode.create) ...[
+                        WorkflowStepper(steps: [
+                          t.mnemonicPhrase,
+                          t.createFactors,
+                          t.usbDevice,
+                          t.recovery
+                        ], current: 0),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 330,
+                              child: SegmentedButton<String>(
+                                segments: [
+                                  ButtonSegment(
+                                      value: 'english',
+                                      label: Text(t.englishMnemonic)),
+                                  ButtonSegment(
+                                      value: 'simplifiedChinese',
+                                      label: Text(t.chineseMnemonic)),
+                                ],
+                                selected: {_mnemonicLanguage},
+                                onSelectionChanged: _busy || _generatingMnemonic
+                                    ? null
+                                    : (value) => setState(
+                                        () => _mnemonicLanguage = value.first),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: DropdownButtonFormField<int>(
+                                initialValue: _mnemonicWordCount,
+                                decoration:
+                                    InputDecoration(labelText: t.wordCount),
+                                items: const [
+                                  DropdownMenuItem(
+                                      value: 20, child: Text('20')),
+                                  DropdownMenuItem(
+                                      value: 24, child: Text('24')),
+                                  DropdownMenuItem(
+                                      value: 28, child: Text('28')),
+                                ],
+                                onChanged: _busy || _generatingMnemonic
+                                    ? null
+                                    : (value) => setState(
+                                        () => _mnemonicWordCount = value ?? 20),
+                              ),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: _busy || _generatingMnemonic
+                                  ? null
+                                  : _generateMnemonic,
+                              icon: const Icon(Icons.auto_awesome_rounded),
+                              label: Text(t.generateMnemonic),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        InlineNotice(
+                            text: t.mnemonicGeneratedLocally,
+                            icon: Icons.lock_outline_rounded),
+                        const SizedBox(height: 12),
+                        InfoRow(
+                            label: t.derivationAlgorithm,
+                            value: _algorithmLabelStatic(
+                                widget.passwordDerivationAlgorithm)),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _mnemonic,
+                          obscureText: !_showMnemonic,
+                          decoration: InputDecoration(
+                            labelText: t.mnemonicPhrase,
+                            suffixIcon: IconButton(
+                              tooltip: _showMnemonic
+                                  ? t.hideMnemonic
+                                  : t.showMnemonic,
+                              onPressed: () => setState(
+                                  () => _showMnemonic = !_showMnemonic),
+                              icon: Icon(_showMnemonic
+                                  ? Icons.visibility_off_rounded
+                                  : Icons.visibility_rounded),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _usbPath,
+                          decoration: InputDecoration(
+                            labelText: t.usbPath,
+                            suffixIcon: IconButton(
+                              tooltip: t.chooseUsb,
+                              onPressed: () => _chooseUsbPath(_usbPath),
+                              icon: const Icon(Icons.folder_open_rounded),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        InlineNotice(
+                            text: t.manualUsbHint, icon: Icons.usb_rounded),
+                        if (_message != null) ...[
+                          const SizedBox(height: 12),
+                          InlineNotice(text: _message!)
+                        ],
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FilledButton.icon(
+                              onPressed: _busy ? null : _submit,
+                              icon: const Icon(Icons.verified_user_rounded),
+                              label: Text(t.createFactors)),
+                        ),
+                      ] else ...[
+                        InlineNotice(
+                            text: t.recoverLocalHelp,
+                            icon: Icons.computer_rounded,
+                            tone: KpColors.primary),
+                        const SizedBox(height: 16),
+                        _RecoveryPanel(
+                          api: widget.api,
+                          usbCandidates: widget.usbCandidates,
+                          initialMode: _RecoveryMode.newDevice,
+                          allowedModes: const {_RecoveryMode.newDevice},
+                          onDone: widget.onDone,
+                        ),
+                      ],
                     ],
                   ),
           ),
@@ -2321,6 +2358,7 @@ class _RotationPage extends StatefulWidget {
     required this.defaultLength,
     required this.api,
     required this.onSelect,
+    required this.onDerivePending,
     required this.onDone,
   });
 
@@ -2329,6 +2367,7 @@ class _RotationPage extends StatefulWidget {
   final int defaultLength;
   final CoreApi? api;
   final ValueChanged<CredentialRecord> onSelect;
+  final ValueChanged<CredentialRecord> onDerivePending;
   final Future<void> Function() onDone;
 
   @override
@@ -2350,7 +2389,9 @@ class _RotationPageState extends State<_RotationPage> {
     final record = widget.selected;
     if (api == null || record == null) return;
     try {
-      await api.rotateCredential(record: record, length: _length.round());
+      final pending =
+          await api.rotateCredential(record: record, length: _length.round());
+      widget.onSelect(pending);
       await widget.onDone();
       setState(() => _message = context.t.pendingCreated);
     } catch (_) {
@@ -2389,6 +2430,7 @@ class _RotationPageState extends State<_RotationPage> {
     final t = context.t;
     final record = widget.selected;
     final pending = record?.state == 'pending_rotation';
+    final hasRecord = record != null;
     return Padding(
       padding: const EdgeInsets.all(28),
       child: ListView(
@@ -2410,22 +2452,36 @@ class _RotationPageState extends State<_RotationPage> {
                   t.commitRotation
                 ], current: pending ? 1 : 0),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    SizedBox(
-                        width: 170,
-                        child: Text('${t.length} ${_length.round()}')),
-                    Expanded(
-                        child: Slider(
-                            min: 8,
-                            max: 64,
-                            divisions: 56,
-                            value: _length,
-                            onChanged: pending
-                                ? null
-                                : (value) => setState(() => _length = value))),
-                  ],
+                InlineNotice(
+                  text: pending
+                      ? t.rotationPendingHelp
+                      : hasRecord
+                          ? t.rotationCreateHelp
+                          : t.rotationNoRecord,
+                  icon: pending
+                      ? Icons.verified_rounded
+                      : Icons.rotate_right_rounded,
+                  tone: pending ? KpColors.warning : KpColors.primary,
                 ),
+                if (!pending) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      SizedBox(
+                          width: 170,
+                          child: Text('${t.length} ${_length.round()}')),
+                      Expanded(
+                          child: Slider(
+                              min: 8,
+                              max: 64,
+                              divisions: 56,
+                              value: _length,
+                              onChanged: hasRecord
+                                  ? (value) => setState(() => _length = value)
+                                  : null)),
+                    ],
+                  ),
+                ],
                 if (_message != null) ...[
                   const SizedBox(height: 12),
                   InlineNotice(text: _message!)
@@ -2438,6 +2494,12 @@ class _RotationPageState extends State<_RotationPage> {
                         onPressed: record == null || pending ? null : _create,
                         icon: const Icon(Icons.add_rounded),
                         label: Text(t.createPendingVersion)),
+                    FilledButton.icon(
+                        onPressed: pending && record != null
+                            ? () => widget.onDerivePending(record)
+                            : null,
+                        icon: const Icon(Icons.password_rounded),
+                        label: Text(t.derivePendingPassword)),
                     OutlinedButton.icon(
                         onPressed: pending ? _commit : null,
                         icon: const Icon(Icons.check_rounded),
@@ -2458,12 +2520,23 @@ class _RotationPageState extends State<_RotationPage> {
 }
 
 class _RecoveryPanel extends StatefulWidget {
-  const _RecoveryPanel(
-      {required this.api, required this.usbCandidates, required this.onDone});
+  const _RecoveryPanel({
+    required this.api,
+    required this.usbCandidates,
+    required this.onDone,
+    this.initialMode = _RecoveryMode.usbLost,
+    this.allowedModes = const {
+      _RecoveryMode.usbLost,
+      _RecoveryMode.newDevice,
+      _RecoveryMode.resetMnemonic,
+    },
+  });
 
   final CoreApi? api;
   final List<UsbCandidate> usbCandidates;
   final Future<void> Function() onDone;
+  final _RecoveryMode initialMode;
+  final Set<_RecoveryMode> allowedModes;
 
   @override
   State<_RecoveryPanel> createState() => _RecoveryPanelState();
@@ -2472,12 +2545,14 @@ class _RecoveryPanel extends StatefulWidget {
 class _RecoveryPanelState extends State<_RecoveryPanel> {
   final _mnemonic = TextEditingController();
   final _usbPath = TextEditingController();
-  _RecoveryMode _mode = _RecoveryMode.usbLost;
+  late _RecoveryMode _mode;
   String? _message;
+  bool _busy = false;
 
   @override
   void initState() {
     super.initState();
+    _mode = _resolvedInitialMode();
     if (widget.usbCandidates.isNotEmpty) {
       _usbPath.text = widget.usbCandidates.first.rootPath;
     }
@@ -2486,9 +2561,19 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
   @override
   void didUpdateWidget(covariant _RecoveryPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!widget.allowedModes.contains(_mode)) {
+      _mode = _resolvedInitialMode();
+    }
     if (_usbPath.text.isEmpty && widget.usbCandidates.isNotEmpty) {
       _usbPath.text = widget.usbCandidates.first.rootPath;
     }
+  }
+
+  _RecoveryMode _resolvedInitialMode() {
+    if (widget.allowedModes.contains(widget.initialMode)) {
+      return widget.initialMode;
+    }
+    return widget.allowedModes.first;
   }
 
   @override
@@ -2500,25 +2585,38 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
 
   Future<void> _submit() async {
     final api = widget.api;
-    if (api == null) return;
+    if (api == null ||
+        _busy ||
+        _mnemonic.text.trim().isEmpty ||
+        _usbPath.text.trim().isEmpty) {
+      return;
+    }
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
     try {
       if (_mode == _RecoveryMode.usbLost) {
-        await api.recoverUsb(mnemonic: _mnemonic.text, usbPath: _usbPath.text);
+        await api.recoverUsb(
+            mnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
       } else if (_mode == _RecoveryMode.newDevice) {
         await api.recoverLocal(
-            mnemonic: _mnemonic.text, usbPath: _usbPath.text);
+            mnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
       } else {
         await api.resetMnemonic(
-            newMnemonic: _mnemonic.text, usbPath: _usbPath.text);
+            newMnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
       }
       await widget.onDone();
-      setState(() => _message = _mode == _RecoveryMode.resetMnemonic
-          ? context.t.mnemonicResetComplete
-          : context.t.recoveryComplete);
+      if (mounted) {
+        setState(() => _message = _mode == _RecoveryMode.resetMnemonic
+            ? context.t.mnemonicResetComplete
+            : context.t.recoveryComplete);
+      }
     } catch (_) {
-      setState(() => _message = context.t.operationFailed);
+      if (mounted) setState(() => _message = context.t.operationFailed);
     } finally {
       _mnemonic.clear();
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -2533,24 +2631,33 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
         Text(t.singleFactorNotEnough,
             style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 16),
-        SegmentedButton<_RecoveryMode>(
-          segments: [
-            ButtonSegment(
-                value: _RecoveryMode.usbLost, label: Text(t.usbLostMode)),
-            ButtonSegment(
-                value: _RecoveryMode.newDevice, label: Text(t.newDeviceMode)),
-            ButtonSegment(
-                value: _RecoveryMode.resetMnemonic,
-                label: Text(t.resetMnemonic)),
-          ],
-          selected: {_mode},
-          onSelectionChanged: (value) => setState(() => _mode = value.first),
-        ),
-        const SizedBox(height: 16),
+        if (widget.allowedModes.length > 1) ...[
+          SegmentedButton<_RecoveryMode>(
+            segments: [
+              if (widget.allowedModes.contains(_RecoveryMode.usbLost))
+                ButtonSegment(
+                    value: _RecoveryMode.usbLost, label: Text(t.usbLostMode)),
+              if (widget.allowedModes.contains(_RecoveryMode.newDevice))
+                ButtonSegment(
+                    value: _RecoveryMode.newDevice,
+                    label: Text(t.newDeviceMode)),
+              if (widget.allowedModes.contains(_RecoveryMode.resetMnemonic))
+                ButtonSegment(
+                    value: _RecoveryMode.resetMnemonic,
+                    label: Text(t.resetMnemonic)),
+            ],
+            selected: {_mode},
+            onSelectionChanged:
+                _busy ? null : (value) => setState(() => _mode = value.first),
+          ),
+          const SizedBox(height: 16),
+        ],
         InlineNotice(
             text: _mode == _RecoveryMode.resetMnemonic
                 ? t.resetMnemonicHelp
-                : t.manualUsbHint,
+                : _mode == _RecoveryMode.usbLost
+                    ? t.usbLostHelp
+                    : t.recoverLocalHelp,
             icon: Icons.usb_rounded),
         const SizedBox(height: 12),
         TextField(
@@ -2579,9 +2686,9 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
         ],
         const SizedBox(height: 16),
         FilledButton.icon(
-            onPressed: _submit,
+            onPressed: _busy ? null : _submit,
             icon: const Icon(Icons.settings_backup_restore_rounded),
-            label: Text(t.runRecovery)),
+            label: Text(_busy ? '...' : t.runRecovery)),
       ],
     );
   }

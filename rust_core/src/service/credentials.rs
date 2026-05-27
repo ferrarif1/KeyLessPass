@@ -1,7 +1,8 @@
 use crate::domain::{CredentialDescriptionRecord, EncodingDescriptor};
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
-use crate::storage::{load_local_factor_payload, read_config, CdrStore, StoragePaths};
+use crate::service::factor_keys::cached_master_key_with_local_factor;
+use crate::storage::{read_config, CdrStore, StoragePaths};
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -56,9 +57,7 @@ pub fn add_credential_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: AddCredentialRequest,
 ) -> Result<CredentialDescriptionRecord> {
-    let config = read_config(paths)?;
-    let (_, local_payload) = load_local_factor_payload(provider, &config.local_factor_path)?;
-    let master_key = crate::crypto::b64_decode(&local_payload.k_master)?;
+    let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     store.init()?;
     let seq = store.max_record_seq()? + 1;
@@ -88,9 +87,7 @@ pub fn update_credential_display_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: UpdateCredentialDisplayRequest,
 ) -> Result<CredentialDescriptionRecord> {
-    let config = read_config(paths)?;
-    let (_, local_payload) = load_local_factor_payload(provider, &config.local_factor_path)?;
-    let master_key = crate::crypto::b64_decode(&local_payload.k_master)?;
+    let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let mut record = store.get(request.record_id, Some(request.version))?;
 

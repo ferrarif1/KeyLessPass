@@ -1,9 +1,13 @@
-use crate::crypto::{b64_encode, kdf, recovery as crypto_recovery, SecretBytes};
+use crate::crypto::{b64_encode, kdf, recovery as crypto_recovery};
 use crate::domain::{AppConfig, LocalFactorPayload, PasswordDerivationAlgorithm, UsbFactorPayload};
+use crate::domain::{WRAP_LABEL_CU, WRAP_LABEL_MC, WRAP_LABEL_MU};
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{
     current_platform_provider, current_security_status, PlatformFactorProvider,
     PlatformSecurityStatus,
+};
+use crate::service::factor_keys::{
+    cu_wrap_aad, mc_wrap_aad, mu_wrap_aad, remember_master_key, wrap_master_key,
 };
 use crate::storage::{
     create_local_factor_package, create_usb_factor_package, write_config,
@@ -51,46 +55,84 @@ pub fn enroll_with_provider(
 
     let user_id = Uuid::new_v4();
     let device_id = provider.get_or_create_device_id()?;
-    let device_secret: SecretBytes = provider.get_or_create_device_secret()?;
+    let device_secret = provider.get_or_create_device_secret()?;
     let platform = provider.platform_name();
-    let k_master = crate::crypto::random_bytes(32);
+    let k_master_bytes = crate::crypto::random_bytes(32);
+    let mut k_master = [0_u8; 32];
+    k_master.copy_from_slice(&k_master_bytes);
     let usb_secret = crate::crypto::random_bytes(32);
+    let usb_id = Uuid::new_v4().to_string();
+    let device_salt = crate::crypto::random_bytes(16);
+    let device_salt_b64 = b64_encode(&device_salt);
+    let usb_salt = crate::crypto::random_bytes(16);
+    let usb_salt_b64 = b64_encode(&usb_salt);
     let mnemonic_salt = crate::crypto::random_bytes(16);
     let mnemonic_salt_b64 = b64_encode(&mnemonic_salt);
-    let f_m = kdf::derive_mnemonic_factor(&request.mnemonic, &user_id, &mnemonic_salt)?;
+    let f_m = kdf::derive_mnemonic_factor(&request.mnemonic, &mnemonic_salt)?;
+    let f_c =
+        kdf::derive_platform_factor(device_secret.expose(), &device_id, &user_id, &device_salt)?;
+    let f_u = kdf::derive_usb_factor(&usb_secret, &usb_id, &user_id, &usb_salt)?;
     let mnemonic_verifier = kdf::derive_mnemonic_verifier(&f_m)?;
     let password_derivation_algorithm = request.password_derivation_algorithm;
+    let w_mc = wrap_master_key(
+        &k_master,
+        &f_m,
+        &f_c,
+        WRAP_LABEL_MC,
+        &mc_wrap_aad(user_id, &device_id, &mnemonic_salt_b64, &device_salt_b64),
+    )?;
+    let w_mu = wrap_master_key(
+        &k_master,
+        &f_m,
+        &f_u,
+        WRAP_LABEL_MU,
+        &mu_wrap_aad(user_id, &usb_id, &mnemonic_salt_b64, &usb_salt_b64),
+    )?;
+    let w_cu = wrap_master_key(
+        &k_master,
+        &f_c,
+        &f_u,
+        WRAP_LABEL_CU,
+        &cu_wrap_aad(
+            user_id,
+            &device_id,
+            &usb_id,
+            &device_salt_b64,
+            &usb_salt_b64,
+        ),
+    )?;
 
     let local_payload = LocalFactorPayload {
-        k_master: b64_encode(&k_master),
-        device_secret: b64_encode(device_secret.expose()),
-        usb_secret: b64_encode(&usb_secret),
+        schema_version: crate::domain::FACTOR_PAYLOAD_SCHEMA_VERSION,
+        user_id,
+        device_id: device_id.clone(),
+        salt_c: device_salt_b64.clone(),
         mnemonic_salt: mnemonic_salt_b64.clone(),
         password_derivation_algorithm,
         mnemonic_verifier: Some(mnemonic_verifier.clone()),
         recovery_generation: 1,
+        w_mc,
+        w_cu: Some(w_cu.clone()),
     };
     let usb_payload = UsbFactorPayload {
-        k_master: b64_encode(&k_master),
+        schema_version: crate::domain::FACTOR_PAYLOAD_SCHEMA_VERSION,
+        user_id,
+        usb_id: usb_id.clone(),
         usb_secret: b64_encode(&usb_secret),
-        device_secret: b64_encode(device_secret.expose()),
+        salt_u: usb_salt_b64,
         mnemonic_salt: mnemonic_salt_b64,
         password_derivation_algorithm,
         mnemonic_verifier: Some(mnemonic_verifier),
         recovery_generation: 1,
+        w_mu,
+        w_cu,
     };
 
     let local_package =
         create_local_factor_package(provider, user_id, &device_id, &platform, &local_payload)?;
     write_local_factor_package(&paths.local_factor_path, &local_package)?;
 
-    let usb_package = create_usb_factor_package(
-        &request.mnemonic,
-        user_id,
-        &device_id,
-        &platform,
-        &usb_payload,
-    )?;
+    let usb_package = create_usb_factor_package(user_id, &device_id, &platform, &usb_payload)?;
     let usb_package_path = write_usb_factor_package(&request.usb_path, &usb_package)?;
 
     CdrStore::new(&paths.db_path).init()?;
@@ -106,6 +148,7 @@ pub fn enroll_with_provider(
         password_derivation_algorithm,
     );
     write_config(paths, &config)?;
+    remember_master_key(&config, &k_master)?;
 
     let recovery = crypto_recovery::build_recovery_metadata(&k_master, 1)?;
     write_recovery_metadata(&paths.recovery_path, &recovery)?;

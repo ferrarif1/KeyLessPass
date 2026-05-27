@@ -4,15 +4,30 @@ use uuid::Uuid;
 
 use crate::domain::PasswordDerivationAlgorithm;
 
-pub const FACTOR_PACKAGE_SCHEMA_VERSION: u32 = 1;
+pub const LEGACY_FACTOR_PACKAGE_SCHEMA_VERSION: u32 = 1;
+pub const FACTOR_PACKAGE_SCHEMA_VERSION: u32 = 2;
 pub const FACTOR_PACKAGE_VERSION: u32 = 1;
+pub const WRAPPED_MASTER_KEY_SCHEMA_VERSION: u32 = 1;
+pub const FACTOR_PAYLOAD_SCHEMA_VERSION: u32 = 2;
+
+pub const WRAP_LABEL_MC: &str = "KeyLessPass/wrap/MC";
+pub const WRAP_LABEL_MU: &str = "KeyLessPass/wrap/MU";
+pub const WRAP_LABEL_CU: &str = "KeyLessPass/wrap/CU";
 
 fn default_factor_package_schema_version() -> u32 {
-    FACTOR_PACKAGE_SCHEMA_VERSION
+    LEGACY_FACTOR_PACKAGE_SCHEMA_VERSION
 }
 
 fn default_factor_package_version() -> u32 {
     FACTOR_PACKAGE_VERSION
+}
+
+fn default_factor_payload_schema_version() -> u32 {
+    FACTOR_PAYLOAD_SCHEMA_VERSION
+}
+
+fn default_wrapped_master_key_schema_version() -> u32 {
+    WRAPPED_MASTER_KEY_SCHEMA_VERSION
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -118,28 +133,72 @@ impl FactorPackage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct LocalFactorPayload {
-    pub k_master: String,
-    pub device_secret: String,
-    pub usb_secret: String,
-    pub mnemonic_salt: String,
-    #[serde(default)]
-    pub password_derivation_algorithm: PasswordDerivationAlgorithm,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mnemonic_verifier: Option<String>,
-    pub recovery_generation: u64,
+pub struct WrappedMasterKey {
+    #[serde(default = "default_wrapped_master_key_schema_version")]
+    pub version: u32,
+    pub wrapper_type: String,
+    pub nonce: String,
+    pub ciphertext: String,
+    pub tag: String,
+    pub aad: String,
+}
+
+impl WrappedMasterKey {
+    pub fn new(
+        wrapper_type: impl Into<String>,
+        nonce: impl Into<String>,
+        ciphertext: impl Into<String>,
+        tag: impl Into<String>,
+        aad: impl Into<String>,
+    ) -> Self {
+        Self {
+            version: WRAPPED_MASTER_KEY_SCHEMA_VERSION,
+            wrapper_type: wrapper_type.into(),
+            nonce: nonce.into(),
+            ciphertext: ciphertext.into(),
+            tag: tag.into(),
+            aad: aad.into(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UsbFactorPayload {
-    pub k_master: String,
-    pub usb_secret: String,
-    pub device_secret: String,
+pub struct LocalFactorPayloadV2 {
+    #[serde(default = "default_factor_payload_schema_version")]
+    pub schema_version: u32,
+    pub user_id: Uuid,
+    pub device_id: String,
+    pub salt_c: String,
     pub mnemonic_salt: String,
     #[serde(default)]
     pub password_derivation_algorithm: PasswordDerivationAlgorithm,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mnemonic_verifier: Option<String>,
     pub recovery_generation: u64,
+    pub w_mc: WrappedMasterKey,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub w_cu: Option<WrappedMasterKey>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UsbFactorPayloadV2 {
+    #[serde(default = "default_factor_payload_schema_version")]
+    pub schema_version: u32,
+    pub user_id: Uuid,
+    pub usb_id: String,
+    pub usb_secret: String,
+    pub salt_u: String,
+    pub mnemonic_salt: String,
+    #[serde(default)]
+    pub password_derivation_algorithm: PasswordDerivationAlgorithm,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mnemonic_verifier: Option<String>,
+    pub recovery_generation: u64,
+    pub w_mu: WrappedMasterKey,
+    pub w_cu: WrappedMasterKey,
+}
+
+pub type LocalFactorPayload = LocalFactorPayloadV2;
+pub type UsbFactorPayload = UsbFactorPayloadV2;

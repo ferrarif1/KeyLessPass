@@ -758,6 +758,30 @@ abstract class AppLocalizations {
   /// **'The current active version remains valid until commit.'**
   String get oldVersionRemainsActive;
 
+  /// No description provided for @rotationCreateHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a pending version first. The current active password stays valid until you commit.'**
+  String get rotationCreateHelp;
+
+  /// No description provided for @rotationPendingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'A pending version exists. Derive and test the new password in the target system, then commit only after the target password has been changed.'**
+  String get rotationPendingHelp;
+
+  /// No description provided for @derivePendingPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Derive pending password'**
+  String get derivePendingPassword;
+
+  /// No description provided for @rotationNoRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a record before starting rotation.'**
+  String get rotationNoRecord;
+
   /// No description provided for @recoverLocal.
   ///
   /// In en, this message translates to:
@@ -785,8 +809,14 @@ abstract class AppLocalizations {
   /// No description provided for @resetMnemonicHelp.
   ///
   /// In en, this message translates to:
-  /// **'Use this device and the selected USB package to set a new mnemonic. Existing derived passwords remain unchanged.'**
+  /// **'Use this computer and the selected USB package to recover with computer + USB. The old mnemonic is not required; existing derived passwords remain unchanged.'**
   String get resetMnemonicHelp;
+
+  /// No description provided for @usbLostHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this computer and your mnemonic to rebuild the USB package. A single computer factor alone cannot recover the master secret.'**
+  String get usbLostHelp;
 
   /// No description provided for @mnemonicResetComplete.
   ///
@@ -815,7 +845,7 @@ abstract class AppLocalizations {
   /// No description provided for @newDeviceMode.
   ///
   /// In en, this message translates to:
-  /// **'New device'**
+  /// **'Replace computer'**
   String get newDeviceMode;
 
   /// No description provided for @runRecovery.
@@ -1183,6 +1213,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create factors'**
   String get createFactors;
+
+  /// No description provided for @setupStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start on this computer'**
+  String get setupStartTitle;
+
+  /// No description provided for @setupStartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new profile or recover an existing profile with your USB package and mnemonic.'**
+  String get setupStartSubtitle;
+
+  /// No description provided for @createNewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new profile'**
+  String get createNewProfile;
+
+  /// No description provided for @recoverExistingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover existing profile'**
+  String get recoverExistingProfile;
+
+  /// No description provided for @recoverLocalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use mnemonic + USB on a replacement computer. It rebuilds this computer\'s local factor and restores records from the USB backup when available.'**
+  String get recoverLocalHelp;
 
   /// No description provided for @setupLocked.
   ///

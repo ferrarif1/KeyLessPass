@@ -23,7 +23,11 @@ use crate::service::usb::{
     get_usb_cdr_status_with_provider, restore_cdr_from_usb_with_provider,
     sync_cdr_to_usb_with_provider, verify_usb_package, UsbCdrRequest, VerifyUsbPackageRequest,
 };
-use crate::storage::{usb_package_file, CdrStore, StoragePaths};
+use crate::storage::{
+    create_local_factor_package, create_usb_factor_package, load_local_factor_payload,
+    load_usb_factor_payload, read_usb_factor_package, usb_package_file, write_local_factor_package,
+    write_usb_factor_package, CdrStore, StoragePaths,
+};
 use tempfile::TempDir;
 use uuid::Uuid;
 
@@ -83,18 +87,58 @@ fn setup_with_algorithm(password_derivation_algorithm: PasswordDerivationAlgorit
 }
 
 fn derive(harness: &Harness) -> String {
+    derive_with_mnemonic(harness, MNEMONIC).unwrap()
+}
+
+fn derive_with_mnemonic(
+    harness: &Harness,
+    mnemonic: &str,
+) -> Result<String, crate::error::KeylessPassError> {
     derive_password_with_provider(
         &harness.paths,
         &harness.provider,
         DerivePasswordRequest {
             record_id: harness.record_id,
             version: Some(harness.version),
-            mnemonic: MNEMONIC.to_string(),
+            mnemonic: mnemonic.to_string(),
             usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
         },
     )
-    .unwrap()
-    .password
+    .map(|response| response.password)
+}
+
+fn rewrite_local_payload(
+    harness: &Harness,
+    mutate: impl FnOnce(&mut crate::domain::LocalFactorPayload),
+) {
+    let (package, mut payload) =
+        load_local_factor_payload(&harness.provider, &harness.paths.local_factor_path).unwrap();
+    mutate(&mut payload);
+    let package = create_local_factor_package(
+        &harness.provider,
+        package.user_id,
+        &package.device_id,
+        &package.platform,
+        &payload,
+    )
+    .unwrap();
+    write_local_factor_package(&harness.paths.local_factor_path, &package).unwrap();
+}
+
+fn rewrite_usb_payload(
+    harness: &Harness,
+    mutate: impl FnOnce(&mut crate::domain::UsbFactorPayload),
+) {
+    let (package, mut payload) = load_usb_factor_payload(harness.usb_dir.path()).unwrap();
+    mutate(&mut payload);
+    let package = create_usb_factor_package(
+        package.user_id,
+        &package.device_id,
+        &package.platform,
+        &payload,
+    )
+    .unwrap();
+    write_usb_factor_package(harness.usb_dir.path(), &package).unwrap();
 }
 
 #[test]
@@ -118,6 +162,25 @@ fn factor_packages_and_recovery_metadata_include_schema_versions() {
 }
 
 #[test]
+fn factor_payloads_do_not_persist_plaintext_master_key() {
+    let harness = setup();
+    let (_, local_payload) =
+        load_local_factor_payload(&harness.provider, &harness.paths.local_factor_path).unwrap();
+    let (_, usb_payload) = load_usb_factor_payload(harness.usb_dir.path()).unwrap();
+
+    let local_json = serde_json::to_value(local_payload).unwrap();
+    let usb_json = serde_json::to_value(usb_payload).unwrap();
+    assert!(local_json.get("kMaster").is_none());
+    assert!(local_json.get("usbSecret").is_none());
+    assert!(local_json.get("deviceSecret").is_none());
+    assert!(usb_json.get("kMaster").is_none());
+    assert!(usb_json.get("deviceSecret").is_none());
+    assert!(local_json.get("wMc").is_some());
+    assert!(usb_json.get("wMu").is_some());
+    assert!(usb_json.get("wCu").is_some());
+}
+
+#[test]
 fn usb_package_authentication_verification_rejects_wrong_mnemonic() {
     let harness = setup();
     let ok = verify_usb_package(VerifyUsbPackageRequest {
@@ -132,6 +195,19 @@ fn usb_package_authentication_verification_rejects_wrong_mnemonic() {
         usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
     })
     .is_err());
+}
+
+#[test]
+fn legacy_usb_package_returns_mnemonic_encrypted_recovery_error() {
+    let harness = setup();
+    let mut package = read_usb_factor_package(harness.usb_dir.path()).unwrap();
+    package.schema_version = crate::domain::LEGACY_FACTOR_PACKAGE_SCHEMA_VERSION;
+    write_usb_factor_package(harness.usb_dir.path(), &package).unwrap();
+
+    let err = load_usb_factor_payload(harness.usb_dir.path()).unwrap_err();
+    assert!(err.to_string().contains(
+        "legacy factor package stores master-key payload and does not support strict pairwise-wrapper recovery"
+    ));
 }
 
 #[test]
@@ -188,6 +264,112 @@ fn recovery_requires_two_valid_factors() {
 }
 
 #[test]
+fn mnemonic_and_usb_can_rebuild_local_package() {
+    let harness = setup();
+    let before = derive(&harness);
+    let usb_path = harness.usb_dir.path().to_string_lossy().to_string();
+    sync_cdr_to_usb_with_provider(
+        &harness.paths,
+        &harness.provider,
+        UsbCdrRequest {
+            usb_path: usb_path.clone(),
+        },
+    )
+    .unwrap();
+
+    let new_app_dir = tempfile::tempdir().unwrap();
+    let new_paths = StoragePaths::from_app_dir(new_app_dir.path().to_path_buf());
+    let new_provider =
+        FallbackPlatformFactorProvider::new(new_paths.app_dir.clone(), "replacement-device");
+    recover_local_with_provider(
+        &new_paths,
+        &new_provider,
+        RecoverLocalRequest {
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: usb_path.clone(),
+        },
+    )
+    .unwrap();
+
+    let after = derive_password_with_provider(
+        &new_paths,
+        &new_provider,
+        DerivePasswordRequest {
+            record_id: harness.record_id,
+            version: Some(harness.version),
+            mnemonic: MNEMONIC.to_string(),
+            usb_path,
+        },
+    )
+    .unwrap()
+    .password;
+    assert_eq!(before, after);
+}
+
+#[test]
+fn mnemonic_and_local_can_rebuild_usb_package() {
+    let harness = setup();
+    let before = derive(&harness);
+    let usb_file = usb_package_file(harness.usb_dir.path());
+    std::fs::remove_file(&usb_file).unwrap();
+
+    recover_usb_with_provider(
+        &harness.paths,
+        &harness.provider,
+        RecoverUsbRequest {
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap();
+
+    assert!(usb_file.exists());
+    assert_eq!(before, derive(&harness));
+}
+
+#[test]
+fn single_factors_do_not_recover_master_key() {
+    let only_usb = setup();
+    std::fs::remove_file(&only_usb.paths.local_factor_path).unwrap();
+    assert!(reset_mnemonic_with_provider(
+        &only_usb.paths,
+        &only_usb.provider,
+        ResetMnemonicRequest {
+            new_mnemonic: NEW_MNEMONIC.to_string(),
+            usb_path: only_usb.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+
+    let only_local = setup();
+    std::fs::remove_file(usb_package_file(only_local.usb_dir.path())).unwrap();
+    assert!(reset_mnemonic_with_provider(
+        &only_local.paths,
+        &only_local.provider,
+        ResetMnemonicRequest {
+            new_mnemonic: NEW_MNEMONIC.to_string(),
+            usb_path: only_local.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+
+    let mnemonic_only_app = tempfile::tempdir().unwrap();
+    let mnemonic_only_usb = tempfile::tempdir().unwrap();
+    let mnemonic_only_paths = StoragePaths::from_app_dir(mnemonic_only_app.path().to_path_buf());
+    let mnemonic_only_provider =
+        FallbackPlatformFactorProvider::new(mnemonic_only_paths.app_dir.clone(), "mnemonic-only");
+    assert!(recover_local_with_provider(
+        &mnemonic_only_paths,
+        &mnemonic_only_provider,
+        RecoverLocalRequest {
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: mnemonic_only_usb.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+}
+
+#[test]
 fn local_and_usb_can_reset_mnemonic_without_changing_passwords() {
     let harness = setup();
     let before = derive(&harness);
@@ -227,6 +409,106 @@ fn local_and_usb_can_reset_mnemonic_without_changing_passwords() {
         },
     )
     .is_err());
+}
+
+#[test]
+fn copied_usb_without_matching_local_factor_cannot_use_cu_wrapper() {
+    let source = setup();
+    let other = setup();
+    let copied_usb = tempfile::tempdir().unwrap();
+    std::fs::copy(
+        usb_package_file(source.usb_dir.path()),
+        usb_package_file(copied_usb.path()),
+    )
+    .unwrap();
+
+    let err = reset_mnemonic_with_provider(
+        &other.paths,
+        &other.provider,
+        ResetMnemonicRequest {
+            new_mnemonic: NEW_MNEMONIC.to_string(),
+            usb_path: copied_usb.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap_err();
+    assert!(
+        err.to_string().contains("does not match")
+            || err.to_string().contains("user mismatch")
+            || err.to_string().contains("managed computer")
+    );
+}
+
+#[test]
+fn tampering_pairwise_wrappers_and_bound_ids_fails() {
+    let tamper_w_mc = setup();
+    rewrite_local_payload(&tamper_w_mc, |payload| {
+        payload.w_mc.tag = crate::crypto::b64_encode(&[0_u8; 16]);
+    });
+    assert!(derive_with_mnemonic(&tamper_w_mc, MNEMONIC).is_err());
+
+    let tamper_w_mu = setup();
+    rewrite_usb_payload(&tamper_w_mu, |payload| {
+        payload.w_mu.nonce = crate::crypto::b64_encode(&[1_u8; 12]);
+    });
+    assert!(derive_with_mnemonic(&tamper_w_mu, MNEMONIC).is_err());
+
+    let tamper_w_cu = setup();
+    rewrite_usb_payload(&tamper_w_cu, |payload| {
+        payload.w_cu.ciphertext = crate::crypto::b64_encode(&[2_u8; 32]);
+    });
+    assert!(reset_mnemonic_with_provider(
+        &tamper_w_cu.paths,
+        &tamper_w_cu.provider,
+        ResetMnemonicRequest {
+            new_mnemonic: NEW_MNEMONIC.to_string(),
+            usb_path: tamper_w_cu.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .is_err());
+
+    let tamper_usb_id = setup();
+    rewrite_usb_payload(&tamper_usb_id, |payload| {
+        payload.usb_id = uuid::Uuid::new_v4().to_string();
+    });
+    assert!(derive_with_mnemonic(&tamper_usb_id, MNEMONIC).is_err());
+
+    let tamper_salt_c = setup();
+    rewrite_local_payload(&tamper_salt_c, |payload| {
+        payload.salt_c = crate::crypto::b64_encode(&[3_u8; 16]);
+    });
+    assert!(derive_with_mnemonic(&tamper_salt_c, MNEMONIC).is_err());
+
+    let tamper_salt_u = setup();
+    rewrite_usb_payload(&tamper_salt_u, |payload| {
+        payload.salt_u = crate::crypto::b64_encode(&[4_u8; 16]);
+    });
+    assert!(derive_with_mnemonic(&tamper_salt_u, MNEMONIC).is_err());
+
+    let tamper_device_id = setup();
+    let (package, payload) = load_usb_factor_payload(tamper_device_id.usb_dir.path()).unwrap();
+    let package = create_usb_factor_package(
+        package.user_id,
+        "copied-device-id",
+        &package.platform,
+        &payload,
+    )
+    .unwrap();
+    write_usb_factor_package(tamper_device_id.usb_dir.path(), &package).unwrap();
+    assert!(derive_with_mnemonic(&tamper_device_id, MNEMONIC).is_err());
+
+    let tamper_user_id = setup();
+    let (package, mut payload) = load_usb_factor_payload(tamper_user_id.usb_dir.path()).unwrap();
+    let other_user_id = uuid::Uuid::new_v4();
+    payload.user_id = other_user_id;
+    let package = create_usb_factor_package(
+        other_user_id,
+        &package.device_id,
+        &package.platform,
+        &payload,
+    )
+    .unwrap();
+    write_usb_factor_package(tamper_user_id.usb_dir.path(), &package).unwrap();
+    assert!(derive_with_mnemonic(&tamper_user_id, MNEMONIC).is_err());
 }
 
 #[test]

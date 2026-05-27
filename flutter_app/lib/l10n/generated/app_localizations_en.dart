@@ -350,6 +350,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'The current active version remains valid until commit.';
 
   @override
+  String get rotationCreateHelp =>
+      'Create a pending version first. The current active password stays valid until you commit.';
+
+  @override
+  String get rotationPendingHelp =>
+      'A pending version exists. Derive and test the new password in the target system, then commit only after the target password has been changed.';
+
+  @override
+  String get derivePendingPassword => 'Derive pending password';
+
+  @override
+  String get rotationNoRecord => 'Select a record before starting rotation.';
+
+  @override
   String get recoverLocal => 'Recover this device';
 
   @override
@@ -363,7 +377,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resetMnemonicHelp =>
-      'Use this device and the selected USB package to set a new mnemonic. Existing derived passwords remain unchanged.';
+      'Use this computer and the selected USB package to recover with computer + USB. The old mnemonic is not required; existing derived passwords remain unchanged.';
+
+  @override
+  String get usbLostHelp =>
+      'Use this computer and your mnemonic to rebuild the USB package. A single computer factor alone cannot recover the master secret.';
 
   @override
   String get mnemonicResetComplete => 'Mnemonic reset completed.';
@@ -379,7 +397,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usbLostMode => 'USB lost';
 
   @override
-  String get newDeviceMode => 'New device';
+  String get newDeviceMode => 'Replace computer';
 
   @override
   String get runRecovery => 'Run recovery';
@@ -573,6 +591,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createFactors => 'Create factors';
+
+  @override
+  String get setupStartTitle => 'Start on this computer';
+
+  @override
+  String get setupStartSubtitle =>
+      'Create a new profile or recover an existing profile with your USB package and mnemonic.';
+
+  @override
+  String get createNewProfile => 'Create new profile';
+
+  @override
+  String get recoverExistingProfile => 'Recover existing profile';
+
+  @override
+  String get recoverLocalHelp =>
+      'Use mnemonic + USB on a replacement computer. It rebuilds this computer\'s local factor and restores records from the USB backup when available.';
 
   @override
   String get setupLocked => 'Setup is locked';

@@ -2,9 +2,10 @@ use crate::crypto::{encoder, kdf};
 use crate::domain::CredentialDescriptionRecord;
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
-use crate::storage::{
-    load_local_factor_payload, load_usb_factor_payload, read_config, CdrStore, StoragePaths,
+use crate::service::factor_keys::{
+    load_local_context, load_usb_context, master_key_from_all_factors, remember_master_key,
 };
+use crate::storage::{read_config, CdrStore, StoragePaths};
 use chrono::{DateTime, Duration, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -46,42 +47,39 @@ pub fn derive_password_with_provider(
     }
 
     let config = read_config(paths)?;
-    let (_, local_payload) = load_local_factor_payload(provider, &config.local_factor_path)?;
-    let (_, usb_payload) = load_usb_factor_payload(&request.mnemonic, &request.usb_path)?;
-
-    if local_payload.k_master != usb_payload.k_master {
+    let local = load_local_context(provider, &config.local_factor_path)?;
+    let usb = load_usb_context(&request.usb_path)?;
+    if local.package.user_id != config.user_id || local.package.device_id != config.device_id {
         return Err(KeylessPassError::Integrity(
-            "local and USB master key mismatch".to_string(),
+            "local factor package does not match this device".to_string(),
         ));
     }
-    if local_payload.mnemonic_salt != usb_payload.mnemonic_salt {
+    if usb.package.user_id != config.user_id || usb.package.device_id != config.device_id {
+        return Err(KeylessPassError::Integrity(
+            "USB factor package does not match this managed computer".to_string(),
+        ));
+    }
+    if local.payload.mnemonic_salt != usb.payload.mnemonic_salt {
         return Err(KeylessPassError::Integrity(
             "local and USB mnemonic salt mismatch".to_string(),
         ));
     }
 
-    let master_key = crate::crypto::b64_decode(&local_payload.k_master)?;
+    let master_key = master_key_from_all_factors(&request.mnemonic, &local, &usb)?;
+    remember_master_key(&config, &master_key)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let record = store.get(request.record_id, request.version)?;
     record.verify_mac(&master_key)?;
 
-    let device_secret = crate::crypto::b64_decode(&local_payload.device_secret)?;
-    let f_c = kdf::derive_platform_factor(
-        &device_secret,
-        &config.device_id,
-        &config.user_id,
-        &config.platform,
-    )?;
-    let f_u = crate::crypto::b64_decode(&usb_payload.usb_secret)?;
     let algorithm = config.password_derivation_algorithm;
-    if algorithm != local_payload.password_derivation_algorithm
-        || algorithm != usb_payload.password_derivation_algorithm
+    if algorithm != local.payload.password_derivation_algorithm
+        || algorithm != usb.payload.password_derivation_algorithm
     {
         return Err(KeylessPassError::Integrity(
             "derivation algorithm metadata mismatch".to_string(),
         ));
     }
-    let derivation_key = kdf::derive_password_root_from_master(&master_key, &f_c, &f_u)?;
+    let derivation_key = kdf::derive_password_root_from_master(&master_key, &local.f_c, &usb.f_u)?;
     let service_secret = kdf::derive_service_secret_with_algorithm(
         algorithm,
         &derivation_key,

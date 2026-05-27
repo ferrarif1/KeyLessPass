@@ -1,6 +1,7 @@
 pub mod credentials;
 pub mod derive;
 pub mod enrollment;
+pub(crate) mod factor_keys;
 pub mod mnemonic;
 pub mod recovery;
 pub mod rotation;

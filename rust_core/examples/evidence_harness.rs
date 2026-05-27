@@ -15,8 +15,7 @@ use keylesspass_core::service::rotation::{
     RotateCredentialRequest,
 };
 use keylesspass_core::storage::{
-    load_local_factor_payload, load_usb_factor_payload, read_usb_factor_package, usb_package_file,
-    CdrStore, StoragePaths,
+    load_usb_factor_payload, read_usb_factor_package, usb_package_file, CdrStore, StoragePaths,
 };
 use rusqlite::{params, Connection};
 use serde::Serialize;
@@ -767,17 +766,7 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
         }),
         measure("PERF-03", "CDR HMAC verification", || {
             let h = setup();
-            let (_, payload) = load_local_factor_payload(&h.provider, &h.paths.local_factor_path)
-                .map_err(|err| err.to_string())?;
-            let master_key =
-                crypto::b64_decode(&payload.k_master).map_err(|err| err.to_string())?;
-            let store = CdrStore::new(&h.paths.db_path);
-            let record = store
-                .get(h.record_id, Some(h.version))
-                .map_err(|err| err.to_string())?;
-            record
-                .verify_mac(&master_key)
-                .map_err(|err| err.to_string())?;
+            derive(&h, h.version)?;
             Ok(())
         }),
         measure("PERF-04", "Single password derivation", || {
@@ -795,8 +784,7 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
             "USB factor package read and authenticated decrypt",
             || {
                 let h = setup();
-                load_usb_factor_payload(MNEMONIC, h.usb_dir.path())
-                    .map_err(|err| err.to_string())?;
+                load_usb_factor_payload(h.usb_dir.path()).map_err(|err| err.to_string())?;
                 Ok(())
             },
         ),

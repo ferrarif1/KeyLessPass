@@ -233,7 +233,6 @@ fn random_index(max: usize, rng: &mut OsRng) -> usize {
 mod tests {
     use super::*;
     use crate::crypto::kdf::{derive_mnemonic_factor, normalize_mnemonic};
-    use uuid::Uuid;
 
     #[test]
     fn generates_english_and_chinese_mnemonics() {
@@ -267,10 +266,9 @@ mod tests {
 
     #[test]
     fn chinese_mnemonic_derivation_is_stable() {
-        let user_id = Uuid::new_v4();
         let salt = [7_u8; 16];
-        let a = derive_mnemonic_factor("山河 星辰 清泉", &user_id, &salt).unwrap();
-        let b = derive_mnemonic_factor("山河　星辰  清泉", &user_id, &salt).unwrap();
+        let a = derive_mnemonic_factor("山河 星辰 清泉", &salt).unwrap();
+        let b = derive_mnemonic_factor("山河　星辰  清泉", &salt).unwrap();
         assert_eq!(a, b);
     }
 }

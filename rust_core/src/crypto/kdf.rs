@@ -7,6 +7,7 @@ use sha2::Sha256;
 use sha2::{Digest, Sha256 as Sha256Digest};
 use unicode_normalization::UnicodeNormalization;
 use uuid::Uuid;
+use zeroize::Zeroize;
 
 use crate::domain::PasswordDerivationAlgorithm;
 
@@ -48,17 +49,32 @@ pub fn normalize_mnemonic(mnemonic: &str) -> String {
         .to_lowercase()
 }
 
-pub fn derive_mnemonic_factor(mnemonic: &str, user_id: &Uuid, salt: &[u8]) -> Result<[u8; 32]> {
+pub fn derive_mnemonic_factor(mnemonic: &str, salt: &[u8]) -> Result<[u8; 32]> {
     let normalized = normalize_mnemonic(mnemonic);
     if normalized.is_empty() {
         return Err(KeylessPassError::MissingFactor(
             "mnemonic phrase is empty".to_string(),
         ));
     }
-    let mut ikm = Vec::with_capacity(normalized.len() + 16);
-    ikm.extend_from_slice(normalized.as_bytes());
-    ikm.extend_from_slice(user_id.as_bytes());
-    hkdf_32(&ikm, salt, b"KeylessPass mnemonic factor")
+    let params = Argon2Params::new(
+        ARGON2ID_MEMORY_KIB,
+        ARGON2ID_ITERATIONS,
+        ARGON2ID_PARALLELISM,
+        Some(32),
+    )
+    .map_err(|_| KeylessPassError::Crypto("Argon2id parameter error".to_string()))?;
+    let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
+    let mut stretched = [0_u8; 32];
+    argon2
+        .hash_password_into(
+            normalized.as_bytes(),
+            &mnemonic_factor_kdf_salt(salt),
+            &mut stretched,
+        )
+        .map_err(|_| KeylessPassError::Crypto("mnemonic Argon2id derivation failed".to_string()))?;
+    let factor = hkdf_32(&stretched, salt, b"KeyLessPass mnemonic factor v2");
+    stretched.zeroize();
+    factor
 }
 
 pub fn derive_mnemonic_verifier(f_m: &[u8]) -> Result<String> {
@@ -75,17 +91,36 @@ pub fn derive_platform_factor(
     device_secret: &[u8],
     device_id: &str,
     user_id: &Uuid,
-    platform: &str,
+    salt: &[u8],
 ) -> Result<[u8; 32]> {
     let mut ikm = Vec::new();
     ikm.extend_from_slice(device_secret);
     ikm.extend_from_slice(device_id.as_bytes());
     ikm.extend_from_slice(user_id.as_bytes());
-    ikm.extend_from_slice(platform.as_bytes());
+    hkdf_32(&ikm, salt, b"KeyLessPass computer factor v2")
+}
+
+pub fn derive_usb_factor(
+    usb_secret: &[u8],
+    usb_id: &str,
+    user_id: &Uuid,
+    salt: &[u8],
+) -> Result<[u8; 32]> {
+    let mut ikm = Vec::new();
+    ikm.extend_from_slice(usb_secret);
+    ikm.extend_from_slice(usb_id.as_bytes());
+    ikm.extend_from_slice(user_id.as_bytes());
+    hkdf_32(&ikm, salt, b"KeyLessPass USB factor v2")
+}
+
+pub fn derive_pairwise_wrap_key(factor_a: &[u8], factor_b: &[u8], label: &str) -> Result<[u8; 32]> {
+    let mut ikm = Vec::with_capacity(factor_a.len() + factor_b.len());
+    ikm.extend_from_slice(factor_a);
+    ikm.extend_from_slice(factor_b);
     hkdf_32(
         &ikm,
-        b"KeylessPass platform factor salt",
-        b"KeylessPass platform factor",
+        b"KeyLessPass pairwise wrapper salt v2",
+        label.as_bytes(),
     )
 }
 
@@ -99,14 +134,10 @@ pub fn derive_password_root(f_m: &[u8], f_c: &[u8], f_u: &[u8]) -> Result<[u8; 3
 
 pub fn derive_password_root_from_master(
     master_key: &[u8],
-    f_c: &[u8],
-    f_u: &[u8],
+    _f_c: &[u8],
+    _f_u: &[u8],
 ) -> Result<[u8; 32]> {
-    let mut ikm = Vec::with_capacity(master_key.len() + f_c.len() + f_u.len());
-    ikm.extend_from_slice(master_key);
-    ikm.extend_from_slice(f_c);
-    ikm.extend_from_slice(f_u);
-    hkdf_32(&ikm, b"", b"KeyLessPass v2 derivation key")
+    hkdf_32(master_key, b"", b"KeyLessPass v2 derivation key")
 }
 
 pub fn derive_service_secret(
@@ -199,12 +230,11 @@ fn service_kdf_salt(path_material: &[u8]) -> [u8; 32] {
     hasher.finalize().into()
 }
 
-pub fn derive_usb_package_key(f_m: &[u8]) -> Result<[u8; 32]> {
-    hkdf_32(
-        f_m,
-        b"KeylessPass USB package salt",
-        b"USB factor package AEAD key",
-    )
+fn mnemonic_factor_kdf_salt(salt: &[u8]) -> [u8; 32] {
+    let mut hasher = Sha256Digest::new();
+    hasher.update(b"KeyLessPass mnemonic Argon2id salt v2");
+    hasher.update(salt);
+    hasher.finalize().into()
 }
 
 pub fn derive_fallback_package_key(secret: &[u8], label: &[u8]) -> Result<[u8; 32]> {

@@ -1,10 +1,12 @@
-use crate::crypto::{b64_decode, b64_encode};
+use crate::crypto::b64_encode;
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
+use crate::service::factor_keys::{
+    cached_master_key_with_local_factor, load_usb_context, master_key_from_mnemonic_usb,
+};
 use crate::storage::{
-    load_local_factor_payload, load_usb_factor_payload, read_config, read_usb_factor_package,
-    usb_cdr_backup_file, usb_package_file, verify_usb_cdr_backup, write_usb_cdr_backup, CdrStore,
-    StoragePaths,
+    read_usb_factor_package, usb_cdr_backup_file, usb_package_file, verify_usb_cdr_backup,
+    write_usb_cdr_backup, CdrStore, StoragePaths,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -64,13 +66,13 @@ pub struct UsbCdrSyncResponse {
 pub fn verify_usb_package(
     request: VerifyUsbPackageRequest,
 ) -> std::result::Result<VerifyUsbPackageResponse, String> {
-    let (package, _) =
-        load_usb_factor_payload(&request.mnemonic, &request.usb_path).map_err(String::from)?;
+    let usb = load_usb_context(&request.usb_path).map_err(String::from)?;
+    let _ = master_key_from_mnemonic_usb(&request.mnemonic, &usb).map_err(String::from)?;
     Ok(VerifyUsbPackageResponse {
         valid: true,
         package_path: usb_package_file(&request.usb_path),
-        user_id: package.user_id.to_string(),
-        device_id: package.device_id,
+        user_id: usb.package.user_id.to_string(),
+        device_id: usb.package.device_id,
     })
 }
 
@@ -372,16 +374,14 @@ fn local_cdr_context(
     Vec<u8>,
     Vec<crate::domain::CredentialDescriptionRecord>,
 )> {
-    let config = read_config(paths)?;
-    let (_, local_payload) = load_local_factor_payload(provider, &config.local_factor_path)?;
-    let master_key = b64_decode(&local_payload.k_master)?;
+    let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     store.init()?;
     let records = store.list_all()?;
     for record in &records {
         record.verify_mac(&master_key)?;
     }
-    Ok((config.user_id, master_key, records))
+    Ok((config.user_id, master_key.to_vec(), records))
 }
 
 fn records_digest(records: &[crate::domain::CredentialDescriptionRecord]) -> Result<String> {
