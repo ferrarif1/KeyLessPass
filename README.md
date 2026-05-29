@@ -122,7 +122,7 @@ flowchart LR
     KM --> D["Selected KDF + deterministic encoding"]
     C["CDR stable fields<br/>recordSeq + recordId + version + salt + Rule"] --> D
     D --> P["Service password<br/>shown briefly / clipboard timeout"]
-    FU --> U["USB stores<br/>USB factor package<br/>optional CDR replica<br/>no plaintext passwords<br/>no mnemonic<br/>no plaintext Kmaster"]
+    FU --> U["USB stores<br/>USB factor package<br/>optional CDR replica<br/"]
     C --> U
 ```
 
