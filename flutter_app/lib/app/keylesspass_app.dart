@@ -401,6 +401,7 @@ class _HomeWindowState extends State<_HomeWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
     return CallbackShortcuts(
       bindings: {
         SingleActivator(LogicalKeyboardKey.keyN,
@@ -422,7 +423,7 @@ class _HomeWindowState extends State<_HomeWindow> {
           body: Row(
             children: [
               _navigation(),
-              const VerticalDivider(width: 1, color: KpColors.hairline),
+              VerticalDivider(width: 1, color: colors.hairline),
               Expanded(child: _content()),
             ],
           ),
@@ -527,10 +528,11 @@ class _HomeWindowState extends State<_HomeWindow> {
 
   Widget _navTile(_Section section, IconData icon, String label) {
     final selected = _navSelected(section);
+    final colors = context.kp;
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Material(
-        color: selected ? KpColors.surfaceCard : Colors.transparent,
+        color: selected ? colors.surfaceElevated : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         child: ListTile(
           selected: selected,
@@ -774,6 +776,7 @@ class _HomeWindowState extends State<_HomeWindow> {
 
   Widget _recordRow(_RecordVersionGroup group) {
     final t = context.t;
+    final colors = context.kp;
     final record = group.current;
     final previous = group.previous;
     final selected = record.recordId == _selected?.recordId;
@@ -782,9 +785,9 @@ class _HomeWindowState extends State<_HomeWindow> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: selected ? KpColors.surfaceElevated : KpColors.surfaceSoft,
+          color: selected ? colors.surfaceElevated : colors.surfaceSoft,
           border: Border.all(
-              color: selected ? KpColors.primary : KpColors.hairlineStrong),
+              color: selected ? colors.primaryStrong : colors.hairlineStrong),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -793,9 +796,9 @@ class _HomeWindowState extends State<_HomeWindow> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 4),
-                  child: Icon(Icons.key_rounded, color: KpColors.primary),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Icon(Icons.key_rounded, color: colors.primaryStrong),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -868,11 +871,12 @@ class _HomeWindowState extends State<_HomeWindow> {
 
   Widget _recordVersionDetails(String label, CredentialRecord record) {
     final t = context.t;
+    final colors = context.kp;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: KpColors.surfaceCard,
-        border: Border.all(color: KpColors.hairline),
+        color: colors.surfaceCard,
+        border: Border.all(color: colors.hairline),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -895,6 +899,7 @@ class _HomeWindowState extends State<_HomeWindow> {
   }
 
   Widget _detailWrap(List<_DetailItem> items) {
+    final colors = context.kp;
     return Wrap(
       spacing: 16,
       runSpacing: 8,
@@ -910,9 +915,9 @@ class _HomeWindowState extends State<_HomeWindow> {
                 const SizedBox(height: 3),
                 SelectableText(
                   item.value.isEmpty ? '-' : item.value,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontFamily: 'monospace',
-                      color: KpColors.bodyStrong,
+                      color: colors.bodyStrong,
                       fontSize: 13),
                 ),
               ],
@@ -2369,6 +2374,7 @@ class _DerivePageState extends State<_DerivePage> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final colors = context.kp;
     return Padding(
       padding: const EdgeInsets.all(28),
       child: ListView(
@@ -2399,8 +2405,8 @@ class _DerivePageState extends State<_DerivePage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                        color: KpColors.surfaceSoft,
-                        border: Border.all(color: KpColors.primary),
+                        color: colors.surfaceSoft,
+                        border: Border.all(color: colors.primaryStrong),
                         borderRadius: BorderRadius.circular(8)),
                     child: SelectableText(
                         _show ? _password! : '••••••••••••••••',
@@ -2729,7 +2735,8 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
 
   Widget _pathCard(AppLocalizations t, _RecoveryMode mode) {
     final selected = _mode == mode;
-    final borderColor = selected ? KpColors.primary : KpColors.hairlineStrong;
+    final colors = context.kp;
+    final borderColor = selected ? colors.primaryStrong : colors.hairlineStrong;
     return InkWell(
       borderRadius: BorderRadius.circular(8),
       onTap: _busy ? null : () => setState(() => _mode = mode),
@@ -2739,7 +2746,7 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: borderColor),
-          color: selected ? KpColors.surfaceSoft : Colors.transparent,
+          color: selected ? colors.surfaceSoft : Colors.transparent,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

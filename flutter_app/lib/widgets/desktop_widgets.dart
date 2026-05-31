@@ -10,12 +10,13 @@ class SectionPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: accent ? KpColors.primary : KpColors.surfaceCard,
-        border: Border.all(
-            color: accent ? KpColors.primary : KpColors.hairlineStrong),
+        color: accent ? colors.primary : colors.surfaceCard,
+        border:
+            Border.all(color: accent ? colors.primary : colors.hairlineStrong),
         borderRadius: BorderRadius.circular(8),
       ),
       child: child,
@@ -32,6 +33,7 @@ class WorkflowStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -40,23 +42,22 @@ class WorkflowStepper extends StatelessWidget {
           Chip(
             avatar: CircleAvatar(
               backgroundColor:
-                  index <= current ? KpColors.canvas : KpColors.surfaceElevated,
+                  index <= current ? KpColors.canvas : colors.surfaceElevated,
               child: Text(
                 '${index + 1}',
                 style: TextStyle(
-                    color: index <= current ? KpColors.primary : KpColors.muted,
+                    color: index <= current ? colors.primary : colors.muted,
                     fontSize: 12),
               ),
             ),
             label: Text(steps[index]),
             labelStyle: TextStyle(
-                color: index <= current ? KpColors.canvas : KpColors.body),
+                color: index <= current ? KpColors.canvas : colors.body),
             backgroundColor:
-                index <= current ? KpColors.primary : KpColors.surfaceCard,
+                index <= current ? colors.primary : colors.surfaceCard,
             side: BorderSide(
-                color: index <= current
-                    ? KpColors.primary
-                    : KpColors.hairlineStrong),
+                color:
+                    index <= current ? colors.primary : colors.hairlineStrong),
           ),
       ],
     );
@@ -71,6 +72,7 @@ class InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -84,9 +86,9 @@ class InfoRow extends StatelessWidget {
           Expanded(
             child: SelectableText(
               value.isEmpty ? '-' : value,
-              style: const TextStyle(
+              style: TextStyle(
                   fontFamily: 'monospace',
-                  color: KpColors.bodyStrong,
+                  color: colors.bodyStrong,
                   fontSize: 13),
             ),
           ),
@@ -112,16 +114,17 @@ class DangerPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: KpColors.surfaceCard,
-        border: Border.all(color: KpColors.error),
+        color: colors.dangerSurface,
+        border: Border.all(color: colors.error),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: KpColors.error),
+          Icon(Icons.warning_amber_rounded, color: colors.error),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -193,12 +196,14 @@ class SignalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
+    final valueTone = colors.resolveTone(tone);
     return Container(
       constraints: const BoxConstraints(minHeight: 96),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: KpColors.surfaceSoft,
-        border: Border.all(color: KpColors.hairline),
+        color: colors.surfaceSoft,
+        border: Border.all(color: colors.hairline),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -214,7 +219,7 @@ class SignalTile extends StatelessWidget {
               value,
               maxLines: 1,
               style: TextStyle(
-                  color: tone,
+                  color: valueTone,
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                   height: 1),
@@ -238,11 +243,13 @@ class StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
+    final dotTone = colors.resolveTone(tone);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: KpColors.surfaceCard,
-        border: Border.all(color: KpColors.hairlineStrong),
+        color: colors.surfaceCard,
+        border: Border.all(color: colors.hairlineStrong),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -251,7 +258,7 @@ class StatusPill extends StatelessWidget {
           Container(
             width: 7,
             height: 7,
-            decoration: BoxDecoration(color: tone, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: dotTone, shape: BoxShape.circle),
           ),
           const SizedBox(width: 8),
           Flexible(
@@ -262,7 +269,7 @@ class StatusPill extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .labelMedium
-                  ?.copyWith(color: KpColors.bodyStrong),
+                  ?.copyWith(color: colors.bodyStrong),
             ),
           ),
         ],
@@ -285,18 +292,20 @@ class InlineNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.kp;
+    final iconTone = colors.resolveTone(tone);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: KpColors.surfaceSoft,
-        border: Border.all(color: KpColors.hairline),
+        color: colors.surfaceSoft,
+        border: Border.all(color: colors.hairline),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: tone, size: 18),
+          Icon(icon, color: iconTone, size: 18),
           const SizedBox(width: 10),
           Expanded(child: Text(text)),
         ],
