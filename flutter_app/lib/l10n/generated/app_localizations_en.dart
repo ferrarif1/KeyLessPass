@@ -223,9 +223,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Changing password rules requires a new version.';
 
   @override
-  String get recordDetails => 'Record details';
-
-  @override
   String get advancedDetails => 'Advanced details';
 
   @override
@@ -290,6 +287,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deriveAndCopy => 'Derive and copy';
 
   @override
+  String get deriveCurrentVersion => 'Derive current version';
+
+  @override
+  String get derivePreviousVersion => 'Derive previous version';
+
+  @override
+  String get currentVersion => 'Current version';
+
+  @override
+  String get previousVersion => 'Previous version';
+
+  @override
+  String get normalDerivationHelp =>
+      'Normal derivation uses your mnemonic + this computer. The USB package is only needed for setup and recovery.';
+
+  @override
   String get deriveMode => 'Verification mode';
 
   @override
@@ -328,7 +341,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The displayed password is cleared when you leave this page.';
 
   @override
-  String get createPendingVersion => 'Create pending version';
+  String get createPendingVersion => 'Create new version';
+
+  @override
+  String get createNewVersion => 'Create new version';
 
   @override
   String get commitRotation => 'Commit rotation';
@@ -337,7 +353,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelPending => 'Cancel pending';
 
   @override
-  String get pendingCreated => 'Pending version created.';
+  String get pendingCreated => 'New version created.';
+
+  @override
+  String get newVersionCreated =>
+      'New current version created. The previous version remains derivable.';
 
   @override
   String get rotationCommitted => 'Rotation committed.';
@@ -347,24 +367,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get oldVersionRemainsActive =>
-      'The current active version remains valid until commit.';
+      'Keep the current and previous versions available for password derivation.';
 
   @override
   String get rotationCreateHelp =>
-      'Create a pending version first. The current active password stays valid until you commit.';
+      'Create a new current version when you need to rotate the target password. KeyLessPass keeps the previous version available for rollback checks.';
 
   @override
   String get rotationPendingHelp =>
-      'A pending version exists. Derive and test the new password in the target system, then commit only after the target password has been changed.';
+      'Use the current and previous version buttons to derive either password.';
 
   @override
-  String get derivePendingPassword => 'Derive pending password';
+  String get derivePendingPassword => 'Derive version password';
 
   @override
   String get rotationNoRecord => 'Select a record before starting rotation.';
 
   @override
-  String get recoverLocal => 'Recover this device';
+  String get recoverLocal => 'Recover this computer';
 
   @override
   String get recoverUsb => 'Rebuild USB package';
@@ -376,12 +396,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newMnemonicPhrase => 'New mnemonic phrase';
 
   @override
+  String get confirmNewMnemonicPhrase => 'Confirm new mnemonic phrase';
+
+  @override
+  String get newMnemonicMismatch =>
+      'The two new mnemonic phrases do not match.';
+
+  @override
   String get resetMnemonicHelp =>
       'Use this computer and the selected USB package to recover with computer + USB. The old mnemonic is not required; existing derived passwords remain unchanged.';
 
   @override
+  String get resetMnemonicFactorHelp =>
+      'This path uses this computer + USB package through W_CU. The old mnemonic is not required.';
+
+  @override
   String get usbLostHelp =>
       'Use this computer and your mnemonic to rebuild the USB package. A single computer factor alone cannot recover the master secret.';
+
+  @override
+  String get recoveryPathMnemonicComputer => 'Mnemonic + this computer';
+
+  @override
+  String get recoveryPathMnemonicUsb => 'Mnemonic + USB package';
+
+  @override
+  String get recoveryPathComputerUsb => 'This computer + USB package';
+
+  @override
+  String get rebuildUsbExplanation =>
+      'Use mnemonic + this computer to recover the master key through W_MC and rebuild a paired USB package.';
+
+  @override
+  String get recoverComputerExplanation =>
+      'Use mnemonic + USB package to recover the master key through W_MU and rebuild this computer\'s local factor.';
+
+  @override
+  String get resetMnemonicExplanation =>
+      'Use this computer + USB package to recover the master key through W_CU and set a new mnemonic. The old mnemonic is not required. Existing derived passwords remain unchanged.';
 
   @override
   String get mnemonicResetComplete => 'Mnemonic reset completed.';
@@ -476,7 +528,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usbHelpHint =>
-      'A standard USB drive is supported. Use the folder button if macOS asks for access.';
+      'A standard USB drive is supported. Verify checks package structure and integrity without a mnemonic; rebuild uses mnemonic + this computer.';
+
+  @override
+  String get usbFactorContainerHelp =>
+      'The USB package is a copyable factor container. It stores USB factor material and pairwise wrappers, but not plaintext service passwords or plaintext Kmaster.';
 
   @override
   String get manualUsbHint =>

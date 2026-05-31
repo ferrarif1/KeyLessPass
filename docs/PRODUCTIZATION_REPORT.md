@@ -9,15 +9,16 @@ KeyLessPass was upgraded from an early desktop build into a product-oriented Flu
 - Reworked the Flutter shell into a desktop product layout with Dashboard, Setup, Records, USB Device, Security, Settings, and About sections. Add, derive, and rotation flows are entered from Records; recovery tools are entered from USB Device.
 - Added search and status filtering for credential records.
 - Added editable metadata fields, including notes, without changing the derivation path.
-- Added two-phase rotation cancel support in Rust Core and Flutter UI.
+- Simplified rotation so creating a new current version keeps the previous version derivable for rollback checks.
 - Added macOS USB candidate detection for writable removable volumes even before a USB factor package exists.
 - Added a macOS native directory picker through `NSOpenPanel` to grant user-selected read/write access to removable USB volumes without adding a CocoaPods plugin.
-- Upgraded the USB Device page from read-only status display to device management: choose path, verify USB package authentication, and rebuild USB package.
+- Upgraded the USB Device page from read-only status display to device management: choose path, verify USB package structure/integrity without a mnemonic, and rebuild USB package with mnemonic + this computer.
 - Expanded Add Record with password-rule controls for required character classes and forbidden characters.
 - Added local English and Simplified Chinese mnemonic generation during setup, with generated phrases kept in memory only.
-- Added mnemonic reset using this device plus the paired USB package. The operation refreshes mnemonic salt/verifier and USB encryption without storing the mnemonic or changing existing derived service passwords.
+- Added paper-aligned 2-of-3 pairwise-wrapper recovery using `W_MC`, `W_MU`, and `W_CU`.
+- Added mnemonic reset using this computer plus the paired USB package through `W_CU`. The operation does not require the old mnemonic, refreshes mnemonic salt/verifier and wrappers, and does not change existing derived service passwords.
 - Added schema/package version fields to factor packages and schema version to recovery metadata while keeping legacy MAC verification compatibility.
-- Added mnemonic recovery verification for new enrollments so mnemonic + local USB rebuild rejects an incorrect mnemonic instead of creating a different derivation set.
+- Added mnemonic recovery verification for new enrollments so mnemonic + local or mnemonic + USB recovery rejects an incorrect mnemonic instead of creating a different derivation set.
 - Added a USB CDR metadata backup file with HMAC verification, local/USB consistency detection, sync local to USB, and restore local from USB.
 - Added typed-confirmation local data reset in Settings so a user can intentionally return the app to setup.
 - Replaced diagnostics placeholder with a redacted diagnostics dialog and copy action.
@@ -45,17 +46,19 @@ KeyLessPass was upgraded from an early desktop build into a product-oriented Flu
 - Left-side desktop navigation is now scroll-safe and avoids small-window overflow.
 - Dashboard shows record count, USB status, integrity status, and quick actions.
 - Records view supports search, filtering, details, derive, rotate, and metadata editing.
-- Derive view masks passwords by default, clears mnemonic input after derivation attempts, and offers this-device or USB-recovery verification mode.
+- Derive view masks passwords by default, clears mnemonic input after derivation attempts, and keeps normal derivation scoped to mnemonic + this computer. USB is reserved for setup, recovery, and factor replacement.
 - Settings exposes language, theme mode, clipboard timeout, default password length, advanced mode, diagnostics, and typed-confirmation local reset.
-- USB Device exposes factor verification, USB factor rebuild, CDR backup status, sync local to USB, restore local from USB, recovery, and mnemonic reset.
+- USB Device exposes USB package structural verification, USB factor rebuild, CDR backup status, sync local to USB, restore local from USB, three 2-of-3 recovery paths, and mnemonic reset with confirmation.
 
 ## Security Hardening
 
 - UI avoids displaying internal factor secrets, master keys, raw CDR secrets, and derived password history.
 - Derived passwords are masked by default and copied to clipboard with automatic clearing.
-- Rust Core tests cover derivation stability, metadata immutability, path-field sensitivity, CDR tamper failure, USB package tamper failure, missing factors, platform provider trait smoke tests, and rotation commit/cancel states.
-- Rust Core tests also cover factor/recovery schema fields, USB package authentication verification, and two-factor recovery behavior.
+- Rust Core tests cover derivation stability, metadata immutability, path-field sensitivity, wrapper and package tamper failure, missing factors, platform provider trait smoke tests, and current/previous version rotation behavior.
+- Rust Core tests also cover factor/recovery schema fields, USB package structural verification, and two-factor recovery behavior.
 - Rust Core tests also cover USB CDR backup sync/restore and mnemonic reset without changing derived passwords.
+- Local and USB factor payloads no longer persist plaintext `Kmaster`; the local payload does not store `usbSecret`, and the USB payload does not store `deviceSecret`.
+- V2 `encryptedPayload` is retained as a historical schema field name for base64 encoded factor payloads, not for a mnemonic-encrypted USB vault.
 - USB discovery no longer logs mount details.
 
 ## Release Preparation

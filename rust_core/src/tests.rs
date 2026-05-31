@@ -15,10 +15,7 @@ use crate::service::recovery::{
     recover_local_with_provider, recover_usb_with_provider, reset_mnemonic_with_provider,
     RecoverLocalRequest, RecoverUsbRequest, ResetMnemonicRequest,
 };
-use crate::service::rotation::{
-    cancel_rotation_with_provider, confirm_rotation_with_provider, rotate_credential_with_provider,
-    CancelRotationRequest, ConfirmRotationRequest, RotateCredentialRequest,
-};
+use crate::service::rotation::{rotate_credential_with_provider, RotateCredentialRequest};
 use crate::service::usb::{
     get_usb_cdr_status_with_provider, restore_cdr_from_usb_with_provider,
     sync_cdr_to_usb_with_provider, verify_usb_package, UsbCdrRequest, VerifyUsbPackageRequest,
@@ -181,20 +178,19 @@ fn factor_payloads_do_not_persist_plaintext_master_key() {
 }
 
 #[test]
-fn usb_package_authentication_verification_rejects_wrong_mnemonic() {
+fn usb_package_structural_verification_does_not_require_mnemonic() {
     let harness = setup();
     let ok = verify_usb_package(VerifyUsbPackageRequest {
-        mnemonic: MNEMONIC.to_string(),
         usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
     })
     .unwrap();
     assert!(ok.valid);
-
-    assert!(verify_usb_package(VerifyUsbPackageRequest {
-        mnemonic: "wrong mnemonic phrase".to_string(),
-        usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
-    })
-    .is_err());
+    assert_eq!(
+        ok.schema_version,
+        crate::domain::FACTOR_PACKAGE_SCHEMA_VERSION
+    );
+    assert!(!ok.usb_id.is_empty());
+    assert_eq!(ok.recovery_generation, 1);
 }
 
 #[test]
@@ -440,6 +436,22 @@ fn copied_usb_without_matching_local_factor_cannot_use_cu_wrapper() {
 
 #[test]
 fn tampering_pairwise_wrappers_and_bound_ids_fails() {
+    let recover_local_fails = |harness: &Harness| {
+        let new_app = tempfile::tempdir().unwrap();
+        let new_paths = StoragePaths::from_app_dir(new_app.path().to_path_buf());
+        let new_provider =
+            FallbackPlatformFactorProvider::new(new_paths.app_dir.clone(), "tamper-replacement");
+        recover_local_with_provider(
+            &new_paths,
+            &new_provider,
+            RecoverLocalRequest {
+                mnemonic: MNEMONIC.to_string(),
+                usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+            },
+        )
+        .is_err()
+    };
+
     let tamper_w_mc = setup();
     rewrite_local_payload(&tamper_w_mc, |payload| {
         payload.w_mc.tag = crate::crypto::b64_encode(&[0_u8; 16]);
@@ -450,12 +462,14 @@ fn tampering_pairwise_wrappers_and_bound_ids_fails() {
     rewrite_usb_payload(&tamper_w_mu, |payload| {
         payload.w_mu.nonce = crate::crypto::b64_encode(&[1_u8; 12]);
     });
-    assert!(derive_with_mnemonic(&tamper_w_mu, MNEMONIC).is_err());
+    assert!(derive_with_mnemonic(&tamper_w_mu, MNEMONIC).is_ok());
+    assert!(recover_local_fails(&tamper_w_mu));
 
     let tamper_w_cu = setup();
     rewrite_usb_payload(&tamper_w_cu, |payload| {
         payload.w_cu.ciphertext = crate::crypto::b64_encode(&[2_u8; 32]);
     });
+    assert!(derive_with_mnemonic(&tamper_w_cu, MNEMONIC).is_ok());
     assert!(reset_mnemonic_with_provider(
         &tamper_w_cu.paths,
         &tamper_w_cu.provider,
@@ -470,7 +484,8 @@ fn tampering_pairwise_wrappers_and_bound_ids_fails() {
     rewrite_usb_payload(&tamper_usb_id, |payload| {
         payload.usb_id = uuid::Uuid::new_v4().to_string();
     });
-    assert!(derive_with_mnemonic(&tamper_usb_id, MNEMONIC).is_err());
+    assert!(derive_with_mnemonic(&tamper_usb_id, MNEMONIC).is_ok());
+    assert!(recover_local_fails(&tamper_usb_id));
 
     let tamper_salt_c = setup();
     rewrite_local_payload(&tamper_salt_c, |payload| {
@@ -482,33 +497,30 @@ fn tampering_pairwise_wrappers_and_bound_ids_fails() {
     rewrite_usb_payload(&tamper_salt_u, |payload| {
         payload.salt_u = crate::crypto::b64_encode(&[4_u8; 16]);
     });
-    assert!(derive_with_mnemonic(&tamper_salt_u, MNEMONIC).is_err());
+    assert!(derive_with_mnemonic(&tamper_salt_u, MNEMONIC).is_ok());
+    assert!(recover_local_fails(&tamper_salt_u));
 
     let tamper_device_id = setup();
-    let (package, payload) = load_usb_factor_payload(tamper_device_id.usb_dir.path()).unwrap();
-    let package = create_usb_factor_package(
-        package.user_id,
-        "copied-device-id",
-        &package.platform,
-        &payload,
-    )
-    .unwrap();
+    let mut package = read_usb_factor_package(tamper_device_id.usb_dir.path()).unwrap();
+    package.device_id = "copied-device-id".to_string();
     write_usb_factor_package(tamper_device_id.usb_dir.path(), &package).unwrap();
-    assert!(derive_with_mnemonic(&tamper_device_id, MNEMONIC).is_err());
+    assert!(verify_usb_package(VerifyUsbPackageRequest {
+        usb_path: tamper_device_id
+            .usb_dir
+            .path()
+            .to_string_lossy()
+            .to_string(),
+    })
+    .is_err());
 
     let tamper_user_id = setup();
-    let (package, mut payload) = load_usb_factor_payload(tamper_user_id.usb_dir.path()).unwrap();
-    let other_user_id = uuid::Uuid::new_v4();
-    payload.user_id = other_user_id;
-    let package = create_usb_factor_package(
-        other_user_id,
-        &package.device_id,
-        &package.platform,
-        &payload,
-    )
-    .unwrap();
+    let mut package = read_usb_factor_package(tamper_user_id.usb_dir.path()).unwrap();
+    package.user_id = uuid::Uuid::new_v4();
     write_usb_factor_package(tamper_user_id.usb_dir.path(), &package).unwrap();
-    assert!(derive_with_mnemonic(&tamper_user_id, MNEMONIC).is_err());
+    assert!(verify_usb_package(VerifyUsbPackageRequest {
+        usb_path: tamper_user_id.usb_dir.path().to_string_lossy().to_string(),
+    })
+    .is_err());
 }
 
 #[test]
@@ -715,12 +727,12 @@ fn encoding_descriptor_change_requires_rotation() {
 }
 
 #[test]
-fn rotation_cancel_and_commit_preserve_expected_states() {
+fn rotation_creates_new_current_and_keeps_previous_derivable() {
     let harness = setup();
     let store = CdrStore::new(&harness.paths.db_path);
     let before = derive(&harness);
 
-    let pending = rotate_credential_with_provider(
+    let current = rotate_credential_with_provider(
         &harness.paths,
         &harness.provider,
         RotateCredentialRequest {
@@ -729,54 +741,42 @@ fn rotation_cancel_and_commit_preserve_expected_states() {
         },
     )
     .unwrap();
-    assert_eq!(pending.version, harness.version + 1);
-    assert_eq!(
-        store
-            .get(harness.record_id, Some(harness.version))
-            .unwrap()
-            .state,
-        CredentialState::Active
-    );
-
-    cancel_rotation_with_provider(
-        &harness.paths,
-        &harness.provider,
-        CancelRotationRequest {
-            record_id: harness.record_id,
-            version: pending.version,
-        },
-    )
-    .unwrap();
-    assert!(store.get(harness.record_id, Some(pending.version)).is_err());
-    assert_eq!(before, derive(&harness));
-
-    let pending = rotate_credential_with_provider(
-        &harness.paths,
-        &harness.provider,
-        RotateCredentialRequest {
-            record_id: harness.record_id,
-            encoding_descriptor: None,
-        },
-    )
-    .unwrap();
-    confirm_rotation_with_provider(
-        &harness.paths,
-        &harness.provider,
-        ConfirmRotationRequest {
-            record_id: harness.record_id,
-            version: pending.version,
-        },
-    )
-    .unwrap();
-
+    assert_eq!(current.version, harness.version + 1);
     let old = store.get(harness.record_id, Some(harness.version)).unwrap();
-    let new_record = store.get(harness.record_id, Some(pending.version)).unwrap();
+    let new_record = store.get(harness.record_id, Some(current.version)).unwrap();
     assert_eq!(old.state, CredentialState::Retired);
     assert_eq!(new_record.state, CredentialState::Active);
+
+    let previous_password = derive_password_with_provider(
+        &harness.paths,
+        &harness.provider,
+        DerivePasswordRequest {
+            record_id: harness.record_id,
+            version: Some(harness.version),
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap()
+    .password;
+    let current_password = derive_password_with_provider(
+        &harness.paths,
+        &harness.provider,
+        DerivePasswordRequest {
+            record_id: harness.record_id,
+            version: Some(current.version),
+            mnemonic: MNEMONIC.to_string(),
+            usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+        },
+    )
+    .unwrap()
+    .password;
+    assert_eq!(before, previous_password);
+    assert_ne!(previous_password, current_password);
 }
 
 #[test]
-fn missing_factors_fail_derivation() {
+fn missing_required_daily_factors_fail_derivation() {
     let harness = setup();
     assert!(derive_password_with_provider(
         &harness.paths,
@@ -805,7 +805,7 @@ fn missing_factors_fail_derivation() {
                 .to_string(),
         },
     )
-    .is_err());
+    .is_ok());
 
     std::fs::remove_file(&harness.paths.local_factor_path).unwrap();
     assert!(derive_password_with_provider(
@@ -822,7 +822,7 @@ fn missing_factors_fail_derivation() {
 }
 
 #[test]
-fn corrupt_usb_package_fails() {
+fn corrupt_usb_package_does_not_block_daily_derivation() {
     let harness = setup();
     let usb_file = usb_package_file(harness.usb_dir.path());
     std::fs::write(usb_file, b"{\"packageMac\":\"broken\"}").unwrap();
@@ -836,6 +836,10 @@ fn corrupt_usb_package_fails() {
             usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
         },
     )
+    .is_ok());
+    assert!(verify_usb_package(VerifyUsbPackageRequest {
+        usb_path: harness.usb_dir.path().to_string_lossy().to_string(),
+    })
     .is_err());
 }
 

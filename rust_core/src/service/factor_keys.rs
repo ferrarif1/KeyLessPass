@@ -242,6 +242,7 @@ pub(crate) fn master_key_from_local_usb(
     )
 }
 
+#[allow(dead_code)]
 pub(crate) fn master_key_from_all_factors(
     mnemonic: &str,
     local: &LocalFactorContext,

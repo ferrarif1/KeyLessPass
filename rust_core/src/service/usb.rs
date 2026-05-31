@@ -1,9 +1,8 @@
-use crate::crypto::b64_encode;
+use crate::crypto::{b64_decode, b64_encode};
+use crate::domain::{WrappedMasterKey, WRAPPED_MASTER_KEY_SCHEMA_VERSION};
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
-use crate::service::factor_keys::{
-    cached_master_key_with_local_factor, load_usb_context, master_key_from_mnemonic_usb,
-};
+use crate::service::factor_keys::{cached_master_key_with_local_factor, load_usb_context};
 use crate::storage::{
     read_usb_factor_package, usb_cdr_backup_file, usb_package_file, verify_usb_cdr_backup,
     write_usb_cdr_backup, CdrStore, StoragePaths,
@@ -27,7 +26,6 @@ pub struct UsbFactorCandidate {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VerifyUsbPackageRequest {
-    pub mnemonic: String,
     pub usb_path: String,
 }
 
@@ -36,8 +34,11 @@ pub struct VerifyUsbPackageRequest {
 pub struct VerifyUsbPackageResponse {
     pub valid: bool,
     pub package_path: PathBuf,
+    pub schema_version: u32,
     pub user_id: String,
     pub device_id: String,
+    pub usb_id: String,
+    pub recovery_generation: u64,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -67,13 +68,44 @@ pub fn verify_usb_package(
     request: VerifyUsbPackageRequest,
 ) -> std::result::Result<VerifyUsbPackageResponse, String> {
     let usb = load_usb_context(&request.usb_path).map_err(String::from)?;
-    let _ = master_key_from_mnemonic_usb(&request.mnemonic, &usb).map_err(String::from)?;
+    validate_wrapper_metadata(&usb.payload.w_mu, "MU").map_err(String::from)?;
+    validate_wrapper_metadata(&usb.payload.w_cu, "CU").map_err(String::from)?;
     Ok(VerifyUsbPackageResponse {
         valid: true,
         package_path: usb_package_file(&request.usb_path),
+        schema_version: usb.package.schema_version,
         user_id: usb.package.user_id.to_string(),
         device_id: usb.package.device_id,
+        usb_id: usb.payload.usb_id,
+        recovery_generation: usb.payload.recovery_generation,
     })
+}
+
+fn validate_wrapper_metadata(wrapper: &WrappedMasterKey, expected_type: &str) -> Result<()> {
+    if wrapper.version != WRAPPED_MASTER_KEY_SCHEMA_VERSION {
+        return Err(KeylessPassError::Validation(
+            "unsupported wrapped master key schema version".to_string(),
+        ));
+    }
+    if wrapper.wrapper_type != expected_type {
+        return Err(KeylessPassError::Integrity(
+            "wrapped master key type mismatch".to_string(),
+        ));
+    }
+    if wrapper.aad.is_empty() {
+        return Err(KeylessPassError::Integrity(
+            "wrapped master key AAD is missing".to_string(),
+        ));
+    }
+    let nonce = b64_decode(&wrapper.nonce)?;
+    let tag = b64_decode(&wrapper.tag)?;
+    let ciphertext = b64_decode(&wrapper.ciphertext)?;
+    if nonce.len() != 12 || tag.len() != 16 || ciphertext.is_empty() {
+        return Err(KeylessPassError::Integrity(
+            "wrapped master key metadata is malformed".to_string(),
+        ));
+    }
+    Ok(())
 }
 
 pub fn get_usb_cdr_status(

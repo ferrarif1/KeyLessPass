@@ -30,6 +30,17 @@ FC = KDF(deviceSecret || deviceID || userID || saltC)
 - A mnemonic verifier may be persisted only for validation; it is not a recovery
   secret and must not become the only condition for recovering `Kmaster`.
 
+## V2 `encryptedPayload` Field
+
+- `encryptedPayload` remains in the JSON schema for compatibility.
+- In V2, this is a historical field name. It stores a base64 encoded factor
+  payload, not a mnemonic-encrypted vault and not a platform-encrypted vault.
+- The encoded local payload must not contain plaintext `Kmaster` or `usbSecret`.
+- The encoded USB payload must not contain plaintext `Kmaster` or
+  `deviceSecret`.
+- `Kmaster` may only appear in V2 packages inside the `W_MC`, `W_MU`, and
+  `W_CU` wrapper ciphertexts.
+
 ## Pairwise Wrappers
 
 `Kmaster` is a random 256-bit root secret. At rest, it may only appear as
@@ -94,4 +105,3 @@ the implementation must return a clear error:
 ```text
 legacy factor package stores master-key payload and does not support strict pairwise-wrapper recovery; please migrate with the old mnemonic available.
 ```
-

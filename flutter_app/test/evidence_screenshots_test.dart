@@ -605,14 +605,14 @@ class _RotationEvidence extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const PageTitle(
-          title: 'Two-phase rotation',
+          title: 'Current and previous versions',
           subtitle:
-              'A new CDR version is created as pending_rotation and becomes active only after the target system update is confirmed.',
+              'Creating a new current version keeps the previous version available for password derivation.',
         ),
         const SizedBox(height: 22),
         const WorkflowStepper(
-            steps: ['Create pending', 'Derive new', 'Update target', 'Commit'],
-            current: 1),
+            steps: ['Create new version', 'Derive current', 'Derive previous'],
+            current: 2),
         const SizedBox(height: 22),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -626,8 +626,8 @@ class _RotationEvidence extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                     SizedBox(height: 14),
-                    InfoRow(label: 'v1', value: 'active until commit'),
-                    InfoRow(label: 'v2', value: 'pending_rotation'),
+                    InfoRow(label: 'current', value: 'v2 active'),
+                    InfoRow(label: 'previous', value: 'v1 retained'),
                     InfoRow(label: 'salt', value: 'new random 128-bit salt'),
                     InfoRow(
                         label: 'descriptor',
@@ -635,7 +635,7 @@ class _RotationEvidence extends StatelessWidget {
                     SizedBox(height: 14),
                     InlineNotice(
                         text:
-                            'If rotation is not committed, the old active version remains the service password source.'),
+                            'The previous version remains available for rollback checks.'),
                   ],
                 ),
               ),
@@ -646,7 +646,7 @@ class _RotationEvidence extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Pending password',
+                    const Text('Version passwords',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 14),
@@ -660,15 +660,15 @@ class _RotationEvidence extends StatelessWidget {
                         Expanded(
                             child: OutlinedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.undo_rounded),
-                                label: const Text('Leave pending',
+                                icon: const Icon(Icons.history_rounded),
+                                label: const Text('Derive previous',
                                     style: _buttonTextStyle))),
                         const SizedBox(width: 12),
                         Expanded(
                             child: FilledButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.check_rounded),
-                                label: const Text('Commit rotation',
+                                icon: const Icon(Icons.password_rounded),
+                                label: const Text('Derive current',
                                     style: _buttonTextStyle))),
                       ],
                     ),

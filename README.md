@@ -81,11 +81,12 @@ This makes it useful when an organization must keep using legacy password-based 
 - CDR metadata backup on the USB drive, with local/USB consistency checks and explicit sync/restore choices.
 - Random per-user master key generated during enrollment.
 - English and Simplified Chinese mnemonic generation on the local device.
-- Mnemonic reset using this device plus the paired USB package, without changing existing derived passwords.
+- Paper-aligned 2-of-3 local recovery with pairwise wrappers `W_MC`, `W_MU`, and `W_CU`.
+- Mnemonic reset using this computer plus the paired USB package, without the old mnemonic and without changing existing derived passwords.
 - Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
 - Selectable service derivation algorithm for new profiles: HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256.
 - Editable display metadata that does not change derived passwords.
-- Two-phase password rotation with pending, commit, and cancel states.
+- Simplified password rotation that creates a new current version while keeping the previous version derivable.
 - Local recovery workflows for rebuilding missing USB or local factor packages.
 - USB management for path selection, package verification, and package rebuild.
 - Redacted diagnostics export.
@@ -94,16 +95,37 @@ This makes it useful when an organization must keep using legacy password-based 
 
 ## What Is Stored
 
-| Stored locally | Not stored |
+| Stored | Not stored |
 | --- | --- |
-| Protected local factor package | Target-system plaintext passwords |
-| USB factor package on a user-selected USB drive | Encrypted service-password vault |
+| Local factor package: `userId`, `deviceId`, `saltC`, `mnemonicSalt`, mnemonic verifier, `W_MC`, optional `W_CU`, schema/version metadata | Target-system plaintext passwords |
+| USB factor package: `userId`, `usbId`, `saltU`, USB factor material, `W_MU`, `W_CU`, schema/version metadata | Encrypted service-password vault |
 | CDR metadata, salts, versions, MAC tags, and optional USB CDR backup | Mnemonic phrase |
-| Recovery metadata for local two-factor recovery operations | Cloud account, sync state, analytics |
+| Platform protected device secret outside the JSON payload, for example macOS `com.keylesspass.local-factor` | Plaintext `Kmaster` in local or USB payloads |
+| Recovery metadata and integrity tags | `usbSecret` in the local package or `deviceSecret` in the USB package |
 
 ## How It Works
 
-During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is transformed into an independent mnemonic factor `F_M`, which participates with the local factor `F_C` and USB factor `F_U` in the local 2-of-3 unwrap/recovery model for `Kmaster`. Service password derivation then uses the recovered `Kmaster` plus stable CDR path fields.
+During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is transformed into an independent mnemonic factor `F_M`; the platform protected computer material derives `F_C`; the USB package derives `F_U`.
+
+The Rust core protects the same `Kmaster` with three pairwise wrappers:
+
+```text
+F_M = KDF(Normalize(mnemonic), saltM)
+F_C = KDF(deviceSecret || deviceID || userID, saltC)
+F_U = KDF(usbSecret || usbID || userID, saltU)
+
+K_MC = HKDF(F_M || F_C, "KeyLessPass/wrap/MC")
+K_MU = HKDF(F_M || F_U, "KeyLessPass/wrap/MU")
+K_CU = HKDF(F_C || F_U, "KeyLessPass/wrap/CU")
+
+W_MC = AES-256-GCM(K_MC, Kmaster)
+W_MU = AES-256-GCM(K_MU, Kmaster)
+W_CU = AES-256-GCM(K_CU, Kmaster)
+```
+
+Any two factors can recover `Kmaster`: mnemonic + this computer uses `W_MC`, mnemonic + USB uses `W_MU`, and this computer + USB uses `W_CU`. A single factor alone cannot recover `Kmaster`. Normal password derivation uses mnemonic + this computer through `W_MC`; the USB package is kept offline during daily use and is needed for enrollment, rebuilding USB, replacing this computer, and resetting the mnemonic.
+
+The V2 JSON field `encryptedPayload` is a historical schema name. In V2 it carries a base64 encoded factor payload, not a mnemonic-encrypted or platform-encrypted vault. That payload does not contain plaintext `Kmaster`; `Kmaster` exists only in wrapper ciphertext and transient runtime memory.
 
 For compatibility, existing profiles without an algorithm field are treated as legacy HKDF-SHA256. New profiles can choose HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256 before enrollment; the choice is locked for that local profile and can be changed only after resetting local application data and initializing again.
 
@@ -115,9 +137,9 @@ When a paired USB drive is present, KeyLessPass can write a signed CDR metadata 
 flowchart LR
     M["Mnemonic phrase<br/>not stored"] --> KDF["KDF"]
     KDF --> FM["Mnemonic factor F_M"]
-    FC["Local factor F_C<br/>platform protected"] --> R["2-of-3 unwrap / recovery"]
+    FC["Computer factor F_C<br/>platform protected"] --> R["2-of-3 pairwise wrappers<br/>W_MC / W_MU / W_CU"]
     FM --> R
-    FU["USB factor F_U<br/>USB factor package"] --> R
+    FU["USB factor F_U<br/>copyable USB package"] --> R
     R --> KM["Recovered Kmaster"]
     KM --> D["Selected KDF + deterministic encoding"]
     C["CDR stable fields<br/>recordSeq + recordId + version + salt + Rule"] --> D
@@ -131,6 +153,10 @@ flowchart LR
 - No target-system plaintext password is written to disk.
 - No encrypted service-password vault is maintained.
 - No mnemonic phrase is stored.
+- `Kmaster` is not persisted as a local or USB payload field.
+- The local package does not store `usbSecret`; the USB package does not store `deviceSecret`.
+- The USB package is an ordinary copyable factor container, not an uncopyable hardware key.
+- Any two factors can recover `Kmaster`; any single factor cannot.
 - No cloud sync, remote backend, browser autofill, or account login is included.
 - All random values come from the operating system CSPRNG.
 - CDR and factor packages are integrity checked before use.

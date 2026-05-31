@@ -3,7 +3,7 @@ use crate::domain::CredentialDescriptionRecord;
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
 use crate::service::factor_keys::{
-    load_local_context, load_usb_context, master_key_from_all_factors, remember_master_key,
+    load_local_context, master_key_from_mnemonic_local, remember_master_key,
 };
 use crate::storage::{read_config, CdrStore, StoragePaths};
 use chrono::{DateTime, Duration, Utc};
@@ -16,6 +16,7 @@ pub struct DerivePasswordRequest {
     pub record_id: Uuid,
     pub version: Option<u32>,
     pub mnemonic: String,
+    #[serde(default)]
     pub usb_path: String,
 }
 
@@ -48,38 +49,25 @@ pub fn derive_password_with_provider(
 
     let config = read_config(paths)?;
     let local = load_local_context(provider, &config.local_factor_path)?;
-    let usb = load_usb_context(&request.usb_path)?;
     if local.package.user_id != config.user_id || local.package.device_id != config.device_id {
         return Err(KeylessPassError::Integrity(
             "local factor package does not match this device".to_string(),
         ));
     }
-    if usb.package.user_id != config.user_id || usb.package.device_id != config.device_id {
-        return Err(KeylessPassError::Integrity(
-            "USB factor package does not match this managed computer".to_string(),
-        ));
-    }
-    if local.payload.mnemonic_salt != usb.payload.mnemonic_salt {
-        return Err(KeylessPassError::Integrity(
-            "local and USB mnemonic salt mismatch".to_string(),
-        ));
-    }
 
-    let master_key = master_key_from_all_factors(&request.mnemonic, &local, &usb)?;
+    let master_key = master_key_from_mnemonic_local(&request.mnemonic, &local)?;
     remember_master_key(&config, &master_key)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let record = store.get(request.record_id, request.version)?;
     record.verify_mac(&master_key)?;
 
     let algorithm = config.password_derivation_algorithm;
-    if algorithm != local.payload.password_derivation_algorithm
-        || algorithm != usb.payload.password_derivation_algorithm
-    {
+    if algorithm != local.payload.password_derivation_algorithm {
         return Err(KeylessPassError::Integrity(
             "derivation algorithm metadata mismatch".to_string(),
         ));
     }
-    let derivation_key = kdf::derive_password_root_from_master(&master_key, &local.f_c, &usb.f_u)?;
+    let derivation_key = kdf::derive_password_root_from_master(&master_key)?;
     let service_secret = kdf::derive_service_secret_with_algorithm(
         algorithm,
         &derivation_key,

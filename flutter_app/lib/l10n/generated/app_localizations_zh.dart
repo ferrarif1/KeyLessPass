@@ -219,9 +219,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ruleChangeRequiresRotation => '修改密码规则前，需要创建新版本。';
 
   @override
-  String get recordDetails => '记录详情';
-
-  @override
   String get advancedDetails => '高级详情';
 
   @override
@@ -285,6 +282,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deriveAndCopy => '派生并复制';
 
   @override
+  String get deriveCurrentVersion => '派生当前版本';
+
+  @override
+  String get derivePreviousVersion => '派生上一版本';
+
+  @override
+  String get currentVersion => '当前版本';
+
+  @override
+  String get previousVersion => '上一版本';
+
+  @override
+  String get normalDerivationHelp => '正常派生使用助记短语 + 本机。U 盘包只在初始化和恢复时使用。';
+
+  @override
   String get deriveMode => '验证方式';
 
   @override
@@ -318,7 +330,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearOnLeave => '离开页面后会清除当前显示的密码。';
 
   @override
-  String get createPendingVersion => '创建待确认版本';
+  String get createPendingVersion => '创建新版本';
+
+  @override
+  String get createNewVersion => '创建新版本';
 
   @override
   String get commitRotation => '提交轮换';
@@ -327,7 +342,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancelPending => '取消待确认版本';
 
   @override
-  String get pendingCreated => '待确认版本已创建。';
+  String get pendingCreated => '新版本已创建。';
+
+  @override
+  String get newVersionCreated => '新的当前版本已创建，上一版本仍可派生。';
 
   @override
   String get rotationCommitted => '轮换已提交。';
@@ -336,17 +354,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rotationCanceled => '待确认版本已取消。';
 
   @override
-  String get oldVersionRemainsActive => '提交前，当前活动版本仍然有效。';
+  String get oldVersionRemainsActive => '保留当前版本和上一版本，两个版本都可以派生密码。';
 
   @override
-  String get rotationCreateHelp => '先创建待确认版本。提交前，当前活动密码仍然有效。';
+  String get rotationCreateHelp =>
+      '需要轮换目标系统密码时创建新的当前版本。KeyLessPass 会保留上一版本，便于回退核验。';
 
   @override
-  String get rotationPendingHelp =>
-      '已存在待确认版本。请先派生并在目标系统验证新密码，确认目标系统密码已完成变更后再提交轮换。';
+  String get rotationPendingHelp => '使用当前版本和上一版本按钮派生对应密码。';
 
   @override
-  String get derivePendingPassword => '派生待确认密码';
+  String get derivePendingPassword => '派生版本密码';
 
   @override
   String get rotationNoRecord => '请先选择要轮换的记录。';
@@ -364,11 +382,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newMnemonicPhrase => '新的助记短语';
 
   @override
-  String get resetMnemonicHelp =>
-      '使用本机 + U 盘包恢复并设置新的助记短语；不需要旧助记短语，已有派生密码保持不变。';
+  String get confirmNewMnemonicPhrase => '确认新的助记短语';
+
+  @override
+  String get newMnemonicMismatch => '两次输入的新助记短语不一致。';
+
+  @override
+  String get resetMnemonicHelp => '使用本机 + U 盘包恢复并设置新的助记短语；不需要旧助记短语，已有派生密码保持不变。';
+
+  @override
+  String get resetMnemonicFactorHelp =>
+      '此路径使用本机 + U 盘包，通过 W_CU 恢复主密钥；不需要旧助记短语。';
 
   @override
   String get usbLostHelp => '使用本机 + 助记短语重建 U 盘包。单独本机因子不能恢复主密钥。';
+
+  @override
+  String get recoveryPathMnemonicComputer => '助记短语 + 本机';
+
+  @override
+  String get recoveryPathMnemonicUsb => '助记短语 + U 盘包';
+
+  @override
+  String get recoveryPathComputerUsb => '本机 + U 盘包';
+
+  @override
+  String get rebuildUsbExplanation => '使用助记短语 + 本机，通过 W_MC 恢复主密钥并重建配对 U 盘包。';
+
+  @override
+  String get recoverComputerExplanation =>
+      '使用助记短语 + U 盘包，通过 W_MU 恢复主密钥并重建本机因子。';
+
+  @override
+  String get resetMnemonicExplanation =>
+      '使用本机 + U 盘包，通过 W_CU 恢复主密钥并设置新的助记短语。不需要旧助记短语，已有派生密码保持不变。';
 
   @override
   String get mnemonicResetComplete => '助记短语已重置。';
@@ -458,7 +505,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get usbRebuilt => 'U 盘包已重建。';
 
   @override
-  String get usbHelpHint => '支持普通 U 盘。如 macOS 需要授权，请使用文件夹按钮选择 U 盘。';
+  String get usbHelpHint => '支持普通 U 盘。校验只检查包结构和完整性，不需要助记短语；重建需要助记短语 + 本机。';
+
+  @override
+  String get usbFactorContainerHelp =>
+      'U 盘包是可复制的因子容器，保存 U 盘因子材料和成对加密包装，不保存明文服务密码或明文 Kmaster。';
 
   @override
   String get manualUsbHint => '如果 Finder 中能看到 U 盘，也可以手动输入路径，例如 /Volumes/WD。';

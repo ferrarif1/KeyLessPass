@@ -55,10 +55,15 @@ pub fn rotate_credential_with_provider(
 ) -> Result<CredentialDescriptionRecord> {
     let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
-    let previous = store.get(request.record_id, None)?;
+    let mut previous = store.get(request.record_id, None)?;
     if previous.state == CredentialState::Retired {
         return Err(KeylessPassError::Validation(
             "cannot rotate a retired CDR version".to_string(),
+        ));
+    }
+    if previous.state == CredentialState::PendingRotation {
+        return Err(KeylessPassError::Validation(
+            "complete or cancel the pending CDR version before rotating again".to_string(),
         ));
     }
     previous.verify_mac(&master_key)?;
@@ -72,8 +77,10 @@ pub fn rotate_credential_with_provider(
         previous.version + 1,
     )?;
     let mut next = CredentialDescriptionRecord::rotation_from(&previous, descriptor);
-    next.set_mac(&master_key)?;
+    next.mark_active(&master_key)?;
     store.insert(&next)?;
+    previous.mark_retired(&master_key)?;
+    store.update(&previous)?;
     Ok(next)
 }
 

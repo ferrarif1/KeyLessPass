@@ -101,7 +101,6 @@ class CoreApi {
     required String recordId,
     required int version,
     required String mnemonic,
-    required String usbPath,
   }) {
     return _core.invoke(
       'derivePassword',
@@ -109,7 +108,6 @@ class CoreApi {
         'recordId': recordId,
         'version': version,
         'mnemonic': mnemonic,
-        'usbPath': usbPath,
       },
       (value) => (value as Map).cast<String, Object?>(),
     );
@@ -165,11 +163,10 @@ class CoreApi {
         'resetApplicationData', {'confirmation': confirmation}, (_) {});
   }
 
-  Future<Map<String, Object?>> verifyUsbPackage(
-      {required String mnemonic, required String usbPath}) {
+  Future<Map<String, Object?>> verifyUsbPackage({required String usbPath}) {
     return _core.invoke(
       'verifyUsbPackage',
-      {'mnemonic': mnemonic, 'usbPath': usbPath},
+      {'usbPath': usbPath},
       (value) => (value as Map).cast<String, Object?>(),
     );
   }

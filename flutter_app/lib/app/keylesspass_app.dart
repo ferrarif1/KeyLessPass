@@ -29,11 +29,48 @@ enum _Section {
 
 enum _RecordFilter { all, active, pending, retired, conflict, error }
 
-enum _DeriveMode { thisDevice, usbRecovery }
-
 enum _SetupMode { create, recover }
 
 enum _RecoveryMode { usbLost, newDevice, resetMnemonic }
+
+class _RecordVersionGroup {
+  const _RecordVersionGroup({required this.current, this.previous});
+
+  final CredentialRecord current;
+  final CredentialRecord? previous;
+}
+
+class _DetailItem {
+  const _DetailItem(this.label, this.value);
+
+  final String label;
+  final String value;
+}
+
+List<_RecordVersionGroup> _groupRecordVersions(List<CredentialRecord> records) {
+  final byId = <String, List<CredentialRecord>>{};
+  for (final record in records) {
+    byId.putIfAbsent(record.recordId, () => []).add(record);
+  }
+  final groups = <_RecordVersionGroup>[];
+  for (final versions in byId.values) {
+    versions.sort((a, b) => b.version.compareTo(a.version));
+    final current = versions.firstWhere(
+      (record) => record.state != 'retired',
+      orElse: () => versions.first,
+    );
+    CredentialRecord? previous;
+    for (final record in versions) {
+      if (record.version < current.version) {
+        previous = record;
+        break;
+      }
+    }
+    groups.add(_RecordVersionGroup(current: current, previous: previous));
+  }
+  groups.sort((a, b) => a.current.recordSeq.compareTo(b.current.recordSeq));
+  return groups;
+}
 
 class _ResponsiveGrid extends StatelessWidget {
   const _ResponsiveGrid({
@@ -255,28 +292,36 @@ class _HomeWindowState extends State<_HomeWindow> {
   }
 
   CredentialRecord? _pickSelected(List<CredentialRecord> records) {
-    if (records.isEmpty) return null;
-    if (_selected == null) return records.first;
+    final groups = _groupRecordVersions(records);
+    if (groups.isEmpty) return null;
+    if (_selected == null) return groups.first.current;
     return records.firstWhere(
       (record) =>
           record.recordId == _selected!.recordId &&
           record.version == _selected!.version,
-      orElse: () => records.first,
+      orElse: () => groups.first.current,
     );
   }
 
-  List<CredentialRecord> get _visibleRecords {
+  List<_RecordVersionGroup> get _visibleRecordGroups {
     final query = _search.trim().toLowerCase();
-    return _records.where((record) {
-      final stateOk =
-          _filter == _RecordFilter.all || _stateMatches(record.state, _filter);
+    return _groupRecordVersions(_records).where((group) {
+      final record = group.current;
+      final previous = group.previous;
+      final stateOk = _filter == _RecordFilter.all ||
+          _stateMatches(record.state, _filter) ||
+          (previous != null && _stateMatches(previous.state, _filter));
       final searchOk = query.isEmpty ||
           record.displayName.toLowerCase().contains(query) ||
           record.serviceHint.toLowerCase().contains(query) ||
-          record.accountHint.toLowerCase().contains(query);
+          record.accountHint.toLowerCase().contains(query) ||
+          record.notes.toLowerCase().contains(query) ||
+          (previous?.notes.toLowerCase().contains(query) ?? false);
       return stateOk && searchOk;
     }).toList();
   }
+
+  int get _recordGroupCount => _groupRecordVersions(_records).length;
 
   bool _stateMatches(String state, _RecordFilter filter) {
     return switch (filter) {
@@ -531,7 +576,6 @@ class _HomeWindowState extends State<_HomeWindow> {
       _Section.derive => _DerivePage(
           records: _records,
           selected: _selected,
-          usbCandidates: _usbCandidates,
           timeoutSeconds: _clipboardTimeout,
           onSelect: (record) => setState(() => _selected = record),
           api: _api),
@@ -617,7 +661,7 @@ class _HomeWindowState extends State<_HomeWindow> {
           children: [
             SignalTile(
                 label: t.activeRecords,
-                value: '${_records.length}',
+                value: '$_recordGroupCount',
                 tone: KpColors.primary),
             SignalTile(
                 label: t.usbStatus,
@@ -684,10 +728,10 @@ class _HomeWindowState extends State<_HomeWindow> {
 
   Widget _recordsPage() {
     final t = context.t;
-    final records = _visibleRecords;
+    final groups = _visibleRecordGroups;
     return _page(
       title: t.records,
-      subtitle: t.recordsCount(records.length),
+      subtitle: t.recordsCount(groups.length),
       trailing: FilledButton.icon(
           onPressed: () => setState(() => _section = _Section.add),
           icon: const Icon(Icons.add_rounded),
@@ -719,119 +763,188 @@ class _HomeWindowState extends State<_HomeWindow> {
             ),
           ],
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SectionPanel(
-                child: records.isEmpty
-                    ? Text(t.noRecords)
-                    : Column(children: records.map(_recordRow).toList()),
-              ),
-            ),
-            const SizedBox(width: 16),
-            SizedBox(width: 380, child: _recordDetails(_selected)),
-          ],
+        SectionPanel(
+          child: groups.isEmpty
+              ? Text(t.noRecords)
+              : Column(children: groups.map(_recordRow).toList()),
         ),
       ],
     );
   }
 
-  Widget _recordRow(CredentialRecord record) {
+  Widget _recordRow(_RecordVersionGroup group) {
     final t = context.t;
-    final selected = record.recordId == _selected?.recordId &&
-        record.version == _selected?.version;
+    final record = group.current;
+    final previous = group.previous;
+    final selected = record.recordId == _selected?.recordId;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Material(
-        color: selected ? KpColors.surfaceCard : KpColors.surfaceSoft,
-        borderRadius: BorderRadius.circular(8),
-        child: ListTile(
-          selected: selected,
-          leading: const Icon(Icons.key_rounded),
-          title: Text(record.displayName),
-          subtitle: Text(
-              '${record.accountHint.isEmpty ? '-' : record.accountHint} · ${t.version} ${record.version} · ${_stateLabel(record.state)}'),
-          trailing: Wrap(
-            spacing: 8,
-            children: [
-              IconButton(
-                  tooltip: t.derivePassword,
-                  onPressed: () => setState(() {
-                        _selected = record;
-                        _section = _Section.derive;
-                      }),
-                  icon: const Icon(Icons.password_rounded)),
-              IconButton(
-                  tooltip: t.rotation,
-                  onPressed: () => setState(() {
-                        _selected = record;
-                        _section = _Section.rotation;
-                      }),
-                  icon: const Icon(Icons.rotate_right_rounded)),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selected ? KpColors.surfaceElevated : KpColors.surfaceSoft,
+          border: Border.all(
+              color: selected ? KpColors.primary : KpColors.hairlineStrong),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Icon(Icons.key_rounded, color: KpColors.primary),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(record.displayName,
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${record.accountHint.isEmpty ? '-' : record.accountHint} · ${t.version} ${record.version} · ${_stateLabel(record.state)}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                        onPressed: () => _deriveRecordVersion(record),
+                        icon: const Icon(Icons.password_rounded),
+                        label: Text(t.deriveCurrentVersion)),
+                    if (previous != null)
+                      OutlinedButton.icon(
+                          onPressed: () => _deriveRecordVersion(previous),
+                          icon: const Icon(Icons.history_rounded),
+                          label: Text(t.derivePreviousVersion)),
+                    OutlinedButton.icon(
+                        onPressed: () => _rotateRecord(record),
+                        icon: const Icon(Icons.rotate_right_rounded),
+                        label: Text(t.createNewVersion)),
+                    IconButton(
+                        tooltip: t.editMetadata,
+                        onPressed: () => _showEditMetadata(record),
+                        icon: const Icon(Icons.edit_rounded)),
+                    IconButton(
+                        tooltip: t.viewIntegrity,
+                        onPressed: () =>
+                            setState(() => _section = _Section.security),
+                        icon: const Icon(Icons.verified_rounded)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _recordVersionDetails(t.currentVersion, record),
+            if (previous != null) ...[
+              const SizedBox(height: 10),
+              _recordVersionDetails(t.previousVersion, previous),
             ],
-          ),
-          onTap: () => setState(() => _selected = record),
+            if (_advancedMode) ...[
+              const SizedBox(height: 10),
+              Text(t.advancedDetails,
+                  style: Theme.of(context).textTheme.titleSmall),
+              InfoRow(label: t.recordSequence, value: '${record.recordSeq}'),
+              InfoRow(label: t.recordId, value: record.recordId),
+              InfoRow(label: t.salt, value: record.salt),
+              InfoRow(
+                  label: t.encodingRule,
+                  value:
+                      '${record.encodingDescriptor['alphabetProfile'] ?? '-'}'),
+            ],
+          ],
         ),
       ),
     );
   }
 
-  Widget _recordDetails(CredentialRecord? record) {
+  Widget _recordVersionDetails(String label, CredentialRecord record) {
     final t = context.t;
-    if (record == null) return SectionPanel(child: Text(t.selectRecord));
-    return SectionPanel(
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: KpColors.surfaceCard,
+        border: Border.all(color: KpColors.hairline),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(t.recordDetails, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          InfoRow(label: t.displayName, value: record.displayName),
-          InfoRow(label: t.serviceHint, value: record.serviceHint),
-          InfoRow(label: t.accountHint, value: record.accountHint),
-          InfoRow(label: t.state, value: _stateLabel(record.state)),
-          InfoRow(label: t.version, value: '${record.version}'),
-          InfoRow(label: t.lastUpdated, value: _shortDate(record.updatedAt)),
-          if (record.notes.isNotEmpty)
-            InfoRow(label: t.notes, value: record.notes),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.icon(
-                  onPressed: () => setState(() => _section = _Section.derive),
-                  icon: const Icon(Icons.password_rounded),
-                  label: Text(t.derivePassword)),
-              OutlinedButton.icon(
-                  onPressed: () => setState(() => _section = _Section.rotation),
-                  icon: const Icon(Icons.rotate_right_rounded),
-                  label: Text(t.rotation)),
-              OutlinedButton.icon(
-                  onPressed: () => _showEditMetadata(record),
-                  icon: const Icon(Icons.edit_rounded),
-                  label: Text(t.editMetadata)),
-              OutlinedButton.icon(
-                  onPressed: () => setState(() => _section = _Section.security),
-                  icon: const Icon(Icons.verified_rounded),
-                  label: Text(t.viewIntegrity)),
-            ],
-          ),
-          if (_advancedMode) ...[
-            const SizedBox(height: 16),
-            Text(t.advancedDetails,
-                style: Theme.of(context).textTheme.titleSmall),
-            InfoRow(label: t.recordSequence, value: '${record.recordSeq}'),
-            InfoRow(label: t.recordId, value: record.recordId),
-            InfoRow(label: t.salt, value: record.salt),
-            InfoRow(
-                label: t.encodingRule,
-                value:
-                    '${record.encodingDescriptor['alphabetProfile'] ?? '-'}'),
-          ],
+          Text(label, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          _detailWrap([
+            _DetailItem(t.displayName, record.displayName),
+            _DetailItem(t.serviceHint, record.serviceHint),
+            _DetailItem(t.accountHint, record.accountHint),
+            _DetailItem(t.state, _stateLabel(record.state)),
+            _DetailItem(t.version, '${record.version}'),
+            _DetailItem(t.lastUpdated, _shortDate(record.updatedAt)),
+            if (record.notes.isNotEmpty) _DetailItem(t.notes, record.notes),
+          ]),
         ],
       ),
     );
+  }
+
+  Widget _detailWrap(List<_DetailItem> items) {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 8,
+      children: [
+        for (final item in items)
+          SizedBox(
+            width: 230,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.label.toUpperCase(),
+                    style: Theme.of(context).textTheme.labelMedium),
+                const SizedBox(height: 3),
+                SelectableText(
+                  item.value.isEmpty ? '-' : item.value,
+                  style: const TextStyle(
+                      fontFamily: 'monospace',
+                      color: KpColors.bodyStrong,
+                      fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _deriveRecordVersion(CredentialRecord record) {
+    setState(() {
+      _selected = record;
+      _section = _Section.derive;
+    });
+  }
+
+  Future<void> _rotateRecord(CredentialRecord record) async {
+    final api = _api;
+    if (api == null) return;
+    try {
+      final length = (record.encodingDescriptor['length'] as num?)?.toInt() ??
+          _defaultLength;
+      final next = await api.rotateCredential(record: record, length: length);
+      await _refresh();
+      await _syncCdrToFirstUsb(silent: true);
+      setState(() {
+        _selected = next;
+        _message = context.t.newVersionCreated;
+      });
+    } catch (_) {
+      setState(() => _message = context.t.operationFailed);
+    }
   }
 
   Future<void> _createRecord(_RecordDraft draft) async {
@@ -934,6 +1047,8 @@ class _HomeWindowState extends State<_HomeWindow> {
   Widget _securityPage() {
     final t = context.t;
     final security = _status?.securityStatus;
+    final localAvailable = _status?.enrolled == true;
+    final usbAvailable = _usbCandidates.any((u) => u.readable);
     return _page(
       title: t.security,
       subtitle: t.integrityCheck,
@@ -973,6 +1088,30 @@ class _HomeWindowState extends State<_HomeWindow> {
                   label: t.clipboardClearing,
                   value: '$_clipboardTimeout ${t.seconds}'),
               InfoRow(label: t.logSafety, value: t.ok),
+            ],
+          ),
+        ),
+        SectionPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(t.recovery, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 10),
+              InfoRow(
+                  label: t.recoveryPathMnemonicComputer,
+                  value: localAvailable ? t.available : t.notFound),
+              InfoRow(
+                  label: t.recoveryPathMnemonicUsb,
+                  value: usbAvailable ? t.available : t.notFound),
+              InfoRow(
+                  label: t.recoveryPathComputerUsb,
+                  value: localAvailable && usbAvailable
+                      ? t.available
+                      : t.notFound),
+              const SizedBox(height: 10),
+              InlineNotice(
+                  text: t.singleFactorNotEnough,
+                  icon: Icons.lock_outline_rounded),
             ],
           ),
         ),
@@ -1080,7 +1219,7 @@ class _HomeWindowState extends State<_HomeWindow> {
       'platform': _status?.securityStatus.platform ?? '-',
       'provider': _status?.securityStatus.provider ?? '-',
       'degradedProtection': _status?.securityStatus.degraded ?? true,
-      'recordCount': _records.length,
+      'recordCount': _recordGroupCount,
       'usbVolumeCount': _usbCandidates.length,
       'readableUsbPackageCount':
           _usbCandidates.where((item) => item.readable).length,
@@ -1749,19 +1888,16 @@ class _UsbDevicePageState extends State<_UsbDevicePage> {
 
   Future<void> _verify() async {
     final api = widget.api;
-    if (api == null) return;
+    if (api == null || _usbPath.text.trim().isEmpty) return;
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      await api.verifyUsbPackage(
-          mnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
-      _mnemonic.clear();
+      await api.verifyUsbPackage(usbPath: _usbPath.text.trim());
       await widget.onRefresh();
       if (mounted) setState(() => _message = context.t.usbVerified);
     } catch (_) {
-      _mnemonic.clear();
       if (mounted) setState(() => _message = context.t.operationFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -1914,6 +2050,9 @@ class _UsbDevicePageState extends State<_UsbDevicePage> {
                 const SizedBox(height: 12),
                 InlineNotice(
                     text: t.usbHelpHint, icon: Icons.help_outline_rounded),
+                const SizedBox(height: 12),
+                InlineNotice(
+                    text: t.usbFactorContainerHelp, icon: Icons.usb_rounded),
                 if (_message != null) ...[
                   const SizedBox(height: 12),
                   InlineNotice(text: _message!)
@@ -2136,16 +2275,23 @@ class _RecordPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final selectedKey =
+        selected == null ? null : '${selected!.recordId}:${selected!.version}';
+    final values =
+        records.map((record) => '${record.recordId}:${record.version}').toSet();
     return DropdownButtonFormField<String>(
-      key: ValueKey(selected?.recordId ?? 'none'),
-      initialValue: selected?.recordId,
+      key: ValueKey(selectedKey ?? 'none'),
+      initialValue: values.contains(selectedKey) ? selectedKey : null,
       decoration: InputDecoration(labelText: t.selectRecord),
       items: records
           .map((record) => DropdownMenuItem(
-              value: record.recordId, child: Text(record.displayName)))
+              value: '${record.recordId}:${record.version}',
+              child: Text(
+                  '${record.displayName} · ${t.version} ${record.version} · ${record.accountHint.isEmpty ? '-' : record.accountHint}')))
           .toList(),
-      onChanged: (id) {
-        final record = records.firstWhere((item) => item.recordId == id);
+      onChanged: (value) {
+        final record = records
+            .firstWhere((item) => '${item.recordId}:${item.version}' == value);
         onChanged(record);
       },
     );
@@ -2156,7 +2302,6 @@ class _DerivePage extends StatefulWidget {
   const _DerivePage({
     required this.records,
     required this.selected,
-    required this.usbCandidates,
     required this.timeoutSeconds,
     required this.onSelect,
     required this.api,
@@ -2164,7 +2309,6 @@ class _DerivePage extends StatefulWidget {
 
   final List<CredentialRecord> records;
   final CredentialRecord? selected;
-  final List<UsbCandidate> usbCandidates;
   final int timeoutSeconds;
   final ValueChanged<CredentialRecord> onSelect;
   final CoreApi? api;
@@ -2175,38 +2319,15 @@ class _DerivePage extends StatefulWidget {
 
 class _DerivePageState extends State<_DerivePage> {
   final _mnemonic = TextEditingController();
-  final _usbPath = TextEditingController();
   Timer? _timer;
   String? _password;
   String? _message;
   bool _show = false;
-  _DeriveMode _mode = _DeriveMode.thisDevice;
-
-  @override
-  void initState() {
-    super.initState();
-    _fillUsb();
-  }
-
-  @override
-  void didUpdateWidget(covariant _DerivePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _fillUsb();
-  }
-
-  void _fillUsb() {
-    if (_usbPath.text.isNotEmpty || widget.usbCandidates.isEmpty) return;
-    final readable = widget.usbCandidates.where((item) => item.readable);
-    _usbPath.text =
-        (readable.isEmpty ? widget.usbCandidates.first : readable.first)
-            .rootPath;
-  }
 
   @override
   void dispose() {
     _timer?.cancel();
     _mnemonic.dispose();
-    _usbPath.dispose();
     super.dispose();
   }
 
@@ -2216,15 +2337,10 @@ class _DerivePageState extends State<_DerivePage> {
     if (api == null || record == null) return;
     final clipboardClearFailed = context.t.clipboardClearFailed;
     try {
-      if (_mode == _DeriveMode.usbRecovery) {
-        await api.recoverLocal(
-            mnemonic: _mnemonic.text, usbPath: _usbPath.text);
-      }
       final response = await api.derivePassword(
         recordId: record.recordId,
         version: record.version,
         mnemonic: _mnemonic.text,
-        usbPath: _usbPath.text,
       );
       final password = response['password'] as String;
       await Clipboard.setData(ClipboardData(text: password));
@@ -2268,45 +2384,15 @@ class _DerivePageState extends State<_DerivePage> {
                     selected: widget.selected,
                     onChanged: widget.onSelect),
                 const SizedBox(height: 12),
-                SegmentedButton<_DeriveMode>(
-                  segments: [
-                    ButtonSegment(
-                        value: _DeriveMode.thisDevice,
-                        label: Text(t.deriveModeThisDevice)),
-                    ButtonSegment(
-                        value: _DeriveMode.usbRecovery,
-                        label: Text(t.deriveModeUsbRecovery)),
-                  ],
-                  selected: {_mode},
-                  onSelectionChanged: (value) =>
-                      setState(() => _mode = value.first),
-                ),
-                const SizedBox(height: 12),
                 InlineNotice(
-                  text: _mode == _DeriveMode.thisDevice
-                      ? t.deriveModeThisDeviceHelp
-                      : t.deriveModeUsbRecoveryHelp,
-                  icon: _mode == _DeriveMode.thisDevice
-                      ? Icons.devices_rounded
-                      : Icons.usb_rounded,
+                  text: t.normalDerivationHelp,
+                  icon: Icons.devices_rounded,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                     controller: _mnemonic,
                     obscureText: true,
                     decoration: InputDecoration(labelText: t.mnemonicPhrase)),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _usbPath,
-                  decoration: InputDecoration(
-                    labelText: t.usbPath,
-                    suffixIcon: IconButton(
-                      tooltip: t.chooseUsb,
-                      onPressed: () => _chooseUsbPath(_usbPath),
-                      icon: const Icon(Icons.folder_open_rounded),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 16),
                 if (_password != null)
                   Container(
@@ -2375,51 +2461,33 @@ class _RotationPage extends StatefulWidget {
 }
 
 class _RotationPageState extends State<_RotationPage> {
-  double _length = 18;
   String? _message;
 
-  @override
-  void initState() {
-    super.initState();
-    _length = widget.defaultLength.toDouble();
+  List<_RecordVersionGroup> get _groups => _groupRecordVersions(widget.records);
+
+  _RecordVersionGroup? get _selectedGroup {
+    final groups = _groups;
+    if (groups.isEmpty) return null;
+    final selected = widget.selected;
+    if (selected == null) return groups.first;
+    return groups.firstWhere(
+      (group) => group.current.recordId == selected.recordId,
+      orElse: () => groups.first,
+    );
   }
 
   Future<void> _create() async {
     final api = widget.api;
-    final record = widget.selected;
+    final record = _selectedGroup?.current;
     if (api == null || record == null) return;
     try {
+      final length = (record.encodingDescriptor['length'] as num?)?.toInt() ??
+          widget.defaultLength;
       final pending =
-          await api.rotateCredential(record: record, length: _length.round());
+          await api.rotateCredential(record: record, length: length);
       widget.onSelect(pending);
       await widget.onDone();
-      setState(() => _message = context.t.pendingCreated);
-    } catch (_) {
-      setState(() => _message = context.t.operationFailed);
-    }
-  }
-
-  Future<void> _commit() async {
-    final record = widget.selected;
-    if (widget.api == null || record == null) return;
-    try {
-      await widget.api!
-          .confirmRotation(recordId: record.recordId, version: record.version);
-      await widget.onDone();
-      setState(() => _message = context.t.rotationCommitted);
-    } catch (_) {
-      setState(() => _message = context.t.operationFailed);
-    }
-  }
-
-  Future<void> _cancel() async {
-    final record = widget.selected;
-    if (widget.api == null || record == null) return;
-    try {
-      await widget.api!
-          .cancelRotation(recordId: record.recordId, version: record.version);
-      await widget.onDone();
-      setState(() => _message = context.t.rotationCanceled);
+      setState(() => _message = context.t.newVersionCreated);
     } catch (_) {
       setState(() => _message = context.t.operationFailed);
     }
@@ -2428,9 +2496,10 @@ class _RotationPageState extends State<_RotationPage> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final record = widget.selected;
-    final pending = record?.state == 'pending_rotation';
-    final hasRecord = record != null;
+    final group = _selectedGroup;
+    final record = group?.current;
+    final previous = group?.previous;
+    final currentRecords = _groups.map((group) => group.current).toList();
     return Padding(
       padding: const EdgeInsets.all(28),
       child: ListView(
@@ -2441,44 +2510,50 @@ class _RotationPageState extends State<_RotationPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _RecordPicker(
-                    records: widget.records,
-                    selected: record,
-                    onChanged: widget.onSelect),
-                const SizedBox(height: 16),
-                WorkflowStepper(steps: [
-                  t.createPendingVersion,
-                  t.derivePassword,
-                  t.commitRotation
-                ], current: pending ? 1 : 0),
+                if (currentRecords.isEmpty)
+                  Text(t.noRecords)
+                else
+                  _RecordPicker(
+                      records: currentRecords,
+                      selected: record,
+                      onChanged: widget.onSelect),
                 const SizedBox(height: 16),
                 InlineNotice(
-                  text: pending
-                      ? t.rotationPendingHelp
-                      : hasRecord
-                          ? t.rotationCreateHelp
-                          : t.rotationNoRecord,
-                  icon: pending
-                      ? Icons.verified_rounded
-                      : Icons.rotate_right_rounded,
-                  tone: pending ? KpColors.warning : KpColors.primary,
+                  text: record == null
+                      ? t.rotationNoRecord
+                      : t.rotationCreateHelp,
+                  icon: Icons.rotate_right_rounded,
+                  tone: KpColors.primary,
                 ),
-                if (!pending) ...[
+                if (record != null) ...[
                   const SizedBox(height: 16),
-                  Row(
+                  InfoRow(
+                      label: t.currentVersion,
+                      value:
+                          '${record.displayName} · ${t.version} ${record.version} · ${_stateLabelForRotation(t, record.state)}'),
+                  if (previous != null)
+                    InfoRow(
+                        label: t.previousVersion,
+                        value:
+                            '${previous.displayName} · ${t.version} ${previous.version} · ${_stateLabelForRotation(t, previous.state)}'),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
-                      SizedBox(
-                          width: 170,
-                          child: Text('${t.length} ${_length.round()}')),
-                      Expanded(
-                          child: Slider(
-                              min: 8,
-                              max: 64,
-                              divisions: 56,
-                              value: _length,
-                              onChanged: hasRecord
-                                  ? (value) => setState(() => _length = value)
-                                  : null)),
+                      FilledButton.icon(
+                          onPressed: () => widget.onDerivePending(record),
+                          icon: const Icon(Icons.password_rounded),
+                          label: Text(t.deriveCurrentVersion)),
+                      if (previous != null)
+                        OutlinedButton.icon(
+                            onPressed: () => widget.onDerivePending(previous),
+                            icon: const Icon(Icons.history_rounded),
+                            label: Text(t.derivePreviousVersion)),
+                      OutlinedButton.icon(
+                          onPressed: _create,
+                          icon: const Icon(Icons.rotate_right_rounded),
+                          label: Text(t.createNewVersion)),
                     ],
                   ),
                 ],
@@ -2487,35 +2562,23 @@ class _RotationPageState extends State<_RotationPage> {
                   InlineNotice(text: _message!)
                 ],
                 const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12,
-                  children: [
-                    FilledButton.icon(
-                        onPressed: record == null || pending ? null : _create,
-                        icon: const Icon(Icons.add_rounded),
-                        label: Text(t.createPendingVersion)),
-                    FilledButton.icon(
-                        onPressed: pending && record != null
-                            ? () => widget.onDerivePending(record)
-                            : null,
-                        icon: const Icon(Icons.password_rounded),
-                        label: Text(t.derivePendingPassword)),
-                    OutlinedButton.icon(
-                        onPressed: pending ? _commit : null,
-                        icon: const Icon(Icons.check_rounded),
-                        label: Text(t.commitRotation)),
-                    OutlinedButton.icon(
-                        onPressed: pending ? _cancel : null,
-                        icon: const Icon(Icons.close_rounded),
-                        label: Text(t.cancelPending)),
-                  ],
-                ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _stateLabelForRotation(AppLocalizations t, String state) {
+    return switch (state) {
+      'active' => t.active,
+      'pending_rotation' => t.pending,
+      'retired' => t.retired,
+      'conflict' => t.conflict,
+      'error' => t.error,
+      _ => state,
+    };
   }
 }
 
@@ -2544,6 +2607,7 @@ class _RecoveryPanel extends StatefulWidget {
 
 class _RecoveryPanelState extends State<_RecoveryPanel> {
   final _mnemonic = TextEditingController();
+  final _confirmMnemonic = TextEditingController();
   final _usbPath = TextEditingController();
   late _RecoveryMode _mode;
   String? _message;
@@ -2579,16 +2643,21 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
   @override
   void dispose() {
     _mnemonic.dispose();
+    _confirmMnemonic.dispose();
     _usbPath.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     final api = widget.api;
-    if (api == null ||
-        _busy ||
-        _mnemonic.text.trim().isEmpty ||
-        _usbPath.text.trim().isEmpty) {
+    final mnemonic = _mnemonic.text.trim();
+    final usbPath = _usbPath.text.trim();
+    if (api == null || _busy || mnemonic.isEmpty || usbPath.isEmpty) {
+      return;
+    }
+    if (_mode == _RecoveryMode.resetMnemonic &&
+        mnemonic != _confirmMnemonic.text.trim()) {
+      setState(() => _message = context.t.newMnemonicMismatch);
       return;
     }
     setState(() {
@@ -2597,14 +2666,11 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
     });
     try {
       if (_mode == _RecoveryMode.usbLost) {
-        await api.recoverUsb(
-            mnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
+        await api.recoverUsb(mnemonic: mnemonic, usbPath: usbPath);
       } else if (_mode == _RecoveryMode.newDevice) {
-        await api.recoverLocal(
-            mnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
+        await api.recoverLocal(mnemonic: mnemonic, usbPath: usbPath);
       } else {
-        await api.resetMnemonic(
-            newMnemonic: _mnemonic.text, usbPath: _usbPath.text.trim());
+        await api.resetMnemonic(newMnemonic: mnemonic, usbPath: usbPath);
       }
       await widget.onDone();
       if (mounted) {
@@ -2616,8 +2682,82 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
       if (mounted) setState(() => _message = context.t.operationFailed);
     } finally {
       _mnemonic.clear();
+      _confirmMnemonic.clear();
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  IconData _modeIcon(_RecoveryMode mode) {
+    return switch (mode) {
+      _RecoveryMode.usbLost => Icons.usb_rounded,
+      _RecoveryMode.newDevice => Icons.computer_rounded,
+      _RecoveryMode.resetMnemonic => Icons.key_rounded,
+    };
+  }
+
+  String _modeTitle(AppLocalizations t, _RecoveryMode mode) {
+    return switch (mode) {
+      _RecoveryMode.usbLost => t.rebuildUsbPackage,
+      _RecoveryMode.newDevice => t.recoverLocal,
+      _RecoveryMode.resetMnemonic => t.resetMnemonic,
+    };
+  }
+
+  String _modeFactors(AppLocalizations t, _RecoveryMode mode) {
+    return switch (mode) {
+      _RecoveryMode.usbLost => t.recoveryPathMnemonicComputer,
+      _RecoveryMode.newDevice => t.recoveryPathMnemonicUsb,
+      _RecoveryMode.resetMnemonic => t.recoveryPathComputerUsb,
+    };
+  }
+
+  String _modeExplanation(AppLocalizations t, _RecoveryMode mode) {
+    return switch (mode) {
+      _RecoveryMode.usbLost => t.rebuildUsbExplanation,
+      _RecoveryMode.newDevice => t.recoverComputerExplanation,
+      _RecoveryMode.resetMnemonic => t.resetMnemonicExplanation,
+    };
+  }
+
+  String _selectedHelp(AppLocalizations t, _RecoveryMode mode) {
+    return switch (mode) {
+      _RecoveryMode.usbLost => t.usbLostHelp,
+      _RecoveryMode.newDevice => t.recoverLocalHelp,
+      _RecoveryMode.resetMnemonic => t.resetMnemonicFactorHelp,
+    };
+  }
+
+  Widget _pathCard(AppLocalizations t, _RecoveryMode mode) {
+    final selected = _mode == mode;
+    final borderColor = selected ? KpColors.primary : KpColors.hairlineStrong;
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: _busy ? null : () => setState(() => _mode = mode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 140),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: borderColor),
+          color: selected ? KpColors.surfaceSoft : Colors.transparent,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(_modeIcon(mode), color: borderColor),
+            const SizedBox(height: 10),
+            Text(_modeTitle(t, mode),
+                style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 6),
+            Text(_modeFactors(t, mode),
+                style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: 8),
+            Text(_modeExplanation(t, mode),
+                style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -2632,33 +2772,23 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
             style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 16),
         if (widget.allowedModes.length > 1) ...[
-          SegmentedButton<_RecoveryMode>(
-            segments: [
-              if (widget.allowedModes.contains(_RecoveryMode.usbLost))
-                ButtonSegment(
-                    value: _RecoveryMode.usbLost, label: Text(t.usbLostMode)),
-              if (widget.allowedModes.contains(_RecoveryMode.newDevice))
-                ButtonSegment(
-                    value: _RecoveryMode.newDevice,
-                    label: Text(t.newDeviceMode)),
-              if (widget.allowedModes.contains(_RecoveryMode.resetMnemonic))
-                ButtonSegment(
-                    value: _RecoveryMode.resetMnemonic,
-                    label: Text(t.resetMnemonic)),
+          _ResponsiveGrid(
+            minItemWidth: 240,
+            children: [
+              for (final mode in const [
+                _RecoveryMode.usbLost,
+                _RecoveryMode.newDevice,
+                _RecoveryMode.resetMnemonic,
+              ])
+                if (widget.allowedModes.contains(mode)) _pathCard(t, mode),
             ],
-            selected: {_mode},
-            onSelectionChanged:
-                _busy ? null : (value) => setState(() => _mode = value.first),
           ),
           const SizedBox(height: 16),
+        ] else ...[
+          _pathCard(t, _mode),
+          const SizedBox(height: 16),
         ],
-        InlineNotice(
-            text: _mode == _RecoveryMode.resetMnemonic
-                ? t.resetMnemonicHelp
-                : _mode == _RecoveryMode.usbLost
-                    ? t.usbLostHelp
-                    : t.recoverLocalHelp,
-            icon: Icons.usb_rounded),
+        InlineNotice(text: _selectedHelp(t, _mode), icon: _modeIcon(_mode)),
         const SizedBox(height: 12),
         TextField(
           controller: _mnemonic,
@@ -2668,6 +2798,14 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
                   ? t.newMnemonicPhrase
                   : t.mnemonicPhrase),
         ),
+        if (_mode == _RecoveryMode.resetMnemonic) ...[
+          const SizedBox(height: 12),
+          TextField(
+            controller: _confirmMnemonic,
+            obscureText: true,
+            decoration: InputDecoration(labelText: t.confirmNewMnemonicPhrase),
+          ),
+        ],
         const SizedBox(height: 12),
         TextField(
           controller: _usbPath,

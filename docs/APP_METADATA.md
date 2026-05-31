@@ -10,7 +10,7 @@ Local-only desktop password derivation for enterprise legacy systems.
 
 ## Long Description
 
-KeyLessPass is a cross-platform desktop client that derives enterprise passwords on demand without storing target-system plaintext passwords or maintaining an encrypted service-password vault. It combines local platform material, an ordinary USB factor package, and a mnemonic-derived factor with protected CDR metadata to generate deterministic service passwords locally.
+KeyLessPass is a cross-platform desktop client that derives enterprise passwords on demand without storing target-system plaintext passwords or maintaining an encrypted service-password vault. It combines mnemonic, computer, and ordinary copyable USB factors with pairwise wrappers (`W_MC`, `W_MU`, `W_CU`) and protected CDR metadata to generate deterministic service passwords locally.
 
 The app is designed for internal operations teams, security administrators, and small enterprise environments that still need to manage legacy password-based access while avoiding a traditional password database.
 
@@ -32,4 +32,4 @@ https://example.com/keylesspass/privacy
 
 ## Terms Of Use Draft
 
-KeyLessPass is provided for local desktop password derivation. Users are responsible for keeping their mnemonic phrase, local device, and USB factor package protected. The software does not recover forgotten mnemonic phrases automatically and does not provide cloud backup unless a separate enterprise process is configured.
+KeyLessPass is provided for local desktop password derivation. Users are responsible for keeping their mnemonic phrase, local device, and USB factor package protected. A forgotten mnemonic can be reset only with this computer plus the paired USB package; KeyLessPass does not provide cloud backup unless a separate enterprise process is configured.

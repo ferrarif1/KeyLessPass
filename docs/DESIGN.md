@@ -32,6 +32,21 @@ Stable derivation fields are:
 Changing `encodingDescriptor` requires a new version and is treated as password
 rotation.
 
+Normal derivation requires mnemonic + this computer. The Rust core recovers
+`Kmaster` through `W_MC`; the USB package is intended to stay offline during
+daily use and is only needed for enrollment, recovery, and factor replacement.
+
+Recovery paths are 2-of-3:
+
+- mnemonic + this computer decrypts `W_MC` and rebuilds a USB package.
+- mnemonic + USB decrypts `W_MU` and rebuilds this computer's local factor.
+- this computer + USB decrypts `W_CU` and resets the mnemonic without the old
+  mnemonic.
+
+Local and USB factor payloads do not persist plaintext `Kmaster`. The USB
+package is ordinary copyable storage and is treated as a copyable factor
+container.
+
 ## Platform Provider Trait
 
 ```rust

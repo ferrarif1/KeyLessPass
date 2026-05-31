@@ -132,11 +132,7 @@ pub fn derive_password_root(f_m: &[u8], f_c: &[u8], f_u: &[u8]) -> Result<[u8; 3
     hkdf_32(&ikm, b"", b"KeylessPass derivation key")
 }
 
-pub fn derive_password_root_from_master(
-    master_key: &[u8],
-    _f_c: &[u8],
-    _f_u: &[u8],
-) -> Result<[u8; 32]> {
+pub fn derive_password_root_from_master(master_key: &[u8]) -> Result<[u8; 32]> {
     hkdf_32(master_key, b"", b"KeyLessPass v2 derivation key")
 }
 

@@ -137,8 +137,9 @@ fn error_response(message: &str) -> String {
 
 fn safe_error(op: &str, detail: &str) -> String {
     match op {
-        "derivePassword" | "recoverUsb" | "recoverLocal" | "verifyUsbPackage" | "resetMnemonic"
-        | "getUsbCdrStatus" | "syncCdrToUsb" | "restoreCdrFromUsb" => {
+        "verifyUsbPackage" => "无法校验 USB 因子包：结构、schema 或完整性校验失败。".to_string(),
+        "derivePassword" | "recoverUsb" | "recoverLocal" | "resetMnemonic" | "getUsbCdrStatus"
+        | "syncCdrToUsb" | "restoreCdrFromUsb" => {
             "无法完成操作：所需本机材料、USB 因子或输入口令未通过安全校验。".to_string()
         }
         "enroll" if detail.contains("USB") || detail.contains("usb") => {

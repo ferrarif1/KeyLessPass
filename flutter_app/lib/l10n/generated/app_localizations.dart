@@ -518,12 +518,6 @@ abstract class AppLocalizations {
   /// **'Changing password rules requires a new version.'**
   String get ruleChangeRequiresRotation;
 
-  /// No description provided for @recordDetails.
-  ///
-  /// In en, this message translates to:
-  /// **'Record details'**
-  String get recordDetails;
-
   /// No description provided for @advancedDetails.
   ///
   /// In en, this message translates to:
@@ -650,6 +644,36 @@ abstract class AppLocalizations {
   /// **'Derive and copy'**
   String get deriveAndCopy;
 
+  /// No description provided for @deriveCurrentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Derive current version'**
+  String get deriveCurrentVersion;
+
+  /// No description provided for @derivePreviousVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Derive previous version'**
+  String get derivePreviousVersion;
+
+  /// No description provided for @currentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Current version'**
+  String get currentVersion;
+
+  /// No description provided for @previousVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous version'**
+  String get previousVersion;
+
+  /// No description provided for @normalDerivationHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal derivation uses your mnemonic + this computer. The USB package is only needed for setup and recovery.'**
+  String get normalDerivationHelp;
+
   /// No description provided for @deriveMode.
   ///
   /// In en, this message translates to:
@@ -719,8 +743,14 @@ abstract class AppLocalizations {
   /// No description provided for @createPendingVersion.
   ///
   /// In en, this message translates to:
-  /// **'Create pending version'**
+  /// **'Create new version'**
   String get createPendingVersion;
+
+  /// No description provided for @createNewVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new version'**
+  String get createNewVersion;
 
   /// No description provided for @commitRotation.
   ///
@@ -737,8 +767,14 @@ abstract class AppLocalizations {
   /// No description provided for @pendingCreated.
   ///
   /// In en, this message translates to:
-  /// **'Pending version created.'**
+  /// **'New version created.'**
   String get pendingCreated;
+
+  /// No description provided for @newVersionCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'New current version created. The previous version remains derivable.'**
+  String get newVersionCreated;
 
   /// No description provided for @rotationCommitted.
   ///
@@ -755,25 +791,25 @@ abstract class AppLocalizations {
   /// No description provided for @oldVersionRemainsActive.
   ///
   /// In en, this message translates to:
-  /// **'The current active version remains valid until commit.'**
+  /// **'Keep the current and previous versions available for password derivation.'**
   String get oldVersionRemainsActive;
 
   /// No description provided for @rotationCreateHelp.
   ///
   /// In en, this message translates to:
-  /// **'Create a pending version first. The current active password stays valid until you commit.'**
+  /// **'Create a new current version when you need to rotate the target password. KeyLessPass keeps the previous version available for rollback checks.'**
   String get rotationCreateHelp;
 
   /// No description provided for @rotationPendingHelp.
   ///
   /// In en, this message translates to:
-  /// **'A pending version exists. Derive and test the new password in the target system, then commit only after the target password has been changed.'**
+  /// **'Use the current and previous version buttons to derive either password.'**
   String get rotationPendingHelp;
 
   /// No description provided for @derivePendingPassword.
   ///
   /// In en, this message translates to:
-  /// **'Derive pending password'**
+  /// **'Derive version password'**
   String get derivePendingPassword;
 
   /// No description provided for @rotationNoRecord.
@@ -785,7 +821,7 @@ abstract class AppLocalizations {
   /// No description provided for @recoverLocal.
   ///
   /// In en, this message translates to:
-  /// **'Recover this device'**
+  /// **'Recover this computer'**
   String get recoverLocal;
 
   /// No description provided for @recoverUsb.
@@ -806,17 +842,71 @@ abstract class AppLocalizations {
   /// **'New mnemonic phrase'**
   String get newMnemonicPhrase;
 
+  /// No description provided for @confirmNewMnemonicPhrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new mnemonic phrase'**
+  String get confirmNewMnemonicPhrase;
+
+  /// No description provided for @newMnemonicMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The two new mnemonic phrases do not match.'**
+  String get newMnemonicMismatch;
+
   /// No description provided for @resetMnemonicHelp.
   ///
   /// In en, this message translates to:
   /// **'Use this computer and the selected USB package to recover with computer + USB. The old mnemonic is not required; existing derived passwords remain unchanged.'**
   String get resetMnemonicHelp;
 
+  /// No description provided for @resetMnemonicFactorHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This path uses this computer + USB package through W_CU. The old mnemonic is not required.'**
+  String get resetMnemonicFactorHelp;
+
   /// No description provided for @usbLostHelp.
   ///
   /// In en, this message translates to:
   /// **'Use this computer and your mnemonic to rebuild the USB package. A single computer factor alone cannot recover the master secret.'**
   String get usbLostHelp;
+
+  /// No description provided for @recoveryPathMnemonicComputer.
+  ///
+  /// In en, this message translates to:
+  /// **'Mnemonic + this computer'**
+  String get recoveryPathMnemonicComputer;
+
+  /// No description provided for @recoveryPathMnemonicUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'Mnemonic + USB package'**
+  String get recoveryPathMnemonicUsb;
+
+  /// No description provided for @recoveryPathComputerUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer + USB package'**
+  String get recoveryPathComputerUsb;
+
+  /// No description provided for @rebuildUsbExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use mnemonic + this computer to recover the master key through W_MC and rebuild a paired USB package.'**
+  String get rebuildUsbExplanation;
+
+  /// No description provided for @recoverComputerExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use mnemonic + USB package to recover the master key through W_MU and rebuild this computer\'s local factor.'**
+  String get recoverComputerExplanation;
+
+  /// No description provided for @resetMnemonicExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this computer + USB package to recover the master key through W_CU and set a new mnemonic. The old mnemonic is not required. Existing derived passwords remain unchanged.'**
+  String get resetMnemonicExplanation;
 
   /// No description provided for @mnemonicResetComplete.
   ///
@@ -995,8 +1085,14 @@ abstract class AppLocalizations {
   /// No description provided for @usbHelpHint.
   ///
   /// In en, this message translates to:
-  /// **'A standard USB drive is supported. Use the folder button if macOS asks for access.'**
+  /// **'A standard USB drive is supported. Verify checks package structure and integrity without a mnemonic; rebuild uses mnemonic + this computer.'**
   String get usbHelpHint;
+
+  /// No description provided for @usbFactorContainerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The USB package is a copyable factor container. It stores USB factor material and pairwise wrappers, but not plaintext service passwords or plaintext Kmaster.'**
+  String get usbFactorContainerHelp;
 
   /// No description provided for @manualUsbHint.
   ///

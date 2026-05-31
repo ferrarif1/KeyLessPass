@@ -79,7 +79,7 @@ pub fn list_credentials_at(paths: &StoragePaths) -> Result<Vec<CredentialDescrip
     let config = read_config(paths)?;
     let store = CdrStore::new(&config.cdr_store_path);
     store.init()?;
-    store.list_latest_visible()
+    store.list_all()
 }
 
 pub fn update_credential_display_with_provider(
