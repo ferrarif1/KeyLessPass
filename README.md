@@ -33,7 +33,6 @@
   <img alt="Desktop" src="https://img.shields.io/badge/desktop-macOS%20%7C%20Windows%20%7C%20Linux-101010">
   <img alt="Core" src="https://img.shields.io/badge/core-Rust-101010">
   <img alt="UI" src="https://img.shields.io/badge/UI-Flutter%20Desktop-101010">
-  <img alt="No cloud" src="https://img.shields.io/badge/cloud-none-101010">
 </p>
 
 <p align="center">
