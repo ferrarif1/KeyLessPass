@@ -37,10 +37,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v0.1-jisa-2026-submission">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v1.0-jisa-2026">
     <img alt="Download macOS DMG" src="https://img.shields.io/badge/Download-macOS%20DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white">
   </a>
-  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v0.1-jisa-2026-submission">
+  <a href="https://github.com/ferrarif1/KeyLessPass/releases/tag/v1.0-jisa-2026">
     <img alt="Download Windows installer" src="https://img.shields.io/badge/Download-Windows%20Installer-0078D4?style=for-the-badge&logo=windows11&logoColor=white">
   </a>
 </p>
