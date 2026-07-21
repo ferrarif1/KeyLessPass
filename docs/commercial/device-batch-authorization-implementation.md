@@ -93,6 +93,24 @@ Flutter:
 - paste/import enterprise license bundle;
 - clear local license grant.
 
+Admin backend:
+
+- standalone `admin_backend` Rust service;
+- token-protected intranet browser UI;
+- SQLite organization, device, bundle, and grant metadata storage;
+- import of desktop device authorization requests;
+- Ed25519 signing of client-compatible license bundle envelopes;
+- grant revocation records included in newly issued bundles;
+- Docker Compose deployment with `scripts/intranet_deploy.sh`.
+
+Commercial release hardening:
+
+- commercial builds can inject the trusted license public key with
+  `KEYLESSPASS_LICENSE_PUBLIC_KEY_B64`;
+- commercial builds must set `KEYLESSPASS_REQUIRE_LICENSE=1`;
+- `tools/commercial/build_commercial_release.sh` checks those inputs before
+  calling the platform packaging script.
+
 Commercial enforcement:
 
 - Default source-available/evaluation builds do not block local password
@@ -117,8 +135,8 @@ Tests:
 ## Deferred
 
 - Online activation API.
-- Full admin portal.
 - MDM managed path auto-import.
 - Production signing-key rotation UI.
 - Release-channel-specific hard enforcement.
-- Dedicated `keylesspass-admin` signing CLI.
+- Multi-user role-based admin accounts and audit-log export.
+- CSV bulk import/export.

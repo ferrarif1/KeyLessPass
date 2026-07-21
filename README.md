@@ -183,6 +183,7 @@ Record-centric actions such as add, derive, and rotation are launched from Recor
 
 ```text
 KeyLessPass
+├── admin_backend/        # Intranet commercial device authorization backend
 ├── flutter_app/          # Flutter Desktop UI
 ├── rust_core/            # Rust cryptography, storage, recovery, and FFI core
 ├── packaging/            # macOS, Windows, and Linux packaging scripts
@@ -191,6 +192,36 @@ KeyLessPass
 ```
 
 The Rust core is intentionally independent from platform-specific secure storage details. Platform factor providers implement a common interface, with macOS Keychain, Windows DPAPI, Linux local/fallback storage, and future TPM/Secure Enclave hooks isolated behind the provider layer.
+
+Commercial device authorization is implemented as an outer product layer. The
+`admin_backend` service signs offline license bundles for intranet deployment;
+the desktop client verifies those bundles locally with an embedded public key.
+Commercial builds should set `KEYLESSPASS_REQUIRE_LICENSE=1` and inject the
+admin public key at compile time. This layer never receives mnemonic phrases,
+`Kmaster`, factor secrets, CDR secrets, service passwords, or derived passwords.
+
+### Run the Intranet Admin Backend
+
+```bash
+cd admin_backend
+./scripts/intranet_deploy.sh
+```
+
+The script starts a Docker Compose deployment, prints the local URL and admin
+token, and generates a fresh Ed25519 signing seed on first run. Embed the
+displayed public key into the matching commercial client build before shipping
+that build to customers.
+
+### Build a Commercial Client
+
+```bash
+KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<public key from admin_backend>' \
+tools/commercial/build_commercial_release.sh macos
+```
+
+This enables compile-time license enforcement for the packaged client. Official
+distribution should still use platform signing and notarization/installer
+signing so tampered builds are distinguishable from official releases.
 
 ## Quick Start
 

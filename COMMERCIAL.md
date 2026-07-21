@@ -47,6 +47,18 @@ See [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch
 for the proposed offline bulk authorization, online activation, MDM deployment,
 renewal, and revocation design.
 
+This feature branch also contains an intranet authorization backend under
+[`admin_backend`](admin_backend/). It can be deployed with Docker Compose,
+imports device authorization requests exported by the desktop client, and
+issues signed `.klp-license-bundle` files for offline enterprise activation.
+The backend stores commercial metadata only and must not receive mnemonic
+phrases, `Kmaster`, factor secrets, CDR secrets, or derived service passwords.
+
+Commercial release hardening guidance is documented in
+[docs/commercial/commercial-release-hardening.md](docs/commercial/commercial-release-hardening.md).
+Commercial clients should be built with compile-time authorization enforcement
+and a public key matching the intranet/admin signing key.
+
 ## Proof-of-Concept Rules
 
 For PoC or evaluation use:

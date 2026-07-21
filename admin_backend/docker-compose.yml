@@ -1,0 +1,19 @@
+services:
+  keylesspass-admin:
+    build:
+      context: .
+    image: keylesspass-admin:local
+    container_name: keylesspass-admin
+    env_file:
+      - .env
+    environment:
+      KEYLESSPASS_ADMIN_BIND: 0.0.0.0:8787
+      KEYLESSPASS_ADMIN_DB: /data/keylesspass-admin.sqlite3
+    ports:
+      - "${KEYLESSPASS_ADMIN_PORT:-8787}:8787"
+    volumes:
+      - keylesspass-admin-data:/data
+    restart: unless-stopped
+
+volumes:
+  keylesspass-admin-data:

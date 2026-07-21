@@ -13,7 +13,7 @@ use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 const DEFAULT_LICENSE_KEY_ID: &str = "keylesspass-license-2026-q3";
-const DEFAULT_LICENSE_PUBLIC_KEY_B64: &str = "QDNS+Maa3BNsG+4jFlo2UFNkcMr00G3+HOxc7I7lOCI=";
+const EVALUATION_LICENSE_PUBLIC_KEY_B64: &str = "QDNS+Maa3BNsG+4jFlo2UFNkcMr00G3+HOxc7I7lOCI=";
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -210,10 +210,10 @@ pub fn clear_license_at(
 }
 
 pub fn default_license_verifier() -> LicenseVerifier {
-    LicenseVerifier::new([(
-        DEFAULT_LICENSE_KEY_ID.to_string(),
-        DEFAULT_LICENSE_PUBLIC_KEY_B64.to_string(),
-    )])
+    let key_id = option_env!("KEYLESSPASS_LICENSE_KEY_ID").unwrap_or(DEFAULT_LICENSE_KEY_ID);
+    let public_key = option_env!("KEYLESSPASS_LICENSE_PUBLIC_KEY_B64")
+        .unwrap_or(EVALUATION_LICENSE_PUBLIC_KEY_B64);
+    LicenseVerifier::new([(key_id.to_string(), public_key.to_string())])
 }
 
 fn verify_and_parse_bundle(

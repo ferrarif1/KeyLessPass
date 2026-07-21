@@ -81,6 +81,7 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 - U 盘可备份 CDR 元数据，并支持本机与 U 盘记录一致性检查、显式同步或恢复。
 - 初始化时随机生成每用户主密钥。
 - 支持本机生成英文或简体中文助记短语，生成后不保存。
+- 支持和论文一致的 2-of-3 本地恢复模型：`W_MC`、`W_MU`、`W_CU` 三组成对包装保护同一个 `Kmaster`。
 - 支持使用本机设备和配对 U 盘重置助记短语，且不改变已有派生密码。
 - 派生路径基于稳定的 `recordSeq`、`recordId`、`version`、`salt` 和 `encodingDescriptor`。
 - 新 profile 可选择服务派生算法：HKDF-SHA256、Argon2id、scrypt 或 PBKDF2-HMAC-SHA256。
@@ -94,16 +95,25 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 
 ## 保存什么，不保存什么
 
-| 本机保存 | 不保存 |
+| 保存 | 不保存 |
 | --- | --- |
-| 受保护的本机因子包 | 目标系统明文密码 |
-| 用户选择的 U 盘因子包 | 加密服务密码库 |
+| 本机因子包：`userId`、`deviceId`、`saltC`、助记短语 salt、助记短语校验器、`W_MC`、可选 `W_CU` 和 schema/version 元数据 | 目标系统明文密码 |
+| U 盘因子包：`userId`、`usbId`、`saltU`、U 盘因子材料、`W_MU`、`W_CU` 和 schema/version 元数据 | 加密服务密码库 |
 | CDR 元数据、盐值、版本、MAC 标签和可选 U 盘 CDR 备份 | 助记短语 |
-| 本地恢复元数据 | 云账号、同步状态、分析数据 |
+| 平台保护的本机设备 secret，例如 macOS `com.keylesspass.local-factor` | 本机或 U 盘 payload 中的明文 `Kmaster` |
+| 商业授权状态、签名 license bundle、商业设备 ID | 本机包中的 `usbSecret` 或 U 盘包中的 `deviceSecret` |
 
 ## 简要工作原理
 
 初始化时，KeyLessPass 生成随机 256-bit 每用户主密钥。助记短语不是服务密码根种子，也不会被保存。它会先通过 KDF 形成独立的助记短语因子 `F_M`，再和本机因子 `F_C`、U 盘因子 `F_U` 一起参与本地 2-of-3 解封装/恢复模型，用于恢复 `Kmaster`。服务密码派生阶段使用恢复出的 `Kmaster` 和稳定的 CDR 路径字段。
+
+```text
+K_MC = HKDF(F_M || F_C, "KeyLessPass/wrap/MC")
+K_MU = HKDF(F_M || F_U, "KeyLessPass/wrap/MU")
+K_CU = HKDF(F_C || F_U, "KeyLessPass/wrap/CU")
+```
+
+任意两个因子都能恢复同一个 `Kmaster`：助记短语 + 本机使用 `W_MC`，助记短语 + U 盘使用 `W_MU`，本机 + U 盘使用 `W_CU`。任意单个因子不能恢复 `Kmaster`。日常派生默认使用助记短语 + 本机；U 盘平时可以离线保存，只在初始化、恢复本机、更换本机或重置助记短语时使用。
 
 为兼容旧数据，缺少算法字段的既有 profile 会按 legacy HKDF-SHA256 处理。新的 profile 可在初始化前选择 HKDF-SHA256、Argon2id、scrypt 或 PBKDF2-HMAC-SHA256；初始化完成后该选择会随本机配置和因子包锁定，如需更改，需要重置本机应用数据并重新初始化。
 
@@ -131,6 +141,10 @@ flowchart LR
 - 不把目标系统明文密码写入磁盘。
 - 不维护加密服务密码库。
 - 不保存助记短语。
+- 不把明文 `Kmaster` 作为本机或 U 盘 payload 字段持久化。
+- 本机包不保存 `usbSecret`，U 盘包不保存 `deviceSecret`。
+- U 盘包是普通可复制的因子容器，不是不可复制硬件密钥。
+- 任意两个因子可以恢复 `Kmaster`，任意单个因子不能恢复。
 - 不包含云同步、远程后台、浏览器自动填充或账号登录体系。
 - 随机数来自操作系统 CSPRNG。
 - 使用前校验 CDR 和因子包完整性。
@@ -158,6 +172,7 @@ flowchart LR
 
 ```text
 KeyLessPass
+├── admin_backend/        # 内网商业设备授权后台
 ├── flutter_app/          # Flutter Desktop UI
 ├── rust_core/            # Rust 密码学、存储、恢复和 FFI 核心
 ├── packaging/            # macOS、Windows、Linux 打包脚本
@@ -166,6 +181,10 @@ KeyLessPass
 ```
 
 Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过统一接口实现，macOS Keychain、Windows DPAPI、Linux 本地/回退存储，以及后续 TPM/Secure Enclave 能力都隔离在 provider 层。
+
+商业设备授权是外层产品授权能力，不属于密码派生安全边界。`admin_backend`
+可在企业内网部署，用于导入桌面客户端导出的设备授权申请，并签发可离线导入的
+`.klp-license-bundle`。该后台只保存商业授权元数据，不接收助记短语、`Kmaster`、因子 secret、CDR secret、服务密码或派生密码。商业客户端应在编译期启用授权强制检查，并嵌入该后台对应的授权公钥。
 
 ## 快速开始
 
@@ -195,6 +214,27 @@ flutter analyze
 flutter test
 flutter run -d macos
 ```
+
+### 一键内网部署授权后台
+
+```bash
+cd admin_backend
+./scripts/intranet_deploy.sh
+```
+
+脚本会启动 Docker Compose 服务，首次运行时生成管理员 token 和 Ed25519
+签名种子，并打印本机访问地址。页面上显示的公钥需要嵌入对应商业客户端构建；
+签名私钥只应保存在内网授权后台。
+
+### 构建强制授权商业客户端
+
+```bash
+KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<来自 admin_backend 的 publicKeyB64>' \
+tools/commercial/build_commercial_release.sh macos
+```
+
+商业构建会设置 `KEYLESSPASS_REQUIRE_LICENSE=1`。正式分发仍应使用平台签名：
+macOS Developer ID + notarization，Windows Authenticode，Linux 签名仓库或签名校验清单。
 
 ### macOS 发布构建
 

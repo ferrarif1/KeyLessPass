@@ -4,6 +4,8 @@ packaging/.DS_Store
 
 # Rust
 /rust_core/target/
+/admin_backend/target/
+/admin_backend/.env
 
 # Flutter
 /flutter_app/build/

@@ -148,6 +148,40 @@ This is the preferred flow for regulated enterprises and internal networks.
 6. Each client verifies the bundle signature locally and activates only the
    grant matching its `commercialDeviceId` and `deviceFingerprint`.
 
+### Intranet Admin Backend
+
+This feature branch includes a deployable intranet backend in `admin_backend/`.
+It is intended for offline/internal customer environments where production
+machines cannot call a public activation service.
+
+The backend provides:
+
+- organization and seat management;
+- device authorization request import;
+- per-device grant issuance;
+- signed `.klp-license-bundle` generation;
+- grant revocation records included in future bundles;
+- a built-in browser UI protected by `KEYLESSPASS_ADMIN_TOKEN`;
+- SQLite storage for commercial metadata;
+- Docker Compose one-click deployment for intranet hosts.
+
+The backend signs the same envelope format that the Rust core verifies. It
+stores only licensing metadata and must not receive mnemonic phrases, `Kmaster`,
+`deviceSecret`, `usbSecret`, service passwords, derived passwords, CDR secrets,
+or recovery wrapper keys.
+
+One-click deployment:
+
+```bash
+cd admin_backend
+./scripts/intranet_deploy.sh
+```
+
+The deployment script generates an admin token and an Ed25519 signing seed on
+first run. The displayed public key must be embedded into the commercial client
+build for the matching `keyId`; the private signing seed must stay only on the
+admin backend host.
+
 ### 2. Online Activation
 
 This is the simpler SaaS-style flow for small teams.
@@ -279,35 +313,37 @@ For batch operation, the UI should clearly support:
 
 ## Commercial Operations
 
-Minimum backend/admin capabilities:
+The current `admin_backend` covers the offline/internal minimum:
 
-- customer account and contract record
+- customer organization and contract-like record
 - seat count and plan management
 - license issuance
-- device request import by JSON or CSV
+- device request import by JSON
 - batch grant generation
-- grant revocation/release
-- renewal bundle generation
+- grant revocation records
+- renewal bundle generation by issuing a fresh signed bundle
 - support diagnostics lookup by `licenseId`, `organizationId`, or `grantId`
 
-For the first commercial version, an internal CLI can replace a full web portal:
+The browser UI is intentionally small enough for internal operations. Future
+work can add CSV import/export, role-based users, audit log export, online
+activation, and MDM managed bundle distribution.
 
-```text
-keylesspass-admin issue-org-license --org acme --seats 200 --until 2027-12-31
-keylesspass-admin import-device-requests ./requests/
-keylesspass-admin issue-bundle --license LIC-... --out acme.klp-license-bundle
-keylesspass-admin revoke-device --grant GRANT-...
-```
+For automated environments, use the `/api/*` endpoints documented in
+`admin_backend/README.md`.
 
 ## Rollout Plan
 
-1. Documentation and commercial terms.
-2. Local signed license verification in Rust core.
-3. Flutter license page for status, request export, and bundle import.
-4. Offline admin CLI for batch device grants.
-5. Online activation API.
-6. MDM managed path support.
-7. Renewal and revocation workflow.
+1. Documentation and commercial terms. Done in this branch.
+2. Local signed license verification in Rust core. Done in this branch.
+3. Flutter license page for status, request export, and bundle import. Done in
+   this branch.
+4. Intranet admin backend for batch device grants. Done in this branch.
+5. Commercial release hardening. Started in this branch with compile-time
+   enforcement, build-time public-key injection, and release guidance.
+6. Online activation API. Future work.
+7. MDM managed path support. Future work.
+8. Rich renewal, revocation, and audit workflow. Partially implemented for
+   offline bundles; future work for online/MDM automation.
 
 ## Acceptance Criteria
 
@@ -322,4 +358,3 @@ keylesspass-admin revoke-device --grant GRANT-...
 - Offline deployments can renew by importing a new signed bundle.
 - Online deployments can activate with an activation code and receive a signed
   device grant.
-
