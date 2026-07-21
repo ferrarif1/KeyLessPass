@@ -608,6 +608,106 @@ class AppLocalizationsEn extends AppLocalizations {
   String get advancedMode => 'Advanced mode';
 
   @override
+  String get commercialAuthorization => 'Commercial authorization';
+
+  @override
+  String get authorizationStatus => 'Authorization status';
+
+  @override
+  String get authorizationSecurityNotice =>
+      'Commercial authorization controls product entitlement only. It does not contain mnemonic phrases, master keys, factor secrets, or service passwords.';
+
+  @override
+  String get organization => 'Organization';
+
+  @override
+  String get organizationId => 'Organization ID';
+
+  @override
+  String get plan => 'Plan';
+
+  @override
+  String get seat => 'Seat';
+
+  @override
+  String get seatLabel => 'Seat label';
+
+  @override
+  String get licenseId => 'License ID';
+
+  @override
+  String get grantId => 'Grant ID';
+
+  @override
+  String get validUntil => 'Valid until';
+
+  @override
+  String get commercialDeviceId => 'Commercial device ID';
+
+  @override
+  String get deviceFingerprint => 'Device fingerprint';
+
+  @override
+  String get features => 'Features';
+
+  @override
+  String get copyDeviceRequest => 'Copy device request';
+
+  @override
+  String get deviceRequestHelp =>
+      'Copy this request and send it to the license issuer or enterprise admin tool. It contains only licensing identifiers, not password secrets.';
+
+  @override
+  String get deviceRequestCopied => 'Device authorization request copied.';
+
+  @override
+  String get importLicenseBundle => 'Import license bundle';
+
+  @override
+  String get licenseBundleJson => 'License bundle JSON';
+
+  @override
+  String get licenseBundleHelp =>
+      'Paste the signed enterprise license bundle. This device is authorized only if the bundle contains a matching device grant.';
+
+  @override
+  String get licenseImported => 'License bundle imported.';
+
+  @override
+  String get licenseImportFailed =>
+      'License bundle could not be verified for this device.';
+
+  @override
+  String get clearLicense => 'Clear local license';
+
+  @override
+  String get licenseCleared => 'Local license grant cleared.';
+
+  @override
+  String get licenseAuthorized => 'Authorized';
+
+  @override
+  String get licenseGrace => 'Grace period';
+
+  @override
+  String get licenseExpired => 'Expired';
+
+  @override
+  String get licenseInvalid => 'Invalid';
+
+  @override
+  String get licenseNotForThisDevice => 'Not for this device';
+
+  @override
+  String get licenseRevoked => 'Revoked';
+
+  @override
+  String get licenseNotYetValid => 'Not yet valid';
+
+  @override
+  String get licenseUnlicensed => 'Unlicensed';
+
+  @override
   String get exportDiagnostics => 'Export diagnostics';
 
   @override

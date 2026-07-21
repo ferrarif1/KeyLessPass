@@ -1232,6 +1232,198 @@ abstract class AppLocalizations {
   /// **'Advanced mode'**
   String get advancedMode;
 
+  /// No description provided for @commercialAuthorization.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial authorization'**
+  String get commercialAuthorization;
+
+  /// No description provided for @authorizationStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorization status'**
+  String get authorizationStatus;
+
+  /// No description provided for @authorizationSecurityNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial authorization controls product entitlement only. It does not contain mnemonic phrases, master keys, factor secrets, or service passwords.'**
+  String get authorizationSecurityNotice;
+
+  /// No description provided for @organization.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get organization;
+
+  /// No description provided for @organizationId.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization ID'**
+  String get organizationId;
+
+  /// No description provided for @plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get plan;
+
+  /// No description provided for @seat.
+  ///
+  /// In en, this message translates to:
+  /// **'Seat'**
+  String get seat;
+
+  /// No description provided for @seatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Seat label'**
+  String get seatLabel;
+
+  /// No description provided for @licenseId.
+  ///
+  /// In en, this message translates to:
+  /// **'License ID'**
+  String get licenseId;
+
+  /// No description provided for @grantId.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant ID'**
+  String get grantId;
+
+  /// No description provided for @validUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid until'**
+  String get validUntil;
+
+  /// No description provided for @commercialDeviceId.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial device ID'**
+  String get commercialDeviceId;
+
+  /// No description provided for @deviceFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Device fingerprint'**
+  String get deviceFingerprint;
+
+  /// No description provided for @features.
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get features;
+
+  /// No description provided for @copyDeviceRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy device request'**
+  String get copyDeviceRequest;
+
+  /// No description provided for @deviceRequestHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this request and send it to the license issuer or enterprise admin tool. It contains only licensing identifiers, not password secrets.'**
+  String get deviceRequestHelp;
+
+  /// No description provided for @deviceRequestCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Device authorization request copied.'**
+  String get deviceRequestCopied;
+
+  /// No description provided for @importLicenseBundle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import license bundle'**
+  String get importLicenseBundle;
+
+  /// No description provided for @licenseBundleJson.
+  ///
+  /// In en, this message translates to:
+  /// **'License bundle JSON'**
+  String get licenseBundleJson;
+
+  /// No description provided for @licenseBundleHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the signed enterprise license bundle. This device is authorized only if the bundle contains a matching device grant.'**
+  String get licenseBundleHelp;
+
+  /// No description provided for @licenseImported.
+  ///
+  /// In en, this message translates to:
+  /// **'License bundle imported.'**
+  String get licenseImported;
+
+  /// No description provided for @licenseImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'License bundle could not be verified for this device.'**
+  String get licenseImportFailed;
+
+  /// No description provided for @clearLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear local license'**
+  String get clearLicense;
+
+  /// No description provided for @licenseCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Local license grant cleared.'**
+  String get licenseCleared;
+
+  /// No description provided for @licenseAuthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized'**
+  String get licenseAuthorized;
+
+  /// No description provided for @licenseGrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace period'**
+  String get licenseGrace;
+
+  /// No description provided for @licenseExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get licenseExpired;
+
+  /// No description provided for @licenseInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid'**
+  String get licenseInvalid;
+
+  /// No description provided for @licenseNotForThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Not for this device'**
+  String get licenseNotForThisDevice;
+
+  /// No description provided for @licenseRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get licenseRevoked;
+
+  /// No description provided for @licenseNotYetValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet valid'**
+  String get licenseNotYetValid;
+
+  /// No description provided for @licenseUnlicensed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlicensed'**
+  String get licenseUnlicensed;
+
   /// No description provided for @exportDiagnostics.
   ///
   /// In en, this message translates to:

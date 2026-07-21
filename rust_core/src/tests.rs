@@ -1,5 +1,10 @@
 use crate::crypto::kdf;
-use crate::domain::{CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm};
+use crate::crypto::signing::{b64url_encode, LicenseVerifier};
+use crate::domain::{
+    CredentialState, DeviceGrant, EncodingDescriptor, LicenseBundlePayload, OrganizationLicense,
+    PasswordDerivationAlgorithm, SignedLicenseEnvelope, LICENSE_ENVELOPE_TYPE,
+    LICENSE_SCHEMA_VERSION, LICENSE_SIGNATURE_ALGORITHM,
+};
 use crate::platform::fallback::FallbackPlatformFactorProvider;
 use crate::platform::linux::LinuxPlatformFactorProvider;
 use crate::platform::macos::MacOSPlatformFactorProvider;
@@ -11,6 +16,10 @@ use crate::service::credentials::{
 };
 use crate::service::derive::{derive_password_with_provider, DerivePasswordRequest};
 use crate::service::enrollment::{enroll_with_provider, EnrollmentRequest};
+use crate::service::license::{
+    export_device_authorization_request_at, get_license_status_at, import_license_bundle_at,
+    ExportDeviceAuthorizationRequest, ImportLicenseBundleRequest,
+};
 use crate::service::recovery::{
     recover_local_with_provider, recover_usb_with_provider, reset_mnemonic_with_provider,
     RecoverLocalRequest, RecoverUsbRequest, ResetMnemonicRequest,
@@ -25,6 +34,8 @@ use crate::storage::{
     load_usb_factor_payload, read_usb_factor_package, usb_package_file, write_local_factor_package,
     write_usb_factor_package, CdrStore, StoragePaths,
 };
+use chrono::{Duration, Utc};
+use ed25519_dalek::{Signer, SigningKey};
 use tempfile::TempDir;
 use uuid::Uuid;
 
@@ -32,6 +43,7 @@ const MNEMONIC: &str =
     "alpha bridge cable delta ember forest galaxy harbor ivory jungle kinetic lemon";
 const NEW_MNEMONIC: &str =
     "anchor bridge cedar delta ember forest galaxy harbor ivory jasmine kernel lantern";
+const TEST_LICENSE_KEY_ID: &str = "test-license-key";
 
 struct Harness {
     _app_dir: TempDir,
@@ -80,6 +92,83 @@ fn setup_with_algorithm(password_derivation_algorithm: PasswordDerivationAlgorit
         provider,
         record_id: record.record_id,
         version: record.version,
+    }
+}
+
+fn license_verifier(signing_key: &SigningKey) -> LicenseVerifier {
+    LicenseVerifier::new([(
+        TEST_LICENSE_KEY_ID.to_string(),
+        b64url_encode(&signing_key.verifying_key().to_bytes()),
+    )])
+}
+
+fn signed_license_bundle(signing_key: &SigningKey, payload: &LicenseBundlePayload) -> String {
+    let payload_bytes = serde_json::to_vec(payload).unwrap();
+    let signature = signing_key.sign(&payload_bytes);
+    let envelope = SignedLicenseEnvelope {
+        schema_version: LICENSE_SCHEMA_VERSION,
+        envelope_type: LICENSE_ENVELOPE_TYPE.to_string(),
+        payload: b64url_encode(&payload_bytes),
+        signature_algorithm: LICENSE_SIGNATURE_ALGORITHM.to_string(),
+        key_id: TEST_LICENSE_KEY_ID.to_string(),
+        signature: b64url_encode(&signature.to_bytes()),
+    };
+    serde_json::to_string(&envelope).unwrap()
+}
+
+fn license_payload_for_request(
+    request: &crate::domain::DeviceAuthorizationRequest,
+    valid_until: String,
+    grace_days: u32,
+) -> LicenseBundlePayload {
+    let now = Utc::now();
+    let valid_from = (now - Duration::days(1)).to_rfc3339();
+    let issued_at = now.to_rfc3339();
+    LicenseBundlePayload {
+        schema_version: LICENSE_SCHEMA_VERSION,
+        bundle_id: Uuid::new_v4().to_string(),
+        organization_license: OrganizationLicense {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            license_id: "LIC-ACME-001".to_string(),
+            organization_id: request
+                .organization_id
+                .clone()
+                .unwrap_or_else(|| "acme".to_string()),
+            organization_name: "ACME Security".to_string(),
+            plan: "offline-enterprise".to_string(),
+            max_seats: 100,
+            valid_from: valid_from.clone(),
+            valid_until: valid_until.clone(),
+            features: vec![
+                "desktop-client".to_string(),
+                "offline-activation".to_string(),
+                "batch-device-import".to_string(),
+            ],
+            offline_grace_days: grace_days,
+            allowed_major_versions: vec![1],
+            issued_at: issued_at.clone(),
+            issuer: "KeyLessPass Commercial".to_string(),
+        },
+        device_grants: vec![DeviceGrant {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            grant_id: "GRANT-ACME-DEVICE-001".to_string(),
+            license_id: "LIC-ACME-001".to_string(),
+            organization_id: request
+                .organization_id
+                .clone()
+                .unwrap_or_else(|| "acme".to_string()),
+            commercial_device_id: request.commercial_device_id.clone(),
+            device_fingerprint: request.device_fingerprint.clone(),
+            seat_label: request.seat_label.clone().unwrap_or_default(),
+            valid_from,
+            valid_until,
+            features: vec!["desktop-client".to_string()],
+            offline_grace_days: grace_days,
+            issued_at,
+            issuer: "KeyLessPass Commercial".to_string(),
+        }],
+        revoked_grant_ids: vec![],
+        issued_at: now.to_rfc3339(),
     }
 }
 
@@ -861,6 +950,187 @@ fn corrupt_cdr_mac_fails() {
         },
     )
     .is_err());
+}
+
+#[test]
+fn license_status_starts_unlicensed_and_request_has_no_password_secrets() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-test");
+    let verifier = LicenseVerifier::new(Vec::<(String, String)>::new());
+
+    let status = get_license_status_at(&paths, &provider, &verifier).unwrap();
+    assert_eq!(status.status, "unlicensed");
+    assert!(!status.authorized);
+    assert!(!status.commercial_device_id.is_empty());
+    assert!(!status.device_fingerprint.is_empty());
+
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: Some("finance-mac-001".to_string()),
+        },
+    )
+    .unwrap();
+    let request_json = serde_json::to_string(&request).unwrap();
+    assert!(request_json.contains("commercialDeviceId"));
+    assert!(request_json.contains("deviceFingerprint"));
+    assert!(!request_json.contains("mnemonic"));
+    assert!(!request_json.contains("Kmaster"));
+    assert!(!request_json.contains("deviceSecret"));
+    assert!(!request_json.contains("usbSecret"));
+}
+
+#[test]
+fn signed_license_bundle_authorizes_intended_device() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-test");
+    let signing_key = SigningKey::from_bytes(&[42_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: Some("finance-mac-001".to_string()),
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    let bundle_json = signed_license_bundle(&signing_key, &payload);
+
+    let imported = import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    )
+    .unwrap();
+    assert_eq!(imported.status, "authorized");
+    assert!(imported.authorized);
+    assert_eq!(imported.organization_id.as_deref(), Some("acme"));
+    assert_eq!(imported.grant_id.as_deref(), Some("GRANT-ACME-DEVICE-001"));
+
+    let stored = get_license_status_at(&paths, &provider, &verifier).unwrap();
+    assert_eq!(stored.status, "authorized");
+    assert!(stored.authorized);
+}
+
+#[test]
+fn copied_license_bundle_does_not_authorize_another_device() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-test-a");
+    let other_app_dir = tempfile::tempdir().unwrap();
+    let other_paths = StoragePaths::from_app_dir(other_app_dir.path().to_path_buf());
+    let other_provider =
+        FallbackPlatformFactorProvider::new(other_paths.app_dir.clone(), "license-test-b");
+    let signing_key = SigningKey::from_bytes(&[43_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: Some("finance-mac-001".to_string()),
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    let bundle_json = signed_license_bundle(&signing_key, &payload);
+
+    assert!(
+        import_license_bundle_at(
+            &paths,
+            &provider,
+            &verifier,
+            ImportLicenseBundleRequest {
+                bundle_json: bundle_json.clone()
+            },
+        )
+        .unwrap()
+        .authorized
+    );
+    let copied = import_license_bundle_at(
+        &other_paths,
+        &other_provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    );
+    assert!(copied.is_err());
+    assert!(copied
+        .unwrap_err()
+        .to_string()
+        .contains("does not contain a grant for this device"));
+}
+
+#[test]
+fn tampered_license_bundle_signature_fails() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-test");
+    let signing_key = SigningKey::from_bytes(&[44_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let mut payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    let bundle_json = signed_license_bundle(&signing_key, &payload);
+    let mut envelope: SignedLicenseEnvelope = serde_json::from_str(&bundle_json).unwrap();
+    payload.organization_license.max_seats = 10_000;
+    envelope.payload = b64url_encode(&serde_json::to_vec(&payload).unwrap());
+    let tampered_json = serde_json::to_string(&envelope).unwrap();
+
+    assert!(import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: tampered_json
+        },
+    )
+    .is_err());
+}
+
+#[test]
+fn expired_license_reports_expired_without_blocking_derivation() {
+    let harness = setup();
+    let signing_key = SigningKey::from_bytes(&[45_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &harness.paths,
+        &harness.provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: Some("ops-mac-001".to_string()),
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() - Duration::days(2)).to_rfc3339(), 0);
+    let bundle_json = signed_license_bundle(&signing_key, &payload);
+    let status = import_license_bundle_at(
+        &harness.paths,
+        &harness.provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    )
+    .unwrap();
+    assert_eq!(status.status, "expired");
+    assert!(!status.authorized);
+    assert_eq!(derive(&harness), derive(&harness));
 }
 
 #[test]

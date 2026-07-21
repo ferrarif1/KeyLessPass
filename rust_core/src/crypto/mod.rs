@@ -3,6 +3,7 @@ pub mod encoder;
 pub mod kdf;
 pub mod mac;
 pub mod recovery;
+pub mod signing;
 
 use base64::{engine::general_purpose::STANDARD, Engine};
 use rand::{rngs::OsRng, RngCore};

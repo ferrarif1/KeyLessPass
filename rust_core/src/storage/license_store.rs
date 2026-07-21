@@ -1,0 +1,60 @@
+use crate::domain::SignedLicenseEnvelope;
+use crate::error::Result;
+use crate::storage::{read_json, write_json_private, StoragePaths};
+use std::fs;
+use std::path::PathBuf;
+use uuid::Uuid;
+
+#[derive(Debug, Clone)]
+pub struct LicenseStore {
+    root: PathBuf,
+    commercial_device_id_path: PathBuf,
+    license_envelope_path: PathBuf,
+}
+
+impl LicenseStore {
+    pub fn new(paths: &StoragePaths) -> Self {
+        let root = paths.app_dir.join("license");
+        Self {
+            commercial_device_id_path: root.join("commercial-device-id"),
+            license_envelope_path: root.join("license-envelope.json"),
+            root,
+        }
+    }
+
+    pub fn read_or_create_commercial_device_id(&self) -> Result<String> {
+        if self.commercial_device_id_path.exists() {
+            let value = fs::read_to_string(&self.commercial_device_id_path)?;
+            let trimmed = value.trim();
+            if !trimmed.is_empty() {
+                return Ok(trimmed.to_string());
+            }
+        }
+        fs::create_dir_all(&self.root)?;
+        let value = Uuid::new_v4().to_string();
+        crate::platform::fallback::write_private_file(
+            &self.commercial_device_id_path,
+            value.as_bytes(),
+        )?;
+        Ok(value)
+    }
+
+    pub fn read_license_envelope(&self) -> Result<Option<SignedLicenseEnvelope>> {
+        if !self.license_envelope_path.exists() {
+            return Ok(None);
+        }
+        Ok(Some(read_json(&self.license_envelope_path)?))
+    }
+
+    pub fn write_license_envelope(&self, envelope: &SignedLicenseEnvelope) -> Result<()> {
+        fs::create_dir_all(&self.root)?;
+        write_json_private(&self.license_envelope_path, envelope)
+    }
+
+    pub fn clear_license(&self) -> Result<()> {
+        if self.license_envelope_path.exists() {
+            fs::remove_file(&self.license_envelope_path)?;
+        }
+        Ok(())
+    }
+}
