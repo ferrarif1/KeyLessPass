@@ -35,6 +35,18 @@ KeyLessPass may support the following cooperation models:
 6. Custom enterprise support
 7. Joint proof-of-concept projects
 
+## Device Batch Authorization
+
+For enterprise and commercial operation, KeyLessPass should use signed
+organization licenses and per-device grants. The authorization layer is separate
+from the password derivation and 2-of-3 recovery model: it must not store,
+upload, or bind to mnemonic phrases, `Kmaster`, `deviceSecret`, `usbSecret`, CDR
+plaintext passwords, or derived service passwords.
+
+See [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)
+for the proposed offline bulk authorization, online activation, MDM deployment,
+renewal, and revocation design.
+
 ## Proof-of-Concept Rules
 
 For PoC or evaluation use:

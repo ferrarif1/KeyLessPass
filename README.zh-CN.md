@@ -239,9 +239,12 @@ Rust 测试覆盖派生稳定性、元数据不可变边界、路径字段敏感
 - [DEVELOPMENT.md](DEVELOPMENT.md)
 - [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
 - [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)
+- [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)
 
 ## 授权许可
 
 KeyLessPass 采用源码可见但非开源的授权模式。详见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [COMMERCIAL.md](COMMERCIAL.md)。
 
 允许个人学习、评估、安全审查和非商业测试。企业生产部署、商业使用、二次分发、OEM 或白标集成、托管服务、安全服务打包、渠道销售，以及处理真实生产凭据，均需另行取得书面商业授权。
+
+商业设备和席位管理建议采用“组织授权 + 单设备授权书”的签名授权模型。批量授权、离线部署、在线激活、续费和吊销方案见 [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)。

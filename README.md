@@ -270,9 +270,14 @@ The Rust test suite covers derivation stability, metadata immutability boundarie
 - [DEVELOPMENT.md](DEVELOPMENT.md)
 - [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
 - [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)
+- [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)
 
 ## License
 
 KeyLessPass is source-available, not open-source. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [COMMERCIAL.md](COMMERCIAL.md).
 
 Personal learning, evaluation, security review, and non-commercial testing are permitted under the license terms. Commercial use, enterprise production deployment, redistribution, OEM or white-label integration, managed service use, security service bundling, channel resale, and processing real production credentials require a separate written commercial license.
+
+Commercial device and seat management should use signed organization licenses
+and per-device grants. The proposed batch authorization design is documented in
+[docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md).
