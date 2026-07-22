@@ -18,7 +18,7 @@ use crate::service::derive::{derive_password_with_provider, DerivePasswordReques
 use crate::service::enrollment::{enroll_with_provider, EnrollmentRequest};
 use crate::service::license::{
     export_device_authorization_request_at, get_license_status_at, import_license_bundle_at,
-    ExportDeviceAuthorizationRequest, ImportLicenseBundleRequest,
+    import_managed_license_file_at, ExportDeviceAuthorizationRequest, ImportLicenseBundleRequest,
 };
 use crate::service::recovery::{
     recover_local_with_provider, recover_usb_with_provider, reset_mnemonic_with_provider,
@@ -1021,6 +1021,35 @@ fn signed_license_bundle_authorizes_intended_device() {
 }
 
 #[test]
+fn managed_license_file_auto_imports_a_valid_bundle() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "managed-license");
+    let signing_key = SigningKey::from_bytes(&[47_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: Some("managed-mac".to_string()),
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    let managed_file = app_dir.path().join("managed.klp-license-bundle");
+    std::fs::write(&managed_file, signed_license_bundle(&signing_key, &payload)).unwrap();
+
+    import_managed_license_file_at(&paths, &provider, &verifier, &managed_file).unwrap();
+    assert!(
+        get_license_status_at(&paths, &provider, &verifier)
+            .unwrap()
+            .authorized
+    );
+}
+
+#[test]
 fn copied_license_bundle_does_not_authorize_another_device() {
     let app_dir = tempfile::tempdir().unwrap();
     let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
@@ -1099,6 +1128,50 @@ fn tampered_license_bundle_signature_fails() {
         &verifier,
         ImportLicenseBundleRequest {
             bundle_json: tampered_json
+        },
+    )
+    .is_err());
+}
+
+#[test]
+fn license_rejects_disallowed_major_version_and_excess_seats() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-limits");
+    let signing_key = SigningKey::from_bytes(&[46_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let mut payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    payload.organization_license.allowed_major_versions = vec![2];
+    let status = import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: signed_license_bundle(&signing_key, &payload),
+        },
+    )
+    .unwrap();
+    assert_eq!(status.status, "versionNotAllowed");
+    assert!(!status.authorized);
+
+    payload.organization_license.allowed_major_versions = vec![1];
+    payload.organization_license.max_seats = 0;
+    assert!(import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: signed_license_bundle(&signing_key, &payload),
         },
     )
     .is_err());

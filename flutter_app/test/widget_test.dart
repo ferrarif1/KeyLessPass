@@ -4,6 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:keylesspass_desktop/app/keylesspass_app.dart';
 
 void main() {
+  test('online activation requires HTTPS except on loopback', () {
+    expect(isAllowedActivationServer(Uri.parse('https://licenses.example.com')),
+        isTrue);
+    expect(
+        isAllowedActivationServer(Uri.parse('http://127.0.0.1:8787')), isTrue);
+    expect(isAllowedActivationServer(Uri.parse('http://license.internal')),
+        isFalse);
+    expect(
+        isAllowedActivationServer(Uri.parse('file:///tmp/license')), isFalse);
+  });
+
   testWidgets('KeylessPass desktop app builds', (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     await tester.pumpWidget(const KeylessPassDesktopApp());

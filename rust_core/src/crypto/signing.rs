@@ -53,3 +53,27 @@ fn b64url_or_standard_decode(value: &str) -> Result<Vec<u8>> {
         .or_else(|_| base64::engine::general_purpose::STANDARD.decode(value))
         .map_err(KeylessPassError::from)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ed25519_dalek::{Signer, SigningKey};
+
+    #[test]
+    fn verifier_accepts_overlapping_rotation_keys() {
+        let old = SigningKey::from_bytes(&[1_u8; 32]);
+        let current = SigningKey::from_bytes(&[2_u8; 32]);
+        let verifier = LicenseVerifier::new([
+            ("old", b64url_encode(old.verifying_key().as_bytes())),
+            ("current", b64url_encode(current.verifying_key().as_bytes())),
+        ]);
+        let signature = old.sign(b"rotation-window");
+        verifier
+            .verify(
+                "old",
+                b"rotation-window",
+                &b64url_encode(&signature.to_bytes()),
+            )
+            .unwrap();
+    }
+}

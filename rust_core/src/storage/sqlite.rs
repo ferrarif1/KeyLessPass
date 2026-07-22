@@ -14,6 +14,7 @@ pub struct StoragePaths {
 }
 
 impl StoragePaths {
+    #[allow(clippy::should_implement_trait)]
     pub fn default() -> Result<Self> {
         let app_dir = default_app_dir()?;
         Ok(Self::from_app_dir(app_dir))

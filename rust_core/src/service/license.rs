@@ -10,6 +10,7 @@ use crate::storage::{LicenseStore, StoragePaths};
 use chrono::{DateTime, Duration, Utc};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
+use std::{collections::BTreeMap, fs, path::PathBuf};
 use uuid::Uuid;
 
 const DEFAULT_LICENSE_KEY_ID: &str = "keylesspass-license-2026-q3";
@@ -33,8 +34,10 @@ pub struct ImportLicenseBundleRequest {
 pub fn get_license_status() -> std::result::Result<LicenseStatus, String> {
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
-    get_license_status_at(&paths, provider.as_ref(), &default_license_verifier())
-        .map_err(String::from)
+    let verifier = default_license_verifier();
+    import_managed_license_if_present(&paths, provider.as_ref(), &verifier)
+        .map_err(String::from)?;
+    get_license_status_at(&paths, provider.as_ref(), &verifier).map_err(String::from)
 }
 
 pub fn export_device_authorization_request(
@@ -90,13 +93,7 @@ pub fn require_license_feature_at(
         return Ok(());
     }
     let status = get_license_status_at(paths, provider, verifier)?;
-    if status.authorized
-        && (status.features.iter().any(|value| value == feature)
-            || status
-                .features
-                .iter()
-                .any(|value| value == "desktop-client"))
-    {
+    if status_authorizes_feature(&status, feature, current_build_channel()) {
         return Ok(());
     }
     Err(KeylessPassError::Validation(format!(
@@ -213,7 +210,103 @@ pub fn default_license_verifier() -> LicenseVerifier {
     let key_id = option_env!("KEYLESSPASS_LICENSE_KEY_ID").unwrap_or(DEFAULT_LICENSE_KEY_ID);
     let public_key = option_env!("KEYLESSPASS_LICENSE_PUBLIC_KEY_B64")
         .unwrap_or(EVALUATION_LICENSE_PUBLIC_KEY_B64);
-    LicenseVerifier::new([(key_id.to_string(), public_key.to_string())])
+    let mut keys = BTreeMap::new();
+    if let Some(json) = std::env::var("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON")
+        .ok()
+        .or_else(|| option_env!("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON").map(str::to_string))
+    {
+        if let Ok(configured) = serde_json::from_str::<BTreeMap<String, String>>(&json) {
+            keys.extend(configured);
+        }
+    }
+    keys.insert(key_id.to_string(), public_key.to_string());
+    LicenseVerifier::new(keys)
+}
+
+fn import_managed_license_if_present(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    verifier: &LicenseVerifier,
+) -> Result<()> {
+    let Some(path) = managed_license_path() else {
+        return Ok(());
+    };
+    if !path.is_file() {
+        return Ok(());
+    }
+    import_managed_license_file_at(paths, provider, verifier, &path)
+}
+
+pub(crate) fn import_managed_license_file_at(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    verifier: &LicenseVerifier,
+    path: &std::path::Path,
+) -> Result<()> {
+    import_license_bundle_at(
+        paths,
+        provider,
+        verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: fs::read_to_string(path)?,
+        },
+    )?;
+    Ok(())
+}
+
+fn managed_license_path() -> Option<PathBuf> {
+    std::env::var("KEYLESSPASS_MANAGED_LICENSE_FILE")
+        .ok()
+        .or_else(|| option_env!("KEYLESSPASS_MANAGED_LICENSE_FILE").map(str::to_string))
+        .map(|value| PathBuf::from(value.trim()))
+        .filter(|path| !path.as_os_str().is_empty())
+        .or_else(|| commercial_enforcement_enabled().then(default_managed_license_path))
+}
+
+#[cfg(target_os = "macos")]
+fn default_managed_license_path() -> PathBuf {
+    PathBuf::from("/Library/Application Support/KeyLessPass/license-bundle.json")
+}
+
+#[cfg(target_os = "windows")]
+fn default_managed_license_path() -> PathBuf {
+    std::env::var("PROGRAMDATA")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| PathBuf::from(r"C:\ProgramData"))
+        .join("KeyLessPass")
+        .join("license-bundle.json")
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+fn default_managed_license_path() -> PathBuf {
+    PathBuf::from("/etc/keylesspass/license-bundle.json")
+}
+
+fn current_build_channel() -> &'static str {
+    option_env!("KEYLESSPASS_BUILD_CHANNEL").unwrap_or("desktop")
+}
+
+fn current_app_major_version() -> u32 {
+    option_env!("KEYLESSPASS_APP_MAJOR_VERSION")
+        .and_then(|value| value.parse().ok())
+        .unwrap_or(1)
+}
+
+fn status_authorizes_feature(status: &LicenseStatus, feature: &str, channel: &str) -> bool {
+    if !status.authorized
+        || !(status.features.iter().any(|value| value == feature)
+            || status
+                .features
+                .iter()
+                .any(|value| value == "desktop-client"))
+    {
+        return false;
+    }
+    matches!(channel, "desktop" | "evaluation")
+        || status
+            .features
+            .iter()
+            .any(|value| value == &format!("channel:{channel}"))
 }
 
 fn verify_and_parse_bundle(
@@ -283,6 +376,36 @@ fn status_from_bundle(
     context: LicenseContext,
     bundle: &LicenseBundlePayload,
 ) -> Result<LicenseStatus> {
+    if bundle.device_grants.len() as u32 > bundle.organization_license.max_seats {
+        return Err(KeylessPassError::Integrity(
+            "license bundle exceeds organization maxSeats".to_string(),
+        ));
+    }
+    if !bundle
+        .organization_license
+        .allowed_major_versions
+        .is_empty()
+        && !bundle
+            .organization_license
+            .allowed_major_versions
+            .contains(&current_app_major_version())
+    {
+        return Ok(LicenseStatus {
+            status: "versionNotAllowed".to_string(),
+            authorized: false,
+            commercial_device_id: context.commercial_device_id,
+            device_fingerprint: context.device_fingerprint,
+            organization_id: Some(bundle.organization_license.organization_id.clone()),
+            organization_name: Some(bundle.organization_license.organization_name.clone()),
+            license_id: Some(bundle.organization_license.license_id.clone()),
+            grant_id: None,
+            plan: Some(bundle.organization_license.plan.clone()),
+            seat_label: None,
+            valid_until: Some(bundle.organization_license.valid_until.clone()),
+            features: vec![],
+            message: "License does not permit this application major version.".to_string(),
+        });
+    }
     let grant = bundle.device_grants.iter().find(|grant| {
         grant.commercial_device_id == context.commercial_device_id
             && grant.device_fingerprint == context.device_fingerprint
@@ -327,7 +450,8 @@ fn status_from_bundle(
     }
 
     let now = Utc::now();
-    let valid_from = parse_rfc3339(&grant.valid_from)?;
+    let valid_from = parse_rfc3339(&grant.valid_from)?
+        .max(parse_rfc3339(&bundle.organization_license.valid_from)?);
     let valid_until = parse_rfc3339(&grant.valid_until)?;
     let org_valid_until = parse_rfc3339(&bundle.organization_license.valid_until)?;
     let effective_until = valid_until.min(org_valid_until);
@@ -444,4 +568,46 @@ fn to_hex(bytes: &[u8]) -> String {
         output.push(HEX[(byte & 0x0f) as usize] as char);
     }
     output
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn status(features: &[&str]) -> LicenseStatus {
+        LicenseStatus {
+            status: "authorized".to_string(),
+            authorized: true,
+            commercial_device_id: "device".to_string(),
+            device_fingerprint: "fingerprint".to_string(),
+            organization_id: None,
+            organization_name: None,
+            license_id: None,
+            grant_id: None,
+            plan: None,
+            seat_label: None,
+            valid_until: None,
+            features: features.iter().map(|value| value.to_string()).collect(),
+            message: String::new(),
+        }
+    }
+
+    #[test]
+    fn commercial_channel_requires_channel_entitlement() {
+        assert!(!status_authorizes_feature(
+            &status(&["desktop-client"]),
+            "desktop-client",
+            "commercial"
+        ));
+        assert!(status_authorizes_feature(
+            &status(&["desktop-client", "channel:commercial"]),
+            "desktop-client",
+            "commercial"
+        ));
+        assert!(status_authorizes_feature(
+            &status(&["desktop-client"]),
+            "desktop-client",
+            "evaluation"
+        ));
+    }
 }

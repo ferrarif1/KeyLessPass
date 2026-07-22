@@ -72,6 +72,15 @@ environment variables:
 KEYLESSPASS_LICENSE_KEY_ID
 KEYLESSPASS_LICENSE_PUBLIC_KEY_B64
 KEYLESSPASS_REQUIRE_LICENSE=1
+KEYLESSPASS_BUILD_CHANNEL=commercial
+KEYLESSPASS_APP_MAJOR_VERSION=1
+KEYLESSPASS_MANAGED_LICENSE_FILE=<managed bundle path>
+```
+
+During signing-key rotation, add the overlapping public-key map:
+
+```text
+KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON={"old-key-id":"old-public-key","new-key-id":"new-public-key"}
 ```
 
 Evaluation/source builds keep a non-blocking default so the project remains
@@ -82,11 +91,11 @@ the same variables.
 Runtime environment variables may enable stricter checks for testing, but a
 commercial build must not rely on a runtime switch for enforcement.
 
-## Recommended Future Additions
+The commercial build script assigns managed bundle defaults under
+`/Library/Application Support/KeyLessPass`, `/etc/keylesspass`, or
+`C:\ProgramData\KeyLessPass`. A valid managed bundle is verified and refreshed
+into the private local license store whenever status is evaluated.
 
-- Customer-specific signed update feed.
-- Transparency log of official release checksums.
-- MDM managed license bundle path.
-- CSV/MDM bulk import in `admin_backend`.
-- Append-only admin audit log export.
-- Key rotation policy with overlapping public-key trust windows.
+Customer-specific update feeds and public release transparency logs remain
+optional distribution enhancements; they are not required for authorization
+correctness.

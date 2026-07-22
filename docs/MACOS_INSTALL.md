@@ -124,9 +124,15 @@ CODESIGN_IDENTITY="-" \
 packaging/macos/build_dmg.sh
 ```
 
+打包脚本默认生成 Intel 与 Apple Silicon 通用版本，首次打包前安装两个 Rust target：
+
+```bash
+rustup target add x86_64-apple-darwin aarch64-apple-darwin
+```
+
 脚本会执行：
 
-1. `cargo build --release`
+1. 分别为 `x86_64-apple-darwin` 和 `aarch64-apple-darwin` 构建 Rust Core，并用 `lipo` 合并
 2. `flutter build macos --release`
 3. 把 Rust Core dylib 复制到 `.app/Contents/Frameworks/`
 4. 使用指定证书或 ad-hoc 签名重新签名 `.app`

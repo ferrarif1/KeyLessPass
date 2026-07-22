@@ -1322,6 +1322,42 @@ abstract class AppLocalizations {
   /// **'Copy device request'**
   String get copyDeviceRequest;
 
+  /// No description provided for @activateOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate online'**
+  String get activateOnline;
+
+  /// No description provided for @activationServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Activation server URL'**
+  String get activationServer;
+
+  /// No description provided for @activationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Activation code'**
+  String get activationCode;
+
+  /// No description provided for @onlineActivationHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Connects only to an HTTPS authorization service (HTTP is allowed only on this computer). No password secrets are sent.'**
+  String get onlineActivationHelp;
+
+  /// No description provided for @onlineActivationSucceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Online activation completed.'**
+  String get onlineActivationSucceeded;
+
+  /// No description provided for @onlineActivationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Online activation failed. Check the server, activation code, and network connection.'**
+  String get onlineActivationFailed;
+
   /// No description provided for @deviceRequestHelp.
   ///
   /// In en, this message translates to:
@@ -1417,6 +1453,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not yet valid'**
   String get licenseNotYetValid;
+
+  /// No description provided for @licenseVersionNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'App version not licensed'**
+  String get licenseVersionNotAllowed;
 
   /// No description provided for @licenseUnlicensed.
   ///

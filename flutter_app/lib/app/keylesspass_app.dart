@@ -14,6 +14,14 @@ import '../platform/native_platform_api.dart';
 import '../widgets/desktop_widgets.dart';
 import 'app_theme.dart';
 
+bool isAllowedActivationServer(Uri uri) {
+  if (!uri.hasScheme || !uri.hasAuthority || uri.host.isEmpty) return false;
+  if (uri.scheme == 'https') return true;
+  final loopback =
+      uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host == '::1';
+  return uri.scheme == 'http' && loopback;
+}
+
 enum _Section {
   dashboard,
   setup,
@@ -1345,6 +1353,11 @@ class _HomeWindowState extends State<_HomeWindow> {
           runSpacing: 12,
           children: [
             FilledButton.icon(
+              onPressed: _activateLicenseOnline,
+              icon: const Icon(Icons.cloud_done_rounded),
+              label: Text(t.activateOnline),
+            ),
+            OutlinedButton.icon(
               onPressed: _copyDeviceAuthorizationRequest,
               icon: const Icon(Icons.content_copy_rounded),
               label: Text(t.copyDeviceRequest),
@@ -1375,9 +1388,124 @@ class _HomeWindowState extends State<_HomeWindow> {
       'notForThisDevice' => t.licenseNotForThisDevice,
       'revoked' => t.licenseRevoked,
       'notYetValid' => t.licenseNotYetValid,
+      'versionNotAllowed' => t.licenseVersionNotAllowed,
       'unlicensed' => t.licenseUnlicensed,
       _ => status,
     };
+  }
+
+  Future<void> _activateLicenseOnline() async {
+    final api = _api;
+    if (api == null) return;
+    final t = context.t;
+    final server = TextEditingController();
+    final activationCode = TextEditingController();
+    final seat = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(t.activateOnline),
+        content: SizedBox(
+          width: 560,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: server,
+                decoration: InputDecoration(labelText: t.activationServer),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: activationCode,
+                obscureText: true,
+                decoration: InputDecoration(labelText: t.activationCode),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: seat,
+                decoration: InputDecoration(labelText: t.seatLabel),
+              ),
+              const SizedBox(height: 12),
+              InlineNotice(text: t.onlineActivationHelp),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(t.activateOnline),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) {
+      server.dispose();
+      activationCode.dispose();
+      seat.dispose();
+      return;
+    }
+    try {
+      final base = Uri.parse(server.text.trim());
+      if (!isAllowedActivationServer(base)) {
+        throw const FormatException('HTTPS required');
+      }
+      final deviceRequest = await api.exportDeviceAuthorizationRequest(
+        seatLabel: seat.text.trim().isEmpty ? null : seat.text.trim(),
+      );
+      final client = HttpClient()
+        ..connectionTimeout = const Duration(seconds: 15);
+      try {
+        final request = await client.postUrl(
+          base.resolve('/api/activation/activate'),
+        );
+        request.headers.contentType = ContentType.json;
+        request.write(jsonEncode({
+          'activationCode': activationCode.text.trim(),
+          'requestJson': jsonEncode(deviceRequest),
+          if (seat.text.trim().isNotEmpty) 'seatLabel': seat.text.trim(),
+        }));
+        final response =
+            await request.close().timeout(const Duration(seconds: 20));
+        final bytes = <int>[];
+        await for (final chunk
+            in response.timeout(const Duration(seconds: 20))) {
+          if (bytes.length + chunk.length > 1024 * 1024) {
+            throw const FormatException('Activation response too large');
+          }
+          bytes.addAll(chunk);
+        }
+        if (response.statusCode != HttpStatus.ok) {
+          throw HttpException('Activation failed (${response.statusCode})');
+        }
+        final body = jsonDecode(utf8.decode(bytes)) as Map<String, Object?>;
+        final envelopeJson = body['envelopeJson'] as String?;
+        if (envelopeJson == null || envelopeJson.isEmpty) {
+          throw const FormatException('Missing license envelope');
+        }
+        final status = await api.importLicenseBundle(bundleJson: envelopeJson);
+        await _refresh();
+        if (mounted) {
+          setState(() {
+            _licenseStatus = status;
+            _message = status.authorized
+                ? t.onlineActivationSucceeded
+                : _licenseStatusLabel(status.status);
+          });
+        }
+      } finally {
+        client.close(force: true);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _message = t.onlineActivationFailed);
+    } finally {
+      server.dispose();
+      activationCode.dispose();
+      seat.dispose();
+    }
   }
 
   Future<void> _copyDeviceAuthorizationRequest() async {

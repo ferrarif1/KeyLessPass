@@ -60,6 +60,7 @@ pub struct FactorPackage {
 }
 
 impl FactorPackage {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         package_type: PackageType,
         user_id: Uuid,

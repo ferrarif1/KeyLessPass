@@ -70,7 +70,7 @@ factor. The device fingerprint may include non-secret local platform identity
 material to bind a grant to one installation, but it must not include
 `deviceSecret`.
 
-## First Implementation Scope
+## Delivered Scope
 
 Rust core:
 
@@ -102,6 +102,11 @@ Admin backend:
 - Ed25519 signing of client-compatible license bundle envelopes;
 - grant revocation records included in newly issued bundles;
 - Docker Compose deployment with `scripts/intranet_deploy.sh`.
+- activation-code online activation;
+- cross-bundle seat enforcement;
+- admin, operator, and auditor roles;
+- append-only audit log and CSV export;
+- CSV device-request import and device export.
 
 Commercial release hardening:
 
@@ -110,6 +115,9 @@ Commercial release hardening:
 - commercial builds must set `KEYLESSPASS_REQUIRE_LICENSE=1`;
 - `tools/commercial/build_commercial_release.sh` checks those inputs before
   calling the platform packaging script.
+- commercial release channel entitlement and application major-version checks;
+- overlapping trusted public keys for signing-key rotation;
+- managed license bundle auto-import paths for macOS, Windows, and Linux.
 
 Commercial enforcement:
 
@@ -132,11 +140,11 @@ Tests:
 - tampered payload/signature fails;
 - expired license reports expired or grace status without mutating factor data.
 
-## Deferred
+## Operational Requirements
 
-- Online activation API.
-- MDM managed path auto-import.
-- Production signing-key rotation UI.
-- Release-channel-specific hard enforcement.
-- Multi-user role-based admin accounts and audit-log export.
-- CSV bulk import/export.
+The authorization implementation is complete. Production rollout still requires
+organization-owned infrastructure and credentials: TLS termination and rate
+limiting for online activation, protected signing-key storage, platform code
+signing/notarization, backups of the authorization database, and a documented
+key-rotation ceremony. These are deployment controls rather than missing product
+code.

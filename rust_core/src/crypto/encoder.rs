@@ -156,7 +156,7 @@ fn apply_required_classes(
         let position = if let Some(position) = class.position {
             if fixed_indexes.contains(&position) {
                 let fixed_char = chars[position];
-                if class_chars.iter().any(|ch| *ch == fixed_char) {
+                if class_chars.contains(&fixed_char) {
                     used_positions.insert(position);
                     continue;
                 }

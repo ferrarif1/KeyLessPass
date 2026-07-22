@@ -1,6 +1,6 @@
 use crate::model::{
-    BundleRecord, CreateOrganizationRequest, DeviceAuthorizationRequest, DeviceRecord, GrantRecord,
-    ImportDeviceRequestBody, OrganizationRecord, LICENSE_SCHEMA_VERSION,
+    AuditRecord, BundleRecord, CreateOrganizationRequest, DeviceAuthorizationRequest, DeviceRecord,
+    GrantRecord, ImportDeviceRequestBody, OrganizationRecord, LICENSE_SCHEMA_VERSION,
 };
 use anyhow::{anyhow, Context, Result};
 use chrono::{DateTime, Duration, Utc};
@@ -51,6 +51,7 @@ impl Db {
             CREATE TABLE IF NOT EXISTS organizations (
                 id TEXT PRIMARY KEY,
                 license_id TEXT NOT NULL UNIQUE,
+                activation_code TEXT UNIQUE,
                 name TEXT NOT NULL,
                 plan TEXT NOT NULL,
                 max_seats INTEGER NOT NULL,
@@ -109,7 +110,38 @@ impl Db {
                 FOREIGN KEY(organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
                 FOREIGN KEY(device_id) REFERENCES devices(id) ON DELETE CASCADE
             );
+
+            CREATE TABLE IF NOT EXISTS audit_log (
+                id TEXT PRIMARY KEY,
+                actor TEXT NOT NULL,
+                role TEXT NOT NULL,
+                action TEXT NOT NULL,
+                target TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                details_json TEXT NOT NULL
+            );
             "#,
+        )?;
+        if !table_has_column(&conn, "organizations", "activation_code")? {
+            conn.execute(
+                "ALTER TABLE organizations ADD COLUMN activation_code TEXT",
+                [],
+            )?;
+        }
+        let mut stmt = conn.prepare(
+            "SELECT id FROM organizations WHERE activation_code IS NULL OR activation_code = ''",
+        )?;
+        let ids = collect_rows(stmt.query_map([], |row| row.get::<_, String>(0))?)?;
+        drop(stmt);
+        for id in ids {
+            conn.execute(
+                "UPDATE organizations SET activation_code = ?2 WHERE id = ?1",
+                params![id, new_activation_code()],
+            )?;
+        }
+        conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_organizations_activation_code ON organizations(activation_code)",
+            [],
         )?;
         Ok(())
     }
@@ -130,9 +162,17 @@ impl Db {
             .map(|value| value.trim().to_string())
             .filter(|value| !value.is_empty())
             .unwrap_or_else(|| format!("org-{}", Uuid::new_v4()));
+        let activation_code = match request.activation_code {
+            Some(value) if value.trim().len() < 16 => {
+                return Err(anyhow!("activationCode must be at least 16 characters"));
+            }
+            Some(value) => value.trim().to_string(),
+            None => new_activation_code(),
+        };
         let record = OrganizationRecord {
             id: id.clone(),
             license_id: format!("lic-{}", Uuid::new_v4()),
+            activation_code,
             name: name.to_string(),
             plan: request
                 .plan
@@ -158,15 +198,16 @@ impl Db {
         conn.execute(
             r#"
             INSERT INTO organizations (
-                id, license_id, name, plan, max_seats, valid_from, valid_until,
+                id, license_id, activation_code, name, plan, max_seats, valid_from, valid_until,
                 features_json, offline_grace_days, allowed_major_versions_json,
                 issuer, created_at, updated_at
             )
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)
             "#,
             params![
                 record.id,
                 record.license_id,
+                record.activation_code,
                 record.name,
                 record.plan,
                 record.max_seats,
@@ -191,7 +232,7 @@ impl Db {
             .query_row(
                 r#"
                 SELECT id, license_id, name, plan, max_seats, valid_from, valid_until,
-                       features_json, offline_grace_days, allowed_major_versions_json,
+                       activation_code, features_json, offline_grace_days, allowed_major_versions_json,
                        issuer, created_at, updated_at
                 FROM organizations
                 WHERE id = ?1
@@ -203,12 +244,32 @@ impl Db {
         Ok(row)
     }
 
+    pub fn organization_by_activation_code(
+        &self,
+        activation_code: &str,
+    ) -> Result<Option<OrganizationRecord>> {
+        let conn = self.lock()?;
+        conn.query_row(
+            r#"
+            SELECT id, license_id, name, plan, max_seats, valid_from, valid_until,
+                   activation_code, features_json, offline_grace_days, allowed_major_versions_json,
+                   issuer, created_at, updated_at
+            FROM organizations
+            WHERE activation_code = ?1
+            "#,
+            params![activation_code.trim()],
+            org_from_row,
+        )
+        .optional()
+        .map_err(Into::into)
+    }
+
     pub fn organizations(&self) -> Result<Vec<OrganizationRecord>> {
         let conn = self.lock()?;
         let mut stmt = conn.prepare(
             r#"
             SELECT id, license_id, name, plan, max_seats, valid_from, valid_until,
-                   features_json, offline_grace_days, allowed_major_versions_json,
+                   activation_code, features_json, offline_grace_days, allowed_major_versions_json,
                    issuer, created_at, updated_at
             FROM organizations
             ORDER BY created_at DESC
@@ -460,6 +521,70 @@ impl Db {
         Ok((organizations, devices, bundles))
     }
 
+    pub fn active_licensed_device_ids(&self, organization_id: &str) -> Result<Vec<String>> {
+        let conn = self.lock()?;
+        let mut stmt = conn.prepare(
+            r#"
+            SELECT DISTINCT device_id
+            FROM grants
+            WHERE organization_id = ?1 AND revoked = 0
+            "#,
+        )?;
+        let rows = stmt.query_map(params![organization_id], |row| row.get(0))?;
+        collect_rows(rows)
+    }
+
+    pub fn record_audit(
+        &self,
+        actor: &str,
+        role: &str,
+        action: &str,
+        target: &str,
+        details_json: &str,
+    ) -> Result<()> {
+        let conn = self.lock()?;
+        conn.execute(
+            r#"
+            INSERT INTO audit_log (id, actor, role, action, target, created_at, details_json)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+            "#,
+            params![
+                format!("audit-{}", Uuid::new_v4()),
+                actor,
+                role,
+                action,
+                target,
+                Utc::now().to_rfc3339(),
+                details_json,
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn audit_log(&self) -> Result<Vec<AuditRecord>> {
+        let conn = self.lock()?;
+        let mut stmt = conn.prepare(
+            r#"
+            SELECT id, actor, role, action, target, created_at, details_json
+            FROM audit_log
+            ORDER BY created_at DESC
+            LIMIT 1000
+            "#,
+        )?;
+        let rows = stmt.query_map([], |row| {
+            Ok(AuditRecord {
+                id: row.get(0)?,
+                actor: row.get(1)?,
+                role: row.get(2)?,
+                action: row.get(3)?,
+                target: row.get(4)?,
+                created_at: row.get(5)?,
+                details_json: row.get(6)?,
+            })
+        })?;
+        collect_rows(rows)
+    }
+
     fn device(&self, id: &str) -> Result<Option<DeviceRecord>> {
         let conn = self.lock()?;
         conn.query_row(
@@ -476,7 +601,7 @@ impl Db {
         .map_err(Into::into)
     }
 
-    fn device_by_identity(
+    pub fn device_by_identity(
         &self,
         commercial_device_id: &str,
         device_fingerprint: &str,
@@ -527,6 +652,7 @@ fn default_features(features: Vec<String>) -> Vec<String> {
         .collect();
     if values.is_empty() {
         values.push("desktop-client".to_string());
+        values.push("channel:commercial".to_string());
     }
     if !values.iter().any(|value| value == "desktop-client") {
         values.push("desktop-client".to_string());
@@ -567,23 +693,34 @@ fn from_json<T: DeserializeOwned + Default>(value: String) -> T {
 }
 
 fn org_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<OrganizationRecord> {
-    let features_json: String = row.get(7)?;
-    let allowed_json: String = row.get(9)?;
+    let features_json: String = row.get(8)?;
+    let allowed_json: String = row.get(10)?;
     Ok(OrganizationRecord {
         id: row.get(0)?,
         license_id: row.get(1)?,
+        activation_code: row.get(7)?,
         name: row.get(2)?,
         plan: row.get(3)?,
         max_seats: row.get::<_, i64>(4)? as u32,
         valid_from: row.get(5)?,
         valid_until: row.get(6)?,
         features: from_json(features_json),
-        offline_grace_days: row.get::<_, i64>(8)? as u32,
+        offline_grace_days: row.get::<_, i64>(9)? as u32,
         allowed_major_versions: from_json(allowed_json),
-        issuer: row.get(10)?,
-        created_at: row.get(11)?,
-        updated_at: row.get(12)?,
+        issuer: row.get(11)?,
+        created_at: row.get(12)?,
+        updated_at: row.get(13)?,
     })
+}
+
+fn new_activation_code() -> String {
+    format!("act-{}", Uuid::new_v4())
+}
+
+fn table_has_column(conn: &Connection, table: &str, column: &str) -> Result<bool> {
+    let mut stmt = conn.prepare(&format!("PRAGMA table_info({table})"))?;
+    let names = collect_rows(stmt.query_map([], |row| row.get::<_, String>(1))?)?;
+    Ok(names.iter().any(|name| name == column))
 }
 
 fn device_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<DeviceRecord> {
@@ -660,6 +797,7 @@ mod tests {
             .create_organization(
                 CreateOrganizationRequest {
                     organization_id: Some("org-acme".to_string()),
+                    activation_code: None,
                     name: "Acme".to_string(),
                     plan: None,
                     max_seats: Some(2),
@@ -694,5 +832,17 @@ mod tests {
         assert_eq!(device.organization_id, "org-acme");
         assert_eq!(device.seat_label, "Finance laptop");
         assert_eq!(db.devices(Some("org-acme")).unwrap().len(), 1);
+        assert!(org.activation_code.starts_with("act-"));
+        assert!(org
+            .features
+            .iter()
+            .any(|value| value == "channel:commercial"));
+        assert_eq!(
+            db.organization_by_activation_code(&org.activation_code)
+                .unwrap()
+                .unwrap()
+                .id,
+            org.id
+        );
     }
 }

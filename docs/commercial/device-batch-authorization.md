@@ -160,8 +160,10 @@ The backend provides:
 - device authorization request import;
 - per-device grant issuance;
 - signed `.klp-license-bundle` generation;
-- grant revocation records included in future bundles;
-- a built-in browser UI protected by `KEYLESSPASS_ADMIN_TOKEN`;
+- grant revocation records included in newly issued bundles;
+- a built-in browser UI protected by role-based bearer tokens;
+- online activation codes with cross-bundle seat enforcement;
+- CSV bulk import/export and append-only audit export;
 - SQLite storage for commercial metadata;
 - Docker Compose one-click deployment for intranet hosts.
 
@@ -313,7 +315,7 @@ For batch operation, the UI should clearly support:
 
 ## Commercial Operations
 
-The current `admin_backend` covers the offline/internal minimum:
+The current `admin_backend` covers the production authorization workflow:
 
 - customer organization and contract-like record
 - seat count and plan management
@@ -323,10 +325,12 @@ The current `admin_backend` covers the offline/internal minimum:
 - grant revocation records
 - renewal bundle generation by issuing a fresh signed bundle
 - support diagnostics lookup by `licenseId`, `organizationId`, or `grantId`
+- activation-code online issuance over TLS
+- admin, operator, and auditor roles
+- device and audit CSV workflows
+- managed-path bundle refresh in commercial clients
 
-The browser UI is intentionally small enough for internal operations. Future
-work can add CSV import/export, role-based users, audit log export, online
-activation, and MDM managed bundle distribution.
+The browser UI remains intentionally small enough for internal operations.
 
 For automated environments, use the `/api/*` endpoints documented in
 `admin_backend/README.md`.
@@ -338,12 +342,12 @@ For automated environments, use the `/api/*` endpoints documented in
 3. Flutter license page for status, request export, and bundle import. Done in
    this branch.
 4. Intranet admin backend for batch device grants. Done in this branch.
-5. Commercial release hardening. Started in this branch with compile-time
-   enforcement, build-time public-key injection, and release guidance.
-6. Online activation API. Future work.
-7. MDM managed path support. Future work.
-8. Rich renewal, revocation, and audit workflow. Partially implemented for
-   offline bundles; future work for online/MDM automation.
+5. Commercial release hardening. Done with compile-time enforcement,
+   release-channel and major-version checks, trusted-key rotation, and build
+   validation.
+6. Online activation API. Done.
+7. MDM managed path support. Done.
+8. Renewal, revocation, roles, CSV, and audit workflow. Done.
 
 ## Acceptance Criteria
 

@@ -44,13 +44,14 @@ upload, or bind to mnemonic phrases, `Kmaster`, `deviceSecret`, `usbSecret`, CDR
 plaintext passwords, or derived service passwords.
 
 See [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)
-for the proposed offline bulk authorization, online activation, MDM deployment,
-renewal, and revocation design.
+for the implemented offline bulk authorization, online activation, MDM
+deployment, renewal, and revocation design.
 
 This feature branch also contains an intranet authorization backend under
 [`admin_backend`](admin_backend/). It can be deployed with Docker Compose,
 imports device authorization requests exported by the desktop client, and
-issues signed `.klp-license-bundle` files for offline enterprise activation.
+issues signed `.klp-license-bundle` files for offline or online enterprise
+activation, with role-based administration, CSV operations, and audit export.
 The backend stores commercial metadata only and must not receive mnemonic
 phrases, `Kmaster`, factor secrets, CDR secrets, or derived service passwords.
 

@@ -143,7 +143,7 @@ pub fn write_private_file(path: &PathBuf, bytes: &[u8]) -> Result<()> {
             .mode(0o600)
             .open(path)?;
         file.write_all(bytes)?;
-        return Ok(());
+        Ok(())
     }
 
     #[cfg(not(unix))]

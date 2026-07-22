@@ -628,6 +628,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copyDeviceRequest => '复制设备请求';
 
   @override
+  String get activateOnline => '在线激活';
+
+  @override
+  String get activationServer => '激活服务器地址';
+
+  @override
+  String get activationCode => '激活码';
+
+  @override
+  String get onlineActivationHelp => '仅连接 HTTPS 授权服务（本机可使用 HTTP），不会发送任何密码秘密。';
+
+  @override
+  String get onlineActivationSucceeded => '在线激活已完成。';
+
+  @override
+  String get onlineActivationFailed => '在线激活失败，请检查服务器、激活码和网络连接。';
+
+  @override
   String get deviceRequestHelp => '复制此请求并发送给授权签发方或企业管理工具。它只包含授权标识，不包含密码秘密。';
 
   @override
@@ -674,6 +692,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get licenseNotYetValid => '尚未生效';
+
+  @override
+  String get licenseVersionNotAllowed => '当前应用版本未获授权';
 
   @override
   String get licenseUnlicensed => '未授权';

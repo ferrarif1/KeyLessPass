@@ -194,10 +194,11 @@ KeyLessPass
 The Rust core is intentionally independent from platform-specific secure storage details. Platform factor providers implement a common interface, with macOS Keychain, Windows DPAPI, Linux local/fallback storage, and future TPM/Secure Enclave hooks isolated behind the provider layer.
 
 Commercial device authorization is implemented as an outer product layer. The
-`admin_backend` service signs offline license bundles for intranet deployment;
-the desktop client verifies those bundles locally with an embedded public key.
+`admin_backend` service supports offline bundles and HTTPS online activation;
+the desktop client verifies every result locally with an embedded public key.
 Commercial builds should set `KEYLESSPASS_REQUIRE_LICENSE=1` and inject the
-admin public key at compile time. This layer never receives mnemonic phrases,
+admin public key at compile time. Managed deployments can push a bundle to the
+platform managed path. This layer never receives mnemonic phrases,
 `Kmaster`, factor secrets, CDR secrets, service passwords, or derived passwords.
 
 ### Run the Intranet Admin Backend
@@ -210,7 +211,8 @@ cd admin_backend
 The script starts a Docker Compose deployment, prints the local URL and admin
 token, and generates a fresh Ed25519 signing seed on first run. Embed the
 displayed public key into the matching commercial client build before shipping
-that build to customers.
+that build to customers. For online activation, place the service behind HTTPS;
+the administration UI also supports roles, device CSV, and audit export.
 
 ### Build a Commercial Client
 

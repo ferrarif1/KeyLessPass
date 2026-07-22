@@ -1,5 +1,19 @@
 # Release Guide
 
+## Commercial authorization
+
+Commercial packages must be built through
+`tools/commercial/build_commercial_release.sh`, which enables compile-time
+authorization enforcement, assigns a non-evaluation build channel and managed
+license path, and embeds the active verification key. During key rotation,
+provide the overlapping public-key map described in
+`docs/commercial/commercial-release-hardening.md`.
+
+Before distribution, verify online activation through the production HTTPS
+endpoint, offline bundle import, managed bundle refresh, expiry/grace behavior,
+revocation refresh, seat exhaustion, and an unauthorized clean installation.
+Do not distribute locally ad-hoc-signed authorization test builds.
+
 ## macOS
 
 Start with the full macOS setup guide:
@@ -14,6 +28,13 @@ cargo build --release
 
 cd ../flutter_app
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer flutter build macos --release
+```
+
+The packaging script creates a universal macOS app. Install both Rust standard
+library targets before running it:
+
+```bash
+rustup target add x86_64-apple-darwin aarch64-apple-darwin
 ```
 
 The release app is expected at:
@@ -52,6 +73,8 @@ Distribution checklist:
 - Configure the real Apple Developer Team ID.
 - Use a real Developer ID Application certificate.
 - Verify entitlements for removable media and user-selected read/write files.
+- Verify both the app executable and `libkeylesspass_core.dylib` contain
+  `x86_64 arm64` with `lipo -archs`.
 - Create a DMG.
 - Submit the signed app or DMG for notarization.
 - Staple the notarization ticket.

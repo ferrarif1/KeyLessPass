@@ -31,13 +31,16 @@ pub extern "C" fn keylesspass_ffi_json(input: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn keylesspass_ffi_free(ptr: *mut c_char) {
+/// Releases a response returned by [`keylesspass_ffi_json`].
+///
+/// # Safety
+/// `ptr` must be null or a pointer returned by `keylesspass_ffi_json` that has
+/// not already been released.
+pub unsafe extern "C" fn keylesspass_ffi_free(ptr: *mut c_char) {
     if ptr.is_null() {
         return;
     }
-    unsafe {
-        let _ = CString::from_raw(ptr);
-    }
+    let _ = unsafe { CString::from_raw(ptr) };
 }
 
 fn ffi_json_inner(input: *const c_char) -> String {
@@ -189,7 +192,7 @@ mod tests {
         let ptr = keylesspass_ffi_json(input.as_ptr());
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr).to_string_lossy().to_string() };
-        keylesspass_ffi_free(ptr);
+        unsafe { keylesspass_ffi_free(ptr) };
         assert!(text.contains(r#""ok":false"#));
         assert!(text.contains("unsupported operation"));
     }
@@ -203,7 +206,7 @@ mod tests {
         let ptr = keylesspass_ffi_json(input.as_ptr());
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr).to_string_lossy().to_string() };
-        keylesspass_ffi_free(ptr);
+        unsafe { keylesspass_ffi_free(ptr) };
         let value: Value = serde_json::from_str(&text).unwrap();
         assert_eq!(value["ok"], true);
         assert_eq!(value["data"]["language"], "simplifiedChinese");

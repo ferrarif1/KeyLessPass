@@ -1,8 +1,8 @@
 # KeyLessPass Admin Backend
 
 This is the intranet management backend for commercial KeyLessPass device
-authorization. It signs offline `.klp-license-bundle` files that the desktop
-client can import through its commercial authorization panel.
+authorization. It signs offline `.klp-license-bundle` files and supports online
+activation from the desktop commercial authorization panel.
 
 The service stores and signs commercial metadata only:
 
@@ -10,6 +10,7 @@ The service stores and signs commercial metadata only:
 - device authorization requests exported by desktop clients;
 - signed license bundle history;
 - grant revocation records.
+- append-only administration audit events.
 
 It must never receive or store mnemonic phrases, `Kmaster`, `deviceSecret`,
 `usbSecret`, service passwords, derived passwords, CDR secrets, or recovery
@@ -36,6 +37,11 @@ http://127.0.0.1:8787
 
 For LAN access, replace `127.0.0.1` with the server address and keep the port
 inside the intranet firewall.
+
+Online desktop activation requires HTTPS unless the service is running on the
+same computer. Put the service behind the organization's TLS reverse proxy and
+apply request rate limits to `/api/activation/activate` before LAN or internet
+exposure.
 
 ## Manual Local Run
 
@@ -69,9 +75,51 @@ client.
 6. When revoking a grant, issue a fresh bundle so clients can import the updated
    revocation list.
 
+For online activation, securely deliver the organization's generated activation
+code. The desktop user enters the HTTPS service URL and activation code; the
+service consumes a seat and returns a device-bound signed bundle.
+
+## Roles and audit
+
+`KEYLESSPASS_ADMIN_TOKEN` remains supported as a single full administrator.
+For separate accounts, set `KEYLESSPASS_ADMIN_USERS_JSON` to a JSON array of
+users with unique tokens of at least 24 characters:
+
+```json
+[
+  {"name":"admin","role":"admin","token":"..."},
+  {"name":"license-operator","role":"operator","token":"..."},
+  {"name":"audit-reader","role":"auditor","token":"..."}
+]
+```
+
+- `admin`: create organizations and revoke grants;
+- `operator`: import devices, bulk import CSV, issue bundles, and view activation codes;
+- `auditor`: read service status and export device/audit CSV files.
+
+Mutation events record actor, role, action, target, and time without recording
+password secrets or administrator tokens.
+
+Bulk device import accepts UTF-8 CSV with the headers below. Because the device
+request is JSON, use a standards-compliant CSV writer so quotes and commas are
+escaped correctly.
+
+```csv
+requestJson,organizationId,seatLabel
+"{""schemaVersion"":1,""requestId"":""req-..."",...}",org-acme,Finance laptop 01
+```
+
+## Signing-key rotation
+
+Generate a new signing seed with `cargo run -- generate-key`, deploy it under a
+new `KEYLESSPASS_LICENSE_KEY_ID`, and build clients with both old and new public
+keys in `KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON`. After all supported clients
+trust the new key, switch the backend to the new seed. Keep the old public key
+during the overlap window; private seeds never go into the client or browser.
+
 ## API
 
-All `/api/*` endpoints require:
+Administrative `/api/*` endpoints require:
 
 ```text
 Authorization: Bearer <KEYLESSPASS_ADMIN_TOKEN>
@@ -84,8 +132,13 @@ Main endpoints:
 - `GET /api/organizations`
 - `POST /api/organizations`
 - `POST /api/device-requests/import`
+- `POST /api/device-requests/import.csv`
 - `GET /api/devices`
+- `GET /api/devices.csv`
 - `POST /api/licenses/issue`
 - `POST /api/grants/{grantId}/revoke`
+- `GET /api/audit.csv`
 
-`GET /healthz` does not require a token.
+`POST /api/activation/activate` is authenticated by the organization activation
+code rather than an administrator token. `GET /healthz` does not require a
+token.

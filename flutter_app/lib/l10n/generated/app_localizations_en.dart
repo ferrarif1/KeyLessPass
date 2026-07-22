@@ -654,6 +654,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyDeviceRequest => 'Copy device request';
 
   @override
+  String get activateOnline => 'Activate online';
+
+  @override
+  String get activationServer => 'Activation server URL';
+
+  @override
+  String get activationCode => 'Activation code';
+
+  @override
+  String get onlineActivationHelp =>
+      'Connects only to an HTTPS authorization service (HTTP is allowed only on this computer). No password secrets are sent.';
+
+  @override
+  String get onlineActivationSucceeded => 'Online activation completed.';
+
+  @override
+  String get onlineActivationFailed =>
+      'Online activation failed. Check the server, activation code, and network connection.';
+
+  @override
   String get deviceRequestHelp =>
       'Copy this request and send it to the license issuer or enterprise admin tool. It contains only licensing identifiers, not password secrets.';
 
@@ -703,6 +723,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get licenseNotYetValid => 'Not yet valid';
+
+  @override
+  String get licenseVersionNotAllowed => 'App version not licensed';
 
   @override
   String get licenseUnlicensed => 'Unlicensed';

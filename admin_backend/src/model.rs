@@ -93,6 +93,7 @@ pub struct DeviceAuthorizationRequest {
 pub struct OrganizationRecord {
     pub id: String,
     pub license_id: String,
+    pub activation_code: String,
     pub name: String,
     pub plan: String,
     pub max_seats: u32,
@@ -158,6 +159,8 @@ pub struct BundleRecord {
 pub struct CreateOrganizationRequest {
     #[serde(default)]
     pub organization_id: Option<String>,
+    #[serde(default)]
+    pub activation_code: Option<String>,
     pub name: String,
     #[serde(default)]
     pub plan: Option<String>,
@@ -201,6 +204,33 @@ pub struct IssueBundleRequest {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ActivateLicenseRequest {
+    pub activation_code: String,
+    pub request_json: String,
+    #[serde(default)]
+    pub seat_label: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AuditRecord {
+    pub id: String,
+    pub actor: String,
+    pub role: String,
+    pub action: String,
+    pub target: String,
+    pub created_at: String,
+    pub details_json: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BulkImportResult {
+    pub imported: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AdminStatus {
     pub service: String,
     pub key_id: String,
@@ -220,6 +250,7 @@ pub struct AdminSnapshot {
     pub devices: Vec<DeviceRecord>,
     pub grants: Vec<GrantRecord>,
     pub bundles: Vec<BundleRecord>,
+    pub audit_log: Vec<AuditRecord>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

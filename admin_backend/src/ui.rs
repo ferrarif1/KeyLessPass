@@ -598,7 +598,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
                 </div>
                 <div class="full">
                   <label for="orgFeatures">Features</label>
-                  <input id="orgFeatures" value="desktop-client">
+                  <input id="orgFeatures" value="desktop-client, channel:commercial">
                 </div>
               </div>
               <div class="toolbar" style="margin-top:14px">
@@ -647,6 +647,21 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
               <button class="secondary" id="downloadBundleButton">Download bundle</button>
             </div>
           </div>
+
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h2>Organization activation</h2>
+                <p>Share activation codes only through an approved secure channel.</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Organization</th><th>Seats</th><th>Activation code</th><th></th></tr></thead>
+                <tbody id="organizationsTable"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -659,6 +674,9 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
           <div class="toolbar">
             <input id="deviceSearch" placeholder="Search seat, ID, fingerprint">
             <select id="deviceFilterOrg"></select>
+            <input id="deviceCsvFile" type="file" accept=".csv,text/csv">
+            <button class="secondary" id="importDeviceCsvButton">Import CSV</button>
+            <button class="secondary" id="exportDeviceCsvButton">Export CSV</button>
           </div>
         </div>
         <div class="card">
@@ -712,6 +730,21 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
                 <tbody id="grantsTable"></tbody>
               </table>
             </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <div class="section-head">
+            <div>
+              <h2>Audit log</h2>
+              <p>Latest authorization administration events.</p>
+            </div>
+            <button class="secondary" id="exportAuditCsvButton">Export audit CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Time</th><th>Actor</th><th>Role</th><th>Action</th><th>Target</th></tr></thead>
+              <tbody id="auditTable"></tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -816,9 +849,11 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
       $("keyIdBadge").textContent = snap.status.keyId;
       renderStatusBox(snap.status);
       renderOrgSelects(snap.organizations);
+      renderOrganizations(snap.organizations);
       renderDevices(snap.devices);
       renderBundles(snap.bundles);
       renderGrants(snap.grants);
+      renderAudit(snap.auditLog || []);
       renderActions();
     }
     function renderTokenState() {
@@ -862,6 +897,26 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
         $("deviceFilterOrg").value = filterSelected;
       }
       state.deviceFilterOrg = $("deviceFilterOrg").value || "all";
+    }
+    function renderOrganizations(orgs) {
+      if (!orgs.length) {
+        $("organizationsTable").innerHTML = emptyRow(4, "No organizations", "Create an organization to receive an activation code.");
+        return;
+      }
+      $("organizationsTable").innerHTML = orgs.map((org) => `
+        <tr>
+          <td><strong>${escapeHtml(org.name)}</strong><div class="fine-print mono">${escapeHtml(org.id)}</div></td>
+          <td>${org.maxSeats}</td>
+          <td class="mono">${escapeHtml(shorten(org.activationCode, 34))}</td>
+          <td><button class="secondary" data-activation-code="${escapeAttr(org.activationCode)}">Copy</button></td>
+        </tr>
+      `).join("");
+      $("organizationsTable").querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await copyText(button.dataset.activationCode || "");
+          showToast("Activation code copied.");
+        });
+      });
     }
     function filteredDevices(devices) {
       const query = state.deviceSearch.trim().toLowerCase();
@@ -957,6 +1012,21 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
         });
       });
     }
+    function renderAudit(records) {
+      if (!records.length) {
+        $("auditTable").innerHTML = emptyRow(5, "No audit events", "Administrative changes will appear here.");
+        return;
+      }
+      $("auditTable").innerHTML = records.slice(0, 100).map((record) => `
+        <tr>
+          <td>${formatDate(record.createdAt)}</td>
+          <td>${escapeHtml(record.actor)}</td>
+          <td><span class="badge">${escapeHtml(record.role)}</span></td>
+          <td>${escapeHtml(record.action)}</td>
+          <td class="mono">${escapeHtml(shorten(record.target, 36))}</td>
+        </tr>
+      `).join("");
+    }
     function renderActions() {
       const hasOrg = Boolean(state.snapshot?.organizations?.length);
       $("importDeviceButton").disabled = !hasOrg;
@@ -988,6 +1058,20 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     async function copyText(value) {
       if (!value) throw new Error("Nothing to copy.");
       await navigator.clipboard.writeText(value);
+    }
+    async function downloadApi(path, filename) {
+      const res = await fetch(path, { headers: { authorization: `Bearer ${token()}` } });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || res.statusText);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
     }
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
@@ -1053,6 +1137,39 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
         await refresh();
         showToast("Device request imported.");
       });
+    });
+    $("importDeviceCsvButton").addEventListener("click", async () => {
+      const file = $("deviceCsvFile").files[0];
+      if (!file) {
+        showToast("Choose a CSV file first.", true);
+        return;
+      }
+      await withBusy($("importDeviceCsvButton"), "Importing", async () => {
+        const result = await api("/api/device-requests/import.csv", {
+          method: "POST",
+          headers: { "content-type": "text/csv" },
+          body: await file.text(),
+        });
+        $("deviceCsvFile").value = "";
+        await refresh();
+        showToast(`${result.imported} device requests imported.`);
+      });
+    });
+    $("exportDeviceCsvButton").addEventListener("click", async () => {
+      try {
+        await downloadApi("/api/devices.csv", "keylesspass-devices.csv");
+        showToast("Device CSV downloaded.");
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+    $("exportAuditCsvButton").addEventListener("click", async () => {
+      try {
+        await downloadApi("/api/audit.csv", "keylesspass-audit.csv");
+        showToast("Audit CSV downloaded.");
+      } catch (err) {
+        showToast(err.message, true);
+      }
     });
     $("selectOrgDevicesButton").addEventListener("click", () => {
       const orgId = $("issueOrg").value;

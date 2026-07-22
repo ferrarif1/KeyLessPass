@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP_NAME="${APP_NAME:-KeyLessPass}"
 CODESIGN_IDENTITY="${CODESIGN_IDENTITY:--}"
 FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
+MACOS_RUST_TARGETS="${MACOS_RUST_TARGETS:-x86_64-apple-darwin,aarch64-apple-darwin}"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "macOS packaging must run on a macOS host." >&2
@@ -13,6 +14,16 @@ fi
 
 if ! command -v cargo >/dev/null 2>&1; then
   echo "cargo was not found in PATH." >&2
+  exit 1
+fi
+
+if ! command -v rustup >/dev/null 2>&1; then
+  echo "rustup was not found in PATH; it is required for universal macOS builds." >&2
+  exit 1
+fi
+
+if ! command -v lipo >/dev/null 2>&1; then
+  echo "lipo was not found in PATH; install the full Xcode command-line tools." >&2
   exit 1
 fi
 
@@ -31,7 +42,25 @@ fi
 APP_VERSION="${APP_VERSION:-0.1.0}"
 
 cd "$ROOT/rust_core"
-cargo build --release
+IFS=',' read -r -a RUST_TARGETS <<<"$MACOS_RUST_TARGETS"
+CORE_LIBS=()
+for RUST_TARGET in "${RUST_TARGETS[@]}"; do
+  if ! rustup target list --installed | grep -Fxq "$RUST_TARGET"; then
+    echo "Rust target is not installed: $RUST_TARGET" >&2
+    echo "Install it with: rustup target add $RUST_TARGET" >&2
+    exit 1
+  fi
+  cargo build --release --target "$RUST_TARGET"
+  CORE_LIBS+=("$ROOT/rust_core/target/$RUST_TARGET/release/libkeylesspass_core.dylib")
+done
+
+UNIVERSAL_CORE="$ROOT/rust_core/target/macos-universal/libkeylesspass_core.dylib"
+mkdir -p "$(dirname "$UNIVERSAL_CORE")"
+if [[ "${#CORE_LIBS[@]}" -eq 1 ]]; then
+  cp "${CORE_LIBS[0]}" "$UNIVERSAL_CORE"
+else
+  lipo -create "${CORE_LIBS[@]}" -output "$UNIVERSAL_CORE"
+fi
 
 cd "$ROOT/flutter_app"
 "$FLUTTER_BIN" build macos --release
@@ -39,7 +68,7 @@ cd "$ROOT/flutter_app"
 APP="$ROOT/flutter_app/build/macos/Build/Products/Release/$APP_NAME.app"
 ENTITLEMENTS="$ROOT/flutter_app/macos/Runner/Release.entitlements"
 mkdir -p "$APP/Contents/Frameworks"
-cp "$ROOT/rust_core/target/release/libkeylesspass_core.dylib" "$APP/Contents/Frameworks/"
+cp "$UNIVERSAL_CORE" "$APP/Contents/Frameworks/libkeylesspass_core.dylib"
 codesign --force --sign "$CODESIGN_IDENTITY" "$APP/Contents/Frameworks/libkeylesspass_core.dylib"
 codesign --force --deep --sign "$CODESIGN_IDENTITY" --entitlements "$ENTITLEMENTS" "$APP"
 
