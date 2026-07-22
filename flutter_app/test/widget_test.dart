@@ -15,6 +15,27 @@ void main() {
         isAllowedActivationServer(Uri.parse('file:///tmp/license')), isFalse);
   });
 
+  test('managed intranet config accepts only a plain HTTP(S) server URL', () {
+    expect(
+      automaticServerUriFromConfig(
+        '{"schemaVersion":1,"serverUrl":"http://10.20.30.40:8787"}',
+      ),
+      Uri.parse('http://10.20.30.40:8787'),
+    );
+    expect(
+      automaticServerUriFromConfig(
+        '{"schemaVersion":1,"serverUrl":"file:///tmp/fake"}',
+      ),
+      isNull,
+    );
+    expect(
+      automaticServerUriFromConfig(
+        '{"schemaVersion":1,"serverUrl":"http://user@10.0.0.1"}',
+      ),
+      isNull,
+    );
+  });
+
   testWidgets('KeylessPass desktop app builds', (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));
     await tester.pumpWidget(const KeylessPassDesktopApp());

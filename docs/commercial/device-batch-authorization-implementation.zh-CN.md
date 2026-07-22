@@ -16,7 +16,7 @@ tools/commercial/    强制授权商业构建入口
 packaging/           安装包和平台签名脚本
 ```
 
-下载应用不需要登录：访问 `http(s)://服务器/download`。创建组织、导入设备、签发和吊销需要打开服务器根地址并输入 Admin token。
+下载应用不需要登录：访问 `http(s)://服务器/download`。推荐模式下终端会自动找到服务器、登记并领取已批准授权；部署维护 token 只给客户 IT 导入/导出厂商文件，不给终端用户。
 
 ## 2. 商业授权怎样防止客户超量
 
@@ -64,11 +64,13 @@ admin_backend/license/customer-entitlement.json
 
 ```text
 /download   任何内网用户可下载应用，不需要 token
-/           管理后台，需要 Admin token
+/           批量批准和故障维护，需要部署维护 token
 /healthz    健康检查，不需要 token
 ```
 
-要让其他内网电脑访问，调整 Compose 的端口绑定或使用 HTTPS 反向代理；不要直接把管理端口暴露到互联网。
+脚本默认把 TCP 8787 和 UDP 8788 开放到内网，并自动生成 `KEYLESSPASS_PUBLIC_BASE_URL`。多网卡或 NAT 环境要在 `.env` 写成终端实际能访问的地址。不要把端口暴露到互联网。
+
+用户点击 `/download` 中任一安装包时，页面会同时下载动态生成的 `keylesspass-client-config.json`。客户端自动读取下载目录中最新的同名配置，UDP 只在配置缺失时兜底。该文件只定位服务器；授权仍必须通过客户端内置厂商根公钥的 Ed25519 验签。
 
 ## 5. 构建和放置客户端
 
@@ -92,7 +94,39 @@ Linux 使用参数 `linux` 并设置 `KEYLESSPASS_LINUX_GPG_KEY_ID`。Windows �
 - 厂商根公钥有效；
 - macOS/Windows 正式包完成平台代码签名。
 
-## 6. 首次批准设备
+## 6. 推荐：纯内网自动批量批准
+
+1. 用户从 `/download` 点击安装包；页面同时下载客户端和服务器配置。安装并启动一次，不输入任何授权信息。
+2. 客户端读取下载目录或受管目录中的最新配置；只有配置丢失时才用 UDP 8788 发现服务器。
+3. 客户端向 `/api/automatic/activate` 提交带设备私钥证明的请求。未获批准时服务端只登记并返回等待状态。
+4. 客户 IT 用部署维护 token 打开 `/`，点击“Export batch request”，把 JSON 发给厂商。
+5. 厂商核对合同数量，在离线工作站执行：
+
+```bash
+export KEYLESSPASS_VENDOR_SIGNING_KEY_B64='<厂商根私钥>'
+export KEYLESSPASS_VENDOR_KEY_ID='keylesspass-vendor-root-2026'
+export KEYLESSPASS_DEVICE_BATCH_REQUEST_FILE='<客户批量请求 JSON>'
+export KEYLESSPASS_CUSTOMER_VALID_UNTIL='2027-12-31T23:59:59Z'
+cargo run -- issue-customer-entitlement > customer-entitlement.json
+```
+
+6. 客户在同一页面导入返回文件。服务自动重启。
+7. 客户端最多 20 秒后再次请求，取得只属于本机的签名授权并自动导入。
+
+批量文件内嵌上一份厂商签名 entitlement；签发命令先验签并继承其中的合同额度、客户、现场公钥、期限和功能。客户修改 JSON 中的额度会被拒绝。请求数超过已签额度时命令拒绝签发；扩容/续费必须由厂商显式覆盖合同参数。若收集设备多于购买数，厂商必须设置 `KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS` 明确选择获批设备。
+
+## 7. 自动附带配置与受管配置位置
+
+| 平台 | 路径 |
+| --- | --- |
+| macOS | `/Library/Application Support/KeyLessPass/keylesspass-client-config.json` 或用户目录同名位置 |
+| Windows | `%PROGRAMDATA%\KeyLessPass\keylesspass-client-config.json` 或 `%APPDATA%` 同名路径 |
+| Linux | `/etc/keylesspass/client-config.json` 或 `~/.config/keylesspass/client-config.json` |
+| 通用 | 可执行文件旁、当前工作目录，或 `KEYLESSPASS_CLIENT_CONFIG` 指定位置 |
+
+TCP 8787 仍必须允许终端访问；如果连 TCP 也被禁止，就不存在客户端访问内网授权服务的网络路径，必须由网络管理员放行或通过 MDM 下发离线授权包。
+
+## 8. 备用：手动批准设备
 
 ### 终端用户
 
@@ -127,7 +161,7 @@ docker compose restart keylesspass-admin
 
 旧序列授权和旧签发时间包会被客户端防回滚状态拒绝。
 
-## 7. 在线激活
+## 9. 备用：手动在线激活
 
 在线激活只适用于已经被厂商批准的设备：
 
@@ -138,7 +172,7 @@ docker compose restart keylesspass-admin
 
 本机测试可使用 `http://127.0.0.1:8787`；普通内网地址必须使用 HTTPS。点按钮后状态不变时，先查看弹出的错误；常见原因是设备尚未加入厂商白名单、激活码错误或席位已满。
 
-## 8. 离线授权
+## 10. 备用：手动导入离线授权
 
 1. 管理员导入并完成厂商审批。
 2. 在后台选择同一组织下的设备。
@@ -154,7 +188,7 @@ docker compose restart keylesspass-admin
 | Windows | `C:\ProgramData\KeyLessPass\license-bundle.json` |
 | Linux | `/etc/keylesspass/license-bundle.json` |
 
-## 9. 席位、吊销和换机
+## 11. 席位、吊销和换机
 
 - 席位在独立 `seat_allocations` 表中事务分配；过期席位自动变为 expired。
 - 吊销一个设备会吊销该设备全部活动 grant，并禁止使用旧身份重新在线激活。
@@ -162,18 +196,20 @@ docker compose restart keylesspass-admin
 - 换机必须生成新设备密钥，由厂商把新 key ID 加入更高序列授权；不要复制旧应用目录。
 - 清除本机授权不会删除密码记录，但防回滚安全状态会保留。
 
-## 10. 故障排查
+## 12. 故障排查
 
 | 现象 | 原因和处理 |
 | --- | --- |
 | 无法启动后台 | 检查根公钥、现场私钥和 `license/customer-entitlement.json` 是否匹配 |
+| 客户端找不到服务器 | 确认浏览器同时下载了配置，或由 IT 下发配置；确认 TCP 8787 可达和 `KEYLESSPASS_PUBLIC_BASE_URL` 正确。UDP 8788 只是兜底 |
+| 一直等待批准 | 在维护页导出最新批量请求；确认导入 entitlement 的序列号更高且包含该设备 key ID |
 | 在线激活无变化 | 设备未获厂商批准、HTTPS/激活码错误或席位已满；查看客户端提示和后台日志 |
 | “exceeds vendor entitlement” | 组织或设备超出厂商签名范围，不能在客户后台自行扩大 |
 | “not for this device” | 包不属于当前设备，重新复制本机 schema v2 请求 |
 | “rollback detected” | 导入了旧 entitlement serial 或旧 bundle，使用最新文件 |
 | 未授权仍可使用 | 运行的是开发/评估构建，重新使用商业构建入口 |
 
-## 11. 不能消除的边界
+## 13. 不能消除的边界
 
 本实现显著提高普通复制、改后台超发和回滚旧授权的成本，但本地软件不是不可破解 DRM：拥有机器控制权的人仍可能 patch 客户端；完整复制离线虚拟机、设备密钥和所有受保护系统状态也无法由纯软件绝对识别。
 

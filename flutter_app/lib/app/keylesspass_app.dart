@@ -22,6 +22,23 @@ bool isAllowedActivationServer(Uri uri) {
   return uri.scheme == 'http' && loopback;
 }
 
+Uri? automaticServerUriFromConfig(String contents) {
+  try {
+    final value = jsonDecode(contents) as Map<String, Object?>;
+    if (value['schemaVersion'] != 1) return null;
+    final uri = Uri.parse(value['serverUrl'] as String);
+    if ((uri.scheme != 'http' && uri.scheme != 'https') ||
+        uri.host.isEmpty ||
+        uri.hasFragment ||
+        uri.userInfo.isNotEmpty) {
+      return null;
+    }
+    return uri;
+  } catch (_) {
+    return null;
+  }
+}
+
 enum _Section {
   dashboard,
   setup,
@@ -233,6 +250,8 @@ class _HomeWindowState extends State<_HomeWindow> {
   int _defaultLength = 18;
   bool _advancedMode = false;
   String _passwordDerivationAlgorithm = 'hkdf-sha256';
+  DateTime? _lastAutomaticActivationAttempt;
+  bool _automaticActivationBusy = false;
 
   @override
   void initState() {
@@ -267,10 +286,24 @@ class _HomeWindowState extends State<_HomeWindow> {
     }
     try {
       final status = await api.getAppStatus();
-      final licenseStatus = await api.getLicenseStatus();
-      final records =
-          status.enrolled ? await api.listCredentials() : <CredentialRecord>[];
-      final candidates = await api.listUsbCandidates();
+      var licenseStatus = await api.getLicenseStatus();
+      if (!licenseStatus.authorized) {
+        licenseStatus = await _tryAutomaticActivation(api) ?? licenseStatus;
+      }
+      var records = <CredentialRecord>[];
+      var candidates = <UsbCandidate>[];
+      if (status.enrolled) {
+        try {
+          records = await api.listCredentials();
+        } catch (_) {
+          records = <CredentialRecord>[];
+        }
+      }
+      try {
+        candidates = await api.listUsbCandidates();
+      } catch (_) {
+        candidates = <UsbCandidate>[];
+      }
       UsbCdrStatus? usbCdrStatus;
       if (status.enrolled) {
         final readable = candidates.where(
@@ -301,6 +334,176 @@ class _HomeWindowState extends State<_HomeWindow> {
       setState(() => _message = context.t.operationFailed);
     } finally {
       if (mounted && !silent) setState(() => _busy = false);
+    }
+  }
+
+  Future<LicenseStatus?> _tryAutomaticActivation(CoreApi api) async {
+    final now = DateTime.now();
+    if (_automaticActivationBusy ||
+        (_lastAutomaticActivationAttempt != null &&
+            now.difference(_lastAutomaticActivationAttempt!) <
+                const Duration(seconds: 15))) {
+      return null;
+    }
+    _automaticActivationBusy = true;
+    _lastAutomaticActivationAttempt = now;
+    try {
+      final servers = await _automaticActivationServers();
+      if (servers.isEmpty) return null;
+      final deviceRequest = await api.exportDeviceAuthorizationRequest();
+      for (final server in servers) {
+        final status = await _activateAutomaticallyAt(
+          api,
+          server,
+          deviceRequest,
+        );
+        if (status != null) return status;
+      }
+    } catch (_) {
+      return null;
+    } finally {
+      _automaticActivationBusy = false;
+    }
+    return null;
+  }
+
+  Future<List<Uri>> _automaticActivationServers() async {
+    final configured = await _configuredAutomaticServer();
+    if (configured != null) return <Uri>[configured];
+    final values = <String>{};
+    for (final discovered in await _discoverAutomaticServers()) {
+      values.add(discovered.toString());
+    }
+    return values.map(Uri.parse).toList(growable: false);
+  }
+
+  Future<Uri?> _configuredAutomaticServer() async {
+    final home = Platform.environment['HOME'];
+    final appData = Platform.environment['APPDATA'];
+    final programData = Platform.environment['PROGRAMDATA'];
+    final userProfile = Platform.environment['USERPROFILE'];
+    final explicit = Platform.environment['KEYLESSPASS_CLIENT_CONFIG'];
+    final executableDirectory = File(Platform.resolvedExecutable).parent.path;
+    final paths = <String>[
+      if (explicit != null && explicit.trim().isNotEmpty) explicit.trim(),
+      '${Directory.current.path}/keylesspass-client-config.json',
+      '$executableDirectory/keylesspass-client-config.json',
+      '/Library/Application Support/KeyLessPass/keylesspass-client-config.json',
+      if (home != null)
+        '$home/Library/Application Support/KeyLessPass/keylesspass-client-config.json',
+      if (home != null) '$home/.config/keylesspass/client-config.json',
+      '/etc/keylesspass/client-config.json',
+      if (appData != null)
+        '$appData\\KeyLessPass\\keylesspass-client-config.json',
+      if (programData != null)
+        '$programData\\KeyLessPass\\keylesspass-client-config.json',
+    ];
+    for (final downloadsDirectory in <String>{
+      if (home != null) '$home/Downloads',
+      if (userProfile != null) '$userProfile\\Downloads',
+    }) {
+      try {
+        final downloaded = await Directory(downloadsDirectory)
+            .list(followLinks: false)
+            .where((entity) {
+              if (entity is! File) return false;
+              final name = entity.uri.pathSegments.last.toLowerCase();
+              return name.startsWith('keylesspass-client-config') &&
+                  name.endsWith('.json');
+            })
+            .cast<File>()
+            .toList();
+        downloaded.sort((left, right) =>
+            right.lastModifiedSync().compareTo(left.lastModifiedSync()));
+        paths.addAll(downloaded.map((file) => file.path));
+      } catch (_) {
+        // Downloads directory may not exist or may be protected.
+      }
+    }
+    for (final path in paths) {
+      try {
+        final file = File(path);
+        if (!await file.exists() || await file.length() > 64 * 1024) continue;
+        final uri = automaticServerUriFromConfig(await file.readAsString());
+        if (uri != null) return uri;
+      } catch (_) {
+        // Try the next managed configuration location.
+      }
+    }
+    return null;
+  }
+
+  Future<List<Uri>> _discoverAutomaticServers() async {
+    RawDatagramSocket? socket;
+    try {
+      socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      socket.broadcastEnabled = true;
+      final results = <Uri>[];
+      socket.listen((event) {
+        if (event != RawSocketEvent.read) return;
+        Datagram? datagram;
+        while ((datagram = socket?.receive()) != null) {
+          final message = utf8.decode(datagram!.data, allowMalformed: true);
+          const prefix = 'KEYLESSPASS_SERVER_V2:';
+          if (!message.startsWith(prefix)) continue;
+          final port = int.tryParse(message.substring(prefix.length));
+          if (port == null || port < 1 || port > 65535) continue;
+          results.add(Uri(
+            scheme: 'http',
+            host: datagram.address.address,
+            port: port,
+          ));
+        }
+      });
+      const request = 'KEYLESSPASS_DISCOVER_V2';
+      final bytes = utf8.encode(request);
+      socket.send(bytes, InternetAddress('255.255.255.255'), 8788);
+      socket.send(bytes, InternetAddress.loopbackIPv4, 8788);
+      await Future<void>.delayed(const Duration(milliseconds: 900));
+      return results;
+    } catch (_) {
+      return const <Uri>[];
+    } finally {
+      socket?.close();
+    }
+  }
+
+  Future<LicenseStatus?> _activateAutomaticallyAt(
+    CoreApi api,
+    Uri server,
+    Map<String, Object?> deviceRequest,
+  ) async {
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 4);
+    try {
+      final request = await client.postUrl(
+        server.resolve('/api/automatic/activate'),
+      );
+      request.followRedirects = false;
+      request.headers.contentType = ContentType.json;
+      request.write(jsonEncode({'requestJson': jsonEncode(deviceRequest)}));
+      final response =
+          await request.close().timeout(const Duration(seconds: 6));
+      final bytes = <int>[];
+      await for (final chunk in response.timeout(const Duration(seconds: 6))) {
+        if (bytes.length + chunk.length > 1024 * 1024) {
+          throw const FormatException('Activation response too large');
+        }
+        bytes.addAll(chunk);
+      }
+      if (response.statusCode == HttpStatus.accepted) return null;
+      if (response.statusCode != HttpStatus.ok) {
+        throw const HttpException('Automatic activation failed');
+      }
+      final body = jsonDecode(utf8.decode(bytes)) as Map<String, Object?>;
+      final envelope = body['envelopeJson'] as String?;
+      if (body['status'] != 'authorized' ||
+          envelope == null ||
+          envelope.isEmpty) {
+        throw const FormatException('Missing automatic license envelope');
+      }
+      return api.importLicenseBundle(bundleJson: envelope);
+    } finally {
+      client.close(force: true);
     }
   }
 

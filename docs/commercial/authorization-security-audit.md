@@ -6,6 +6,14 @@ Audit date: 2026-07-22
 
 Scope: Rust authorization/enforcement, Flutter library loading, backend trust/authentication/seats/revocation, commercial packaging, and deployment documentation.
 
+## Pure-intranet automatic-authorization delta audit
+
+- UDP 8788 responses and `keylesspass-client-config.json` are location hints, not trust roots. Forging either cannot create a client-verifiable grant.
+- Public `/api/automatic/activate` receives licensing metadata and device-key proof only; it receives no password secret, maintenance token, or signing private key.
+- A `deviceKeyId` absent from the vendor entitlement can only remain pending. A modified site service cannot bypass the vendor-root check in the commercial client.
+- Batch export/import requires the deployment-maintenance token. Import verifies vendor signature, customer, delegated site key, validity, increasing serial, and registered device set before atomic replacement and restart.
+- The added residual risk is metadata/disk denial of service by a malicious intranet host generating valid self-signed identities. The automatic queue defaults to `max(32, purchased devices x 4)`; also restrict TCP 8787 and UDP 8788 to endpoint subnets and optionally rate-limit at the reverse proxy. Rate limiting is not an authorization trust boundary.
+
 ## Conclusion
 
 The implementation no longer treats a customer backend as the client trust root. A vendor-signed customer entitlement delegates the site key and explicitly approves device key IDs. Without modifying the official client, possession of the customer backend, database, and site private key is insufficient to authorize an unapproved endpoint.

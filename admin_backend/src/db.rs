@@ -310,6 +310,48 @@ impl Db {
         Ok(row)
     }
 
+    pub fn update_automatic_organization(
+        &self,
+        id: &str,
+        request: &CreateOrganizationRequest,
+        issuer: &str,
+    ) -> Result<()> {
+        let valid_until = request
+            .valid_until
+            .as_deref()
+            .ok_or_else(|| anyhow!("automatic organization validUntil is required"))?;
+        let changed = self.lock()?.execute(
+            r#"
+            UPDATE organizations
+            SET name = ?2,
+                plan = 'offline-intranet',
+                max_seats = ?3,
+                valid_until = ?4,
+                features_json = ?5,
+                offline_grace_days = ?6,
+                allowed_major_versions_json = ?7,
+                issuer = ?8,
+                updated_at = ?9
+            WHERE id = ?1
+            "#,
+            params![
+                id,
+                request.name,
+                request.max_seats.unwrap_or(1).max(1),
+                valid_until,
+                to_json(&request.features)?,
+                request.offline_grace_days.unwrap_or(0),
+                to_json(&request.allowed_major_versions)?,
+                issuer,
+                Utc::now().to_rfc3339(),
+            ],
+        )?;
+        if changed != 1 {
+            return Err(anyhow!("automatic organization does not exist"));
+        }
+        Ok(())
+    }
+
     pub fn organization_by_activation_code(
         &self,
         activation_code: &str,
@@ -745,6 +787,32 @@ impl Db {
         collect_rows(rows)
     }
 
+    pub fn latest_active_bundle_for_device(
+        &self,
+        organization_id: &str,
+        device_id: &str,
+    ) -> Result<Option<BundleRecord>> {
+        let conn = self.lock()?;
+        conn.query_row(
+            r#"
+            SELECT b.id, b.bundle_id, b.organization_id, b.license_id, b.device_count,
+                   b.revoked_count, b.valid_until, b.issued_at, b.envelope_json
+            FROM bundles b
+            JOIN grants g ON g.bundle_id = b.bundle_id
+            WHERE g.organization_id = ?1
+              AND g.device_id = ?2
+              AND g.revoked = 0
+              AND g.valid_until > ?3
+            ORDER BY b.issued_at DESC
+            LIMIT 1
+            "#,
+            params![organization_id, device_id, Utc::now().to_rfc3339()],
+            bundle_from_row,
+        )
+        .optional()
+        .map_err(Into::into)
+    }
+
     pub fn record_audit(
         &self,
         actor: &str,
@@ -897,7 +965,7 @@ fn ensure_request_has_no_password_secrets(value: &str) -> Result<()> {
     Ok(())
 }
 
-fn to_json<T: Serialize>(value: &T) -> Result<String> {
+fn to_json<T: Serialize + ?Sized>(value: &T) -> Result<String> {
     Ok(serde_json::to_string(value)?)
 }
 

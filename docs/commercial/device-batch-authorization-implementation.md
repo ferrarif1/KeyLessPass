@@ -16,7 +16,7 @@ tools/commercial/    enforced commercial build entry point
 packaging/           platform packages and signing scripts
 ```
 
-Application downloads at `/download` require no login. Organization, device, issuance, and revocation operations at `/` require an Admin token.
+Application downloads at `/download` require no login. In the recommended mode, endpoints locate the service, register, and retrieve approved grants automatically. The deployment token is reserved for customer IT batch exchange and troubleshooting.
 
 ## Trust and seat protection
 
@@ -44,15 +44,17 @@ cd admin_backend
 ./scripts/intranet_deploy.sh
 ```
 
-The first run creates an Admin token and customer-site key, prints the site key ID/public key, and pauses. The vendor issues a bootstrap entitlement delegated to those values. Install the returned vendor root public key in `.env` and the signed file at `license/customer-entitlement.json`, then run the script again.
+The first run creates a deployment token and customer-site key, prints the site key ID/public key, and pauses. The vendor issues a bootstrap entitlement delegated to those values. Install the returned vendor root public key in `.env` and the signed file at `license/customer-entitlement.json`, then run the script again.
 
 ```text
 /download   public artifact list
-/           token-authenticated admin UI
+/           token-authenticated batch exchange and maintenance
 /healthz    public health check
 ```
 
-Place non-loopback activation behind HTTPS and restrict administrative ingress.
+The script exposes TCP 8787 and UDP 8788 to the intranet and generates `KEYLESSPASS_PUBLIC_BASE_URL`. Override it for multiple NICs, NAT, fixed DNS, or a reverse proxy. Never expose the ports to the Internet.
+
+Clicking any installer on `/download` also downloads a dynamically generated `keylesspass-client-config.json`. The client reads the newest matching file in Downloads; UDP is only a fallback when config is absent. The config only locates the server and cannot replace the vendor-root Ed25519 authorization chain.
 
 ## Commercial client build
 
@@ -67,7 +69,41 @@ tools/commercial/build_commercial_release.sh macos
 
 Use `linux` with `KEYLESSPASS_LINUX_GPG_KEY_ID` on Linux. On Windows, set the Authenticode certificate thumbprint required by the packaging script. Copy final packages into `admin_backend/downloads/`; the public page computes and displays SHA-256 values.
 
-## Initial device approval
+## Recommended pure-intranet batch approval
+
+1. Users click an installer on `/download`; the page delivers both the installer and server config. They install and start once without entering authorization data.
+2. Each client reads the newest downloaded or managed config. It discovers UDP port 8788 only when config is missing.
+3. `/api/automatic/activate` verifies proof of the device private key, records an unapproved device, and returns a pending state.
+4. Customer IT opens `/` with the deployment token, clicks **Export batch request**, and sends the JSON to the vendor.
+5. The vendor checks the contract and runs on its offline workstation:
+
+```bash
+export KEYLESSPASS_VENDOR_SIGNING_KEY_B64='<vendor root seed>'
+export KEYLESSPASS_VENDOR_KEY_ID='keylesspass-vendor-root-2026'
+export KEYLESSPASS_DEVICE_BATCH_REQUEST_FILE='<customer batch request JSON>'
+export KEYLESSPASS_CUSTOMER_VALID_UNTIL='2027-12-31T23:59:59Z'
+cargo run -- issue-customer-entitlement > customer-entitlement.json
+```
+
+6. Customer IT imports that file on the same page. The service restarts.
+7. Within 20 seconds, each polling client retrieves and imports its own signed grant.
+
+The batch embeds the previous vendor-signed entitlement. The signer verifies it and inherits its customer, site key, contract limit, dates, and features, so an edited batch quota is rejected. Renewal or expansion requires explicit vendor-side overrides. If the collected list is larger than the signed limit, the vendor must set the reviewed `KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS` subset.
+
+## Automatic companion config and managed paths
+
+Deploy the generated configuration to:
+
+| Platform | Path |
+| --- | --- |
+| macOS | `/Library/Application Support/KeyLessPass/keylesspass-client-config.json` or the equivalent user path |
+| Windows | `%PROGRAMDATA%\KeyLessPass\keylesspass-client-config.json` or the `%APPDATA%` equivalent |
+| Linux | `/etc/keylesspass/client-config.json` or `~/.config/keylesspass/client-config.json` |
+| Any | beside the executable/current directory, or set `KEYLESSPASS_CLIENT_CONFIG` |
+
+TCP 8787 must remain reachable. If policy blocks TCP as well, no network path exists; allow it or deploy a signed offline bundle through MDM.
+
+## Manual fallback: initial device approval
 
 1. The user opens Security -> Commercial authorization and copies the schema-v2 device request.
 2. The customer admin creates an organization and imports the request.
@@ -78,13 +114,13 @@ Use `linux` with `KEYLESSPASS_LINUX_GPG_KEY_ID` on Linux. On Windows, set the Au
 
 Device requests contain a public key and proof of possession but no password secrets.
 
-## Online activation
+## Manual fallback: online activation
 
 The user enters the HTTPS server URL, organization activation code, and seat label. The server verifies device proof, vendor approval, organization policy, revocation, and availability, then allocates the seat and stores the grant in one SQLite `BEGIN IMMEDIATE` transaction.
 
 Loopback HTTP is accepted for testing. An unapproved device, invalid code, exhausted pool, or non-loopback HTTP request is rejected.
 
-## Offline and managed activation
+## Manual fallback: offline and managed activation
 
 After vendor approval, select devices in the admin UI, issue the bundle, and import it from the client authorization panel. Managed deployment paths are:
 

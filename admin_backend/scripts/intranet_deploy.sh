@@ -17,6 +17,22 @@ else
   exit 1
 fi
 
+detect_server_ip() {
+  if [ -n "${KEYLESSPASS_SERVER_IP:-}" ]; then
+    printf '%s' "$KEYLESSPASS_SERVER_IP"
+  elif command -v hostname >/dev/null 2>&1 && hostname -I >/dev/null 2>&1; then
+    hostname -I | awk '{print $1}'
+  elif command -v ipconfig >/dev/null 2>&1; then
+    ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true
+  fi
+}
+
+SERVER_IP="$(detect_server_ip)"
+if [ -z "$SERVER_IP" ]; then
+  SERVER_IP=127.0.0.1
+  echo "Warning: could not detect an intranet IP. Set KEYLESSPASS_PUBLIC_BASE_URL in .env." >&2
+fi
+
 if [ ! -f .env ]; then
   ADMIN_TOKEN="$(openssl rand -hex 32)"
   SIGNING_KEY="$(openssl rand -base64 32)"
@@ -29,12 +45,34 @@ KEYLESSPASS_LICENSE_ISSUER=KeyLessPass Customer Site
 KEYLESSPASS_VENDOR_KEY_ID=keylesspass-vendor-root-2026
 KEYLESSPASS_VENDOR_PUBLIC_KEY_B64=replace-with-vendor-root-public-key
 KEYLESSPASS_ADMIN_PORT=8787
+KEYLESSPASS_PUBLIC_BASE_URL=http://${SERVER_IP}:8787
+KEYLESSPASS_HOST_BIND=0.0.0.0
 EOF
   chmod 600 .env
   echo "Created .env with a fresh admin token and license signing seed."
 else
   ADMIN_TOKEN="$(sed -n 's/^KEYLESSPASS_ADMIN_TOKEN=//p' .env | tail -n 1)"
+  if [ "${#ADMIN_TOKEN}" -lt 24 ]; then
+    ADMIN_TOKEN="$(openssl rand -hex 32)"
+    TEMP_ENV="$(mktemp ./.env.XXXXXX)"
+    awk -v token="$ADMIN_TOKEN" '
+      BEGIN { replaced = 0 }
+      /^KEYLESSPASS_ADMIN_TOKEN=/ { print "KEYLESSPASS_ADMIN_TOKEN=" token; replaced = 1; next }
+      { print }
+      END { if (!replaced) print "KEYLESSPASS_ADMIN_TOKEN=" token }
+    ' .env > "$TEMP_ENV"
+    chmod 600 "$TEMP_ENV"
+    mv "$TEMP_ENV" .env
+    echo "Generated a fresh local deployment token."
+  fi
   echo "Using existing .env."
+fi
+
+if ! grep -q '^KEYLESSPASS_PUBLIC_BASE_URL=' .env; then
+  printf '\nKEYLESSPASS_PUBLIC_BASE_URL=http://%s:8787\n' "$SERVER_IP" >> .env
+fi
+if ! grep -q '^KEYLESSPASS_HOST_BIND=' .env; then
+  printf 'KEYLESSPASS_HOST_BIND=0.0.0.0\n' >> .env
 fi
 
 mkdir -p downloads license
@@ -61,8 +99,10 @@ if [ -z "${PORT}" ]; then
 fi
 
 echo
-echo "KeyLessPass Admin is running."
-echo "URL:   http://127.0.0.1:${PORT}"
+echo "KeyLessPass intranet service is running."
+echo "Download URL: http://${SERVER_IP}:${PORT}/download"
+echo "Fallback config: http://${SERVER_IP}:${PORT}/keylesspass-client-config.json"
+echo "Maintenance URL: http://${SERVER_IP}:${PORT}/"
 echo "Token: ${ADMIN_TOKEN}"
 echo
-echo "Public downloads do not require login. Administrative authorization operations require the token."
+echo "Users download and authorize automatically. Only batch exchange and maintenance require the token."

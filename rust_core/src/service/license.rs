@@ -227,7 +227,7 @@ pub fn default_license_verifier() -> LicenseVerifier {
     // environment would let a local user add their own signing key and mint a
     // valid-looking commercial license at runtime.
     if let Some(json) = option_env!("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON") {
-        if let Ok(configured) = serde_json::from_str::<BTreeMap<String, String>>(&json) {
+        if let Ok(configured) = serde_json::from_str::<BTreeMap<String, String>>(json) {
             keys.extend(configured);
         }
     }

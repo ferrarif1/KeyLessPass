@@ -280,6 +280,23 @@ pub struct ActivateLicenseRequest {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AutomaticActivationRequest {
+    pub request_json: String,
+    #[serde(default)]
+    pub seat_label: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AutomaticActivationResponse {
+    pub status: String,
+    pub device_key_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub envelope_json: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AuditRecord {
     pub id: String,
     pub actor: String,

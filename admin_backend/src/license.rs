@@ -15,6 +15,27 @@ use rand::{rngs::OsRng, RngCore};
 use std::collections::HashSet;
 use uuid::Uuid;
 
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct DeviceBatchApprovalInput {
+    schema_version: u32,
+    customer_id: String,
+    customer_name: String,
+    entitlement_serial: u64,
+    site_key_id: String,
+    site_public_key: String,
+    purchased_device_limit: u32,
+    current_customer_entitlement: SignedCustomerEntitlementEnvelope,
+    #[serde(default)]
+    requested_devices: Vec<DeviceBatchApprovalDevice>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct DeviceBatchApprovalDevice {
+    device_key_id: String,
+}
+
 #[derive(Clone)]
 pub struct SigningMaterial {
     pub key_id: String,
@@ -60,6 +81,14 @@ impl SigningMaterial {
             signing_key: signing_key_from_b64(&private_key)?,
         })
     }
+
+    #[cfg(test)]
+    pub fn for_test(key_id: &str, seed: [u8; 32]) -> Self {
+        Self {
+            key_id: key_id.to_string(),
+            signing_key: SigningKey::from_bytes(&seed),
+        }
+    }
 }
 
 pub fn load_customer_entitlement(
@@ -74,11 +103,18 @@ pub fn load_customer_entitlement(
         std::fs::read_to_string(&path)
             .with_context(|| format!("read customer entitlement file {path}"))?
     };
+    verify_customer_entitlement_for_site(&envelope_json, site_signing)
+}
+
+pub fn verify_customer_entitlement_for_site(
+    envelope_json: &str,
+    site_signing: &SigningMaterial,
+) -> Result<VerifiedCustomerEntitlement> {
     let vendor_key_id = std::env::var("KEYLESSPASS_VENDOR_KEY_ID")
         .unwrap_or_else(|_| "keylesspass-vendor-root-2026".to_string());
     let vendor_public_key = std::env::var("KEYLESSPASS_VENDOR_PUBLIC_KEY_B64")
         .context("KEYLESSPASS_VENDOR_PUBLIC_KEY_B64 is required")?;
-    let verified = verify_customer_entitlement(&envelope_json, &vendor_key_id, &vendor_public_key)?;
+    let verified = verify_customer_entitlement(envelope_json, &vendor_key_id, &vendor_public_key)?;
     if verified.payload.site_key_id != site_signing.key_id
         || decode_key(&verified.payload.site_public_key)?
             != *site_signing.signing_key.verifying_key().as_bytes()
@@ -98,49 +134,164 @@ pub fn load_customer_entitlement(
 
 pub fn issue_customer_entitlement_output() -> Result<String> {
     let vendor_signing = SigningMaterial::vendor_from_env()?;
+    let batch = std::env::var("KEYLESSPASS_DEVICE_BATCH_REQUEST_FILE")
+        .ok()
+        .map(|path| {
+            let value = std::fs::read_to_string(&path)
+                .with_context(|| format!("read device batch request file {path}"))?;
+            serde_json::from_str::<DeviceBatchApprovalInput>(&value)
+                .context("parse device batch request file")
+        })
+        .transpose()?;
+    let trusted_batch_entitlement = batch
+        .as_ref()
+        .map(|input| verify_device_batch_entitlement(input, &vendor_signing))
+        .transpose()?;
     let now = Utc::now();
     let valid_until = std::env::var("KEYLESSPASS_CUSTOMER_VALID_UNTIL")
-        .unwrap_or_else(|_| (now + Duration::days(365)).to_rfc3339());
+        .ok()
+        .or_else(|| {
+            trusted_batch_entitlement
+                .as_ref()
+                .map(|value| value.payload.valid_until.clone())
+        })
+        .unwrap_or_else(|| (now + Duration::days(365)).to_rfc3339());
     parse_time(&valid_until)?;
-    let authorized_device_key_ids = env_list("KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS", &[]);
-    validate_authorized_device_keys(
-        &authorized_device_key_ids,
-        env_u32("KEYLESSPASS_MAX_REGISTERED_DEVICES", 25)?,
-    )?;
+    let batch_key_ids = batch
+        .as_ref()
+        .map(|input| {
+            let mut values = input
+                .requested_devices
+                .iter()
+                .map(|device| device.device_key_id.clone())
+                .chain(
+                    trusted_batch_entitlement
+                        .as_ref()
+                        .into_iter()
+                        .flat_map(|value| value.payload.authorized_device_key_ids.iter().cloned()),
+                )
+                .collect::<Vec<_>>();
+            values.sort();
+            values.dedup();
+            values
+        })
+        .unwrap_or_default();
+    let authorized_device_key_ids = std::env::var("KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS")
+        .ok()
+        .map(|_| env_list("KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS", &[]))
+        .unwrap_or(batch_key_ids);
+    let default_device_limit = trusted_batch_entitlement
+        .as_ref()
+        .map(|value| value.payload.max_registered_devices)
+        .unwrap_or(25);
+    let max_registered_devices = std::env::var("KEYLESSPASS_MAX_REGISTERED_DEVICES")
+        .ok()
+        .map(|value| {
+            value
+                .parse()
+                .context("KEYLESSPASS_MAX_REGISTERED_DEVICES must be an integer")
+        })
+        .transpose()?
+        .unwrap_or(default_device_limit);
+    validate_authorized_device_keys(&authorized_device_key_ids, max_registered_devices)?;
     let payload = CustomerEntitlement {
         schema_version: LICENSE_SCHEMA_VERSION,
         entitlement_id: format!("ent-{}", Uuid::new_v4()),
         entitlement_serial: std::env::var("KEYLESSPASS_ENTITLEMENT_SERIAL")
             .ok()
             .and_then(|value| value.parse().ok())
-            .unwrap_or(1),
-        customer_id: required_env("KEYLESSPASS_CUSTOMER_ID")?,
-        customer_name: required_env("KEYLESSPASS_CUSTOMER_NAME")?,
+            .unwrap_or_else(|| {
+                trusted_batch_entitlement
+                    .as_ref()
+                    .map_or(1, |value| value.payload.entitlement_serial + 1)
+            }),
+        customer_id: env_or_batch(
+            "KEYLESSPASS_CUSTOMER_ID",
+            trusted_batch_entitlement
+                .as_ref()
+                .map(|value| &value.payload.customer_id),
+        )?,
+        customer_name: env_or_batch(
+            "KEYLESSPASS_CUSTOMER_NAME",
+            trusted_batch_entitlement
+                .as_ref()
+                .map(|value| &value.payload.customer_name),
+        )?,
         product: "KeyLessPass".to_string(),
-        site_key_id: required_env("KEYLESSPASS_SITE_KEY_ID")?,
-        site_public_key: required_env("KEYLESSPASS_SITE_PUBLIC_KEY_B64")?,
-        max_registered_devices: env_u32("KEYLESSPASS_MAX_REGISTERED_DEVICES", 25)?,
-        max_concurrent_devices: env_u32("KEYLESSPASS_MAX_CONCURRENT_DEVICES", 25)?,
-        max_offline_borrowed: env_u32("KEYLESSPASS_MAX_OFFLINE_BORROWED", 0)?,
-        max_offline_grace_days: env_u32("KEYLESSPASS_MAX_OFFLINE_GRACE_DAYS", 14)?,
+        site_key_id: env_or_batch(
+            "KEYLESSPASS_SITE_KEY_ID",
+            trusted_batch_entitlement
+                .as_ref()
+                .map(|value| &value.payload.site_key_id),
+        )?,
+        site_public_key: env_or_batch(
+            "KEYLESSPASS_SITE_PUBLIC_KEY_B64",
+            trusted_batch_entitlement
+                .as_ref()
+                .map(|value| &value.payload.site_public_key),
+        )?,
+        max_registered_devices,
+        max_concurrent_devices: env_u32(
+            "KEYLESSPASS_MAX_CONCURRENT_DEVICES",
+            trusted_batch_entitlement
+                .as_ref()
+                .map_or(max_registered_devices, |value| {
+                    value.payload.max_concurrent_devices
+                }),
+        )?,
+        max_offline_borrowed: env_u32(
+            "KEYLESSPASS_MAX_OFFLINE_BORROWED",
+            trusted_batch_entitlement
+                .as_ref()
+                .map_or(0, |value| value.payload.max_offline_borrowed),
+        )?,
+        max_offline_grace_days: env_u32(
+            "KEYLESSPASS_MAX_OFFLINE_GRACE_DAYS",
+            trusted_batch_entitlement
+                .as_ref()
+                .map_or(14, |value| value.payload.max_offline_grace_days),
+        )?,
         authorized_device_key_ids,
         valid_from: now.to_rfc3339(),
         valid_until,
-        features: env_list(
-            "KEYLESSPASS_CUSTOMER_FEATURES",
-            &["desktop-client", "channel:commercial"],
-        ),
-        allowed_major_versions: env_list("KEYLESSPASS_ALLOWED_MAJOR_VERSIONS", &["1"])
-            .into_iter()
-            .map(|value| {
-                value
-                    .parse()
-                    .context("allowed major versions must be integers")
+        features: std::env::var("KEYLESSPASS_CUSTOMER_FEATURES")
+            .ok()
+            .map(|_| env_list("KEYLESSPASS_CUSTOMER_FEATURES", &[]))
+            .or_else(|| {
+                trusted_batch_entitlement
+                    .as_ref()
+                    .map(|value| value.payload.features.clone())
             })
-            .collect::<Result<Vec<u32>>>()?,
+            .unwrap_or_else(|| {
+                vec![
+                    "desktop-client".to_string(),
+                    "channel:commercial".to_string(),
+                ]
+            }),
+        allowed_major_versions: if std::env::var("KEYLESSPASS_ALLOWED_MAJOR_VERSIONS").is_ok() {
+            env_list("KEYLESSPASS_ALLOWED_MAJOR_VERSIONS", &[])
+                .into_iter()
+                .map(|value| {
+                    value
+                        .parse()
+                        .context("allowed major versions must be integers")
+                })
+                .collect::<Result<Vec<u32>>>()?
+        } else {
+            trusted_batch_entitlement
+                .as_ref()
+                .map(|value| value.payload.allowed_major_versions.clone())
+                .unwrap_or_else(|| vec![1])
+        },
         issued_at: now.to_rfc3339(),
         issuer: std::env::var("KEYLESSPASS_VENDOR_ISSUER")
-            .unwrap_or_else(|_| "KeyLessPass Vendor Licensing".to_string()),
+            .ok()
+            .or_else(|| {
+                trusted_batch_entitlement
+                    .as_ref()
+                    .map(|value| value.payload.issuer.clone())
+            })
+            .unwrap_or_else(|| "KeyLessPass Vendor Licensing".to_string()),
     };
     if payload.max_concurrent_devices > payload.max_registered_devices
         || payload.max_offline_borrowed > payload.max_registered_devices
@@ -159,6 +310,41 @@ pub fn issue_customer_entitlement_output() -> Result<String> {
             .encode(vendor_signing.signing_key.sign(&payload_json).to_bytes()),
     };
     Ok(serde_json::to_string_pretty(&envelope)?)
+}
+
+fn verify_device_batch_entitlement(
+    input: &DeviceBatchApprovalInput,
+    vendor_signing: &SigningMaterial,
+) -> Result<VerifiedCustomerEntitlement> {
+    if input.schema_version != 1 {
+        return Err(anyhow!("unsupported device batch request schema"));
+    }
+    let envelope_json = serde_json::to_string(&input.current_customer_entitlement)?;
+    let verified = verify_customer_entitlement(
+        &envelope_json,
+        &vendor_signing.key_id,
+        &vendor_signing.public_key_b64(),
+    )?;
+    if input.customer_id != verified.payload.customer_id
+        || input.customer_name != verified.payload.customer_name
+        || input.entitlement_serial != verified.payload.entitlement_serial
+        || input.site_key_id != verified.payload.site_key_id
+        || input.site_public_key != verified.payload.site_public_key
+        || input.purchased_device_limit != verified.payload.max_registered_devices
+    {
+        return Err(anyhow!(
+            "device batch summary does not match its vendor-signed entitlement"
+        ));
+    }
+    Ok(verified)
+}
+
+fn env_or_batch(name: &str, fallback: Option<&String>) -> Result<String> {
+    std::env::var(name)
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .or_else(|| fallback.cloned())
+        .ok_or_else(|| anyhow!("{name} is required"))
 }
 
 pub fn site_public_key_output() -> Result<String> {
@@ -294,10 +480,6 @@ pub fn build_payload(
     }
 }
 
-fn required_env(name: &str) -> Result<String> {
-    std::env::var(name).with_context(|| format!("{name} is required"))
-}
-
 fn env_u32(name: &str, default: u32) -> Result<u32> {
     std::env::var(name)
         .ok()
@@ -411,5 +593,55 @@ mod tests {
             .verifying_key()
             .verify(b"payload", &Signature::from_bytes(&signature.to_bytes()))
             .unwrap();
+    }
+
+    #[test]
+    fn batch_quota_must_match_the_existing_vendor_signature() {
+        let vendor = SigningMaterial::for_test("vendor-test", [5; 32]);
+        let now = Utc::now();
+        let payload = CustomerEntitlement {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            entitlement_id: "ent-test".to_string(),
+            entitlement_serial: 7,
+            customer_id: "customer-test".to_string(),
+            customer_name: "Customer Test".to_string(),
+            product: "KeyLessPass".to_string(),
+            site_key_id: "site-test".to_string(),
+            site_public_key: STANDARD.encode([3; 32]),
+            max_registered_devices: 10,
+            max_concurrent_devices: 10,
+            max_offline_borrowed: 0,
+            max_offline_grace_days: 14,
+            authorized_device_key_ids: Vec::new(),
+            valid_from: (now - Duration::days(1)).to_rfc3339(),
+            valid_until: (now + Duration::days(30)).to_rfc3339(),
+            features: vec!["desktop-client".to_string()],
+            allowed_major_versions: vec![1],
+            issued_at: now.to_rfc3339(),
+            issuer: "Vendor Test".to_string(),
+        };
+        let payload_json = serde_json::to_vec(&payload).unwrap();
+        let envelope = SignedCustomerEntitlementEnvelope {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            envelope_type: CUSTOMER_ENTITLEMENT_TYPE.to_string(),
+            payload: URL_SAFE_NO_PAD.encode(&payload_json),
+            signature_algorithm: LICENSE_SIGNATURE_ALGORITHM.to_string(),
+            key_id: vendor.key_id.clone(),
+            signature: URL_SAFE_NO_PAD.encode(vendor.signing_key.sign(&payload_json).to_bytes()),
+        };
+        let mut request = DeviceBatchApprovalInput {
+            schema_version: 1,
+            customer_id: payload.customer_id.clone(),
+            customer_name: payload.customer_name.clone(),
+            entitlement_serial: payload.entitlement_serial,
+            site_key_id: payload.site_key_id.clone(),
+            site_public_key: payload.site_public_key.clone(),
+            purchased_device_limit: payload.max_registered_devices,
+            current_customer_entitlement: envelope,
+            requested_devices: Vec::new(),
+        };
+        verify_device_batch_entitlement(&request, &vendor).unwrap();
+        request.purchased_device_limit = 300;
+        assert!(verify_device_batch_entitlement(&request, &vendor).is_err());
     }
 }

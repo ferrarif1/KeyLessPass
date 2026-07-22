@@ -3,7 +3,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>KeyLessPass Admin</title>
+  <title>KeyLessPass Intranet Deployment</title>
   <style>
     :root {
       color-scheme: light;
@@ -459,8 +459,8 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     <div class="brand">
       <div class="brand-mark">K</div>
       <div>
-        <div class="brand-title">KeyLessPass Admin</div>
-        <div class="brand-subtitle">License operations</div>
+        <div class="brand-title">KeyLessPass Deployment</div>
+        <div class="brand-subtitle">Offline batch approval</div>
       </div>
     </div>
     <button class="secondary" id="mobileRefreshButton">Refresh</button>
@@ -472,7 +472,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
         <div class="brand-mark">K</div>
         <div>
           <div class="brand-title">KeyLessPass</div>
-          <div class="brand-subtitle">Commercial Admin</div>
+          <div class="brand-subtitle">Intranet Deployment</div>
         </div>
       </div>
       <nav class="nav" aria-label="Admin sections">
@@ -491,13 +491,13 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     <main class="content">
       <section class="hero" id="overview">
         <div>
-          <div class="eyebrow">Offline license authority</div>
-          <h1>Issue device grants without touching password secrets.</h1>
-          <p class="hero-copy">Manage enterprise seats, import desktop device requests, and ship signed license bundles for intranet KeyLessPass deployments.</p>
+          <div class="eyebrow">Pure-intranet automatic authorization</div>
+          <h1>Download, collect once, approve once.</h1>
+          <p class="hero-copy">Users only install and start the app. Customer IT exchanges one offline batch with the vendor; clients then authorize themselves.</p>
         </div>
         <div class="hero-actions">
           <button class="secondary" id="copyPublicKeyTopButton">Copy site public key</button>
-          <button id="jumpIssueButton">Issue bundle</button>
+          <button id="jumpIssueButton">Batch approval</button>
         </div>
       </section>
 
@@ -531,14 +531,14 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
         <div class="card" id="tokenCard">
           <div class="section-head">
             <div>
-              <h2>Admin access</h2>
-              <p>Token protected local session.</p>
+              <h2>Deployment maintenance access</h2>
+              <p>Only customer IT uses this token for batch exchange and recovery.</p>
             </div>
             <span class="badge" id="tokenBadge">No token</span>
           </div>
-          <label for="tokenInput">Admin token</label>
+          <label for="tokenInput">Deployment token</label>
           <div class="toolbar">
-            <input id="tokenInput" type="password" autocomplete="off" placeholder="Paste KEYLESSPASS_ADMIN_TOKEN">
+            <input id="tokenInput" type="password" autocomplete="off" placeholder="Paste the token printed by intranet_deploy.sh">
             <button id="saveTokenButton">Connect</button>
             <button class="secondary" id="clearTokenButton">Forget</button>
           </div>
@@ -564,6 +564,22 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
           <div>
             <h2>Operations</h2>
             <p>Create organizations, import devices, and issue signed bundles.</p>
+          </div>
+        </div>
+        <div class="card" id="automaticApprovalCard" style="margin-bottom:14px">
+          <div class="section-head">
+            <div>
+              <h2>Pure-intranet automatic authorization</h2>
+              <p>Clients register automatically. Exchange one batch file with the vendor, then import the signed approval once.</p>
+            </div>
+            <span class="badge purple">No per-device action</span>
+          </div>
+          <div class="callout info">1. Let all target clients start once. 2. Export the collected request and send it to the vendor. 3. Import the newer vendor-signed customer entitlement. The service restarts and clients authorize themselves.</div>
+          <div class="toolbar" style="margin-top:14px">
+            <button id="exportOfflineApprovalButton">Export batch request</button>
+            <input id="offlineApprovalFile" type="file" accept=".json,application/json">
+            <button class="secondary" id="importOfflineApprovalButton">Import vendor approval</button>
+            <a href="/download">Open public download page</a>
           </div>
         </div>
         <div class="split">
@@ -1099,7 +1115,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     });
     $("refreshButton").addEventListener("click", () => withBusy($("refreshButton"), "Refreshing", refresh));
     $("mobileRefreshButton").addEventListener("click", () => withBusy($("mobileRefreshButton"), "Refreshing", refresh));
-    $("jumpIssueButton").addEventListener("click", () => $("issueCard").scrollIntoView({ behavior: "smooth", block: "start" }));
+    $("jumpIssueButton").addEventListener("click", () => $("automaticApprovalCard").scrollIntoView({ behavior: "smooth", block: "start" }));
     $("copyPublicKeyTopButton").addEventListener("click", async () => {
       try {
         await copyText(state.snapshot?.status?.publicKeyB64 || "");
@@ -1163,6 +1179,30 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
       try {
         await downloadApi("/api/devices.csv", "keylesspass-devices.csv");
         showToast("Device CSV downloaded.");
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+    $("exportOfflineApprovalButton").addEventListener("click", async () => {
+      try {
+        await withBusy($("exportOfflineApprovalButton"), "Exporting", async () => {
+          await downloadApi("/api/offline-approval/request", "keylesspass-offline-approval-request.json");
+          showToast("Offline approval request downloaded.");
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+    $("importOfflineApprovalButton").addEventListener("click", async () => {
+      const file = $("offlineApprovalFile").files?.[0];
+      if (!file) return showToast("Choose the vendor approval JSON first.", true);
+      if (file.size > 1024 * 1024) return showToast("Approval file is too large.", true);
+      try {
+        await withBusy($("importOfflineApprovalButton"), "Importing", async () => {
+          const result = await api("/api/offline-approval/import", { method: "POST", body: await file.text() });
+          showToast(result.message || "Approval installed. Service is restarting.");
+          setTimeout(() => location.reload(), 2500);
+        });
       } catch (err) {
         showToast(err.message, true);
       }

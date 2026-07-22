@@ -11,12 +11,15 @@ services:
       KEYLESSPASS_ADMIN_DB: /data/keylesspass-admin.sqlite3
       KEYLESSPASS_DOWNLOAD_DIR: /downloads
       KEYLESSPASS_CUSTOMER_ENTITLEMENT_FILE: /license/customer-entitlement.json
+      KEYLESSPASS_DISCOVERY_BIND: 0.0.0.0:8788
+      KEYLESSPASS_PUBLIC_PORT: ${KEYLESSPASS_ADMIN_PORT:-8787}
     ports:
-      - "127.0.0.1:${KEYLESSPASS_ADMIN_PORT:-8787}:8787"
+      - "${KEYLESSPASS_HOST_BIND:-0.0.0.0}:${KEYLESSPASS_ADMIN_PORT:-8787}:8787"
+      - "${KEYLESSPASS_HOST_BIND:-0.0.0.0}:8788:8788/udp"
     volumes:
       - keylesspass-admin-data:/data
       - ./downloads:/downloads:ro
-      - ./license:/license:ro
+      - ./license:/license
     restart: unless-stopped
 
 volumes:
