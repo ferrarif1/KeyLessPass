@@ -1,5 +1,7 @@
 # Device Batch Authorization Implementation Notes
 
+[中文版：设备批量授权实现与使用指南](device-batch-authorization-implementation.zh-CN.md)
+
 This branch implements the first commercial authorization layer for
 KeyLessPass. The current stable product state is preserved in the main worktree
 and tagged as `baseline-before-device-auth-20260721`.
