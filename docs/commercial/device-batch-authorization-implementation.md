@@ -67,15 +67,16 @@ CODESIGN_IDENTITY='Developer ID Application: Your Company (TEAMID)' \
 tools/commercial/build_commercial_release.sh macos
 ```
 
-Use `linux` with `KEYLESSPASS_LINUX_GPG_KEY_ID` on Linux. On Windows, set the Authenticode certificate thumbprint required by the packaging script. Copy final packages into `admin_backend/downloads/`; the public page computes and displays SHA-256 values.
+Use `linux` with `KEYLESSPASS_LINUX_GPG_KEY_ID` on Linux. On Windows, set the Authenticode certificate thumbprint required by the packaging script. Copy final packages into `admin_backend/downloads/`, then run `cargo run -- issue-release-manifest > downloads/release-manifest.json` with the offline vendor root. The page lists only files covered by the signed manifest whose size and SHA-256 still match.
 
 ## Recommended pure-intranet batch approval
 
 1. Users click an installer on `/download`; the page delivers both the installer and server config. They install and start once without entering authorization data.
 2. Each client reads the newest downloaded or managed config. It discovers UDP port 8788 only when config is missing.
 3. `/api/automatic/activate` verifies proof of the device private key, records an unapproved device, and returns a pending state.
-4. Customer IT opens `/` with the deployment token, clicks **Export batch request**, and sends the JSON to the vendor.
-5. The vendor checks the contract and runs on its offline workstation:
+4. Once approved, the server issues a 24-hour lease by default. The client renews every 30 minutes and retains only the last signed lease plus the default one-day grace when the server is unavailable.
+5. Customer IT opens `/` with the deployment token, clicks **Export batch request**, and sends the JSON to the vendor.
+6. The vendor checks the contract and runs on its offline workstation:
 
 ```bash
 export KEYLESSPASS_VENDOR_SIGNING_KEY_B64='<vendor root seed>'
@@ -85,8 +86,8 @@ export KEYLESSPASS_CUSTOMER_VALID_UNTIL='2027-12-31T23:59:59Z'
 cargo run -- issue-customer-entitlement > customer-entitlement.json
 ```
 
-6. Customer IT imports that file on the same page. The service restarts.
-7. Within 20 seconds, each polling client retrieves and imports its own signed grant.
+7. Customer IT imports that file on the same page. The service restarts.
+8. Each polling client retrieves and imports its own signed grant. Revocation stops renewal and takes effect no later than the remaining lease plus grace.
 
 The batch embeds the previous vendor-signed entitlement. The signer verifies it and inherits its customer, site key, contract limit, dates, and features, so an edited batch quota is rejected. Renewal or expansion requires explicit vendor-side overrides. If the collected list is larger than the signed limit, the vendor must set the reviewed `KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS` subset.
 

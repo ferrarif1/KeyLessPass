@@ -85,7 +85,7 @@ tools/commercial/build_commercial_release.sh macos
 
 Linux 使用参数 `linux` 并设置 `KEYLESSPASS_LINUX_GPG_KEY_ID`。Windows 在 Windows 主机按 `packaging/windows/build_installer.ps1` 的提示设置相同根 key ID、公钥和 Authenticode 证书指纹。
 
-将签名后的 DMG、EXE/MSIX 或 Linux 包复制到 `admin_backend/downloads/`。平台自动计算 SHA-256，并在 `/download` 提供下载。
+将平台签名后的 DMG、EXE/MSIX 或 Linux 包复制到 `admin_backend/downloads/`，再在厂商离线工作站用根私钥执行 `cargo run -- issue-release-manifest > downloads/release-manifest.json`。后台只列出厂商签名清单内且文件大小、SHA-256 均匹配的安装包。
 
 商业构建必须满足：
 
@@ -99,8 +99,9 @@ Linux 使用参数 `linux` 并设置 `KEYLESSPASS_LINUX_GPG_KEY_ID`。Windows �
 1. 用户从 `/download` 点击安装包；页面同时下载客户端和服务器配置。安装并启动一次，不输入任何授权信息。
 2. 客户端读取下载目录或受管目录中的最新配置；只有配置丢失时才用 UDP 8788 发现服务器。
 3. 客户端向 `/api/automatic/activate` 提交带设备私钥证明的请求。未获批准时服务端只登记并返回等待状态。
-4. 客户 IT 用部署维护 token 打开 `/`，点击“Export batch request”，把 JSON 发给厂商。
-5. 厂商核对合同数量，在离线工作站执行：
+4. 获批后服务端默认签发 24 小时短租约；客户端每 30 分钟自动续签，服务不可达时仅保留最后一份签名租约及默认 1 天宽限。
+5. 客户 IT 用部署维护 token 打开 `/`，点击“Export batch request”，把 JSON 发给厂商。
+6. 厂商核对合同数量，在离线工作站执行：
 
 ```bash
 export KEYLESSPASS_VENDOR_SIGNING_KEY_B64='<厂商根私钥>'

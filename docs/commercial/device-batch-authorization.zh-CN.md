@@ -31,7 +31,7 @@ English: [device-batch-authorization.md](device-batch-authorization.md)
 - Device request：设备公钥、key ID、平台信息和设备私钥签名证明。
 - Device grant：绑定设备 key ID、公钥、商业设备 ID、HMAC 指纹、有效期和功能。
 - Bundle：厂商 entitlement、组织授权、设备 grant、吊销列表和现场签名。
-- Security state：已见最大 entitlement serial、最新 bundle 时间和最大本机时间，受平台保护且清除授权时保留。
+- Security state：已见最大 entitlement serial、最新 bundle 时间、最大本机时间和独立存放的受保护历史标记；清除本地授权时仍保留。
 
 当前 schema version 为 `2`。
 
@@ -45,7 +45,7 @@ English: [device-batch-authorization.md](device-batch-authorization.md)
 
 `seat_allocations` 单独记录 active、expired 和 revoked 状态。签发在 SQLite `BEGIN IMMEDIATE` 事务中完成清理、计数、分配、bundle/grant 写入，避免并发超发。吊销设备时会吊销其全部活动 grant 并禁止原身份再次激活。
 
-离线客户端不可能即时收到吊销。静态离线授权只能在收到新包或原授权到期后失效。
+自动内网客户端每 30 分钟续签默认 24 小时租约，并带 1 天默认宽限，吊销延迟有上限但不是即时。手工导出的静态离线授权仍只能在收到新包或原授权到期后失效。
 
 ## 严格节点授权与浮动授权
 

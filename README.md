@@ -213,8 +213,8 @@ cd admin_backend
 The script generates an Admin token and customer-site Ed25519 key on first run,
 then waits for a vendor-signed `customer-entitlement.json`. Embed the vendor root
 public key, never the displayed site key, into commercial client builds. Public
-downloads require no login; administrative operations require the token. For online activation, place the service behind HTTPS;
-the administration UI also supports roles, device CSV, and audit export.
+downloads require no login; administrative operations require the token and should use HTTPS plus a management-subnet ACL. Authorized clients renew a 24-hour lease every 30 minutes, and the download page lists only artifacts matching the offline vendor-signed release manifest.
+The administration UI also supports roles, device CSV, and audit export.
 
 ### Build a Commercial Client
 

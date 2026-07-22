@@ -33,8 +33,9 @@ English: [commercial-release-hardening.md](commercial-release-hardening.md)
    - Linux：签名仓库元数据或发布校验和清单。
 
 商业 macOS/Windows 构建默认拒绝缺少平台签名证书，Linux 默认要求 `KEYLESSPASS_LINUX_GPG_KEY_ID` 并生成 `SHA256SUMS.asc`。`KEYLESSPASS_ALLOW_UNSIGNED=1` 只能用于本机测试，不能发布。
-5. 通过客户专属渠道分发，并把 release artifact、`licenseId`、`organizationId`、`keyId` 和合同记录关联保存。
-6. 商业支持和更新要求客户提供有效授权状态。
+5. 将安装包放入 `admin_backend/downloads/` 后，在厂商离线工作站设置 `KEYLESSPASS_RELEASE_DIRECTORY` 并执行 `cargo run -- issue-release-manifest > downloads/release-manifest.json`。后台拒绝列出未被厂商清单签名或哈希不匹配的文件。
+6. 通过客户专属渠道分发，并把 release artifact、`licenseId`、`organizationId`、`keyId` 和合同记录关联保存。
+7. 商业支持和更新要求客户提供有效授权状态。
 
 ## 反滥用模型
 
@@ -69,7 +70,7 @@ KEYLESSPASS_MANAGED_LICENSE_FILE=<managed bundle path>
 KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON={"old-key-id":"old-public-key","new-key-id":"new-public-key"}
 ```
 
-评估/源码构建保留非阻断默认值，便于审查。商业发布必须使用 `tools/commercial/build_commercial_release.sh` 或设置同等变量的 CI。
+评估/源码构建保留非阻断默认值，便于审查。商业发布必须使用 `tools/commercial/build_commercial_release.sh` 或设置同等变量的 CI；该入口要求显式提供根 key ID 和公钥，禁止默认 ID。
 
 运行时变量可以用于测试更严格检查，但商业构建不能依赖运行时开关来启用授权强制。
 

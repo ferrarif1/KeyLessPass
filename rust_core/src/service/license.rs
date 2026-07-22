@@ -131,7 +131,17 @@ pub fn get_license_status_at(
         ));
     };
     match verify_and_parse_bundle(&envelope, verifier).and_then(|bundle| {
-        update_security_state(paths, provider, &bundle)?;
+        if !store.has_license_history(provider)? {
+            if store.read_security_state(provider)?.is_some() {
+                store.write_license_history(provider)?;
+            } else {
+                return Err(KeylessPassError::Integrity(
+                    "license history marker is missing; device reapproval is required".to_string(),
+                ));
+            }
+        }
+        let next = next_security_state(paths, provider, &bundle, false)?;
+        store.write_security_state(provider, &next)?;
         status_from_bundle(context.clone(), &bundle)
     }) {
         Ok(status) => Ok(status),
@@ -200,8 +210,13 @@ pub fn import_license_bundle_at(
     if status.status == "notForThisDevice" || status.status == "revoked" {
         return Err(KeylessPassError::Validation(status.message));
     }
-    LicenseStore::new(paths).write_license_envelope(&envelope)?;
-    update_security_state(paths, provider, &bundle)?;
+    let store = LicenseStore::new(paths);
+    let allow_initialize =
+        store.read_license_envelope()?.is_none() && !store.has_license_history(provider)?;
+    let next = next_security_state(paths, provider, &bundle, allow_initialize)?;
+    store.write_security_state(provider, &next)?;
+    store.write_license_history(provider)?;
+    store.write_license_envelope(&envelope)?;
     Ok(status)
 }
 
@@ -414,7 +429,7 @@ fn validate_entitlement_constraints(
     let entitlement_from = parse_rfc3339(&entitlement.valid_from)?;
     let entitlement_until = parse_rfc3339(&entitlement.valid_until)?;
     if now < entitlement_from
-        || now > entitlement_until
+        || now > entitlement_until + Duration::days(entitlement.max_offline_grace_days as i64)
         || parse_rfc3339(&organization.valid_until)? > entitlement_until
     {
         return Err(KeylessPassError::Validation(
@@ -424,17 +439,18 @@ fn validate_entitlement_constraints(
     Ok(())
 }
 
-fn update_security_state(
+fn next_security_state(
     paths: &StoragePaths,
     provider: &dyn PlatformFactorProvider,
     bundle: &LicenseBundlePayload,
-) -> Result<()> {
+    allow_initialize: bool,
+) -> Result<LicenseSecurityState> {
     let entitlement_payload = b64url_decode(&bundle.customer_entitlement.payload)?;
     let entitlement: CustomerEntitlement = serde_json::from_slice(&entitlement_payload)?;
     let now = Utc::now();
     let bundle_issued_at = parse_rfc3339(&bundle.issued_at)?;
     let store = LicenseStore::new(paths);
-    let next = if let Some(current) = store.read_security_state(provider)? {
+    if let Some(current) = store.read_security_state(provider)? {
         let max_seen = parse_rfc3339(&current.max_seen_time)?;
         let latest_bundle = parse_rfc3339(&current.latest_bundle_issued_at)?;
         if now + Duration::minutes(5) < max_seen {
@@ -449,23 +465,27 @@ fn update_security_state(
                 "license rollback was detected".to_string(),
             ));
         }
-        LicenseSecurityState {
+        Ok(LicenseSecurityState {
             schema_version: LICENSE_SCHEMA_VERSION,
             max_entitlement_serial: current
                 .max_entitlement_serial
                 .max(entitlement.entitlement_serial),
             latest_bundle_issued_at: bundle_issued_at.max(latest_bundle).to_rfc3339(),
             max_seen_time: now.max(max_seen).to_rfc3339(),
-        }
+        })
     } else {
-        LicenseSecurityState {
+        if !allow_initialize {
+            return Err(KeylessPassError::Integrity(
+                "license security state is missing; device reapproval is required".to_string(),
+            ));
+        }
+        Ok(LicenseSecurityState {
             schema_version: LICENSE_SCHEMA_VERSION,
             max_entitlement_serial: entitlement.entitlement_serial,
             latest_bundle_issued_at: bundle_issued_at.to_rfc3339(),
             max_seen_time: now.to_rfc3339(),
-        }
-    };
-    store.write_security_state(provider, &next)
+        })
+    }
 }
 
 #[derive(Debug, Clone)]

@@ -31,7 +31,7 @@ This closes the fundamental loophole where a customer-controlled server changes 
 - Device request: device public key/key ID, platform metadata, and proof of possession.
 - Device grant: device key ID/public key, commercial ID, HMAC fingerprint, dates, and features.
 - Bundle: vendor entitlement, organization license, grants, revocations, and site signature.
-- Security state: maximum entitlement serial, newest bundle issue time, and maximum observed local time, platform-protected and retained across local-license clearing.
+- Security state: maximum entitlement serial, newest bundle issue time, maximum observed local time, and a separately stored protected history marker retained across local-license clearing.
 
 The current schema version is `2`.
 
@@ -45,7 +45,7 @@ Higher-assurance editions should replace software keys with TPM 2.0, Secure Encl
 
 `seat_allocations` records active, expired, and revoked state. SQLite `BEGIN IMMEDIATE` performs expiry cleanup, counting, allocation, and bundle/grant persistence atomically. Revoking a device revokes all of its active grants and blocks reactivation with that identity.
 
-An offline client cannot receive immediate revocation. Static offline grants stop only after an updated bundle arrives or the old grant expires.
+Automatic intranet clients renew every 30 minutes against a 24-hour lease plus one default grace day, bounding but not eliminating revocation delay. Manually exported static offline grants stop only after an updated bundle arrives or the old grant expires.
 
 ## Strict node locking versus floating use
 

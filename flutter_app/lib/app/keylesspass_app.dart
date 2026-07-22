@@ -287,9 +287,9 @@ class _HomeWindowState extends State<_HomeWindow> {
     try {
       final status = await api.getAppStatus();
       var licenseStatus = await api.getLicenseStatus();
-      if (!licenseStatus.authorized) {
-        licenseStatus = await _tryAutomaticActivation(api) ?? licenseStatus;
-      }
+      licenseStatus =
+          await _tryAutomaticActivation(api, licenseStatus.authorized) ??
+              licenseStatus;
       var records = <CredentialRecord>[];
       var candidates = <UsbCandidate>[];
       if (status.enrolled) {
@@ -337,12 +337,17 @@ class _HomeWindowState extends State<_HomeWindow> {
     }
   }
 
-  Future<LicenseStatus?> _tryAutomaticActivation(CoreApi api) async {
+  Future<LicenseStatus?> _tryAutomaticActivation(
+    CoreApi api,
+    bool currentlyAuthorized,
+  ) async {
     final now = DateTime.now();
+    final minimumInterval = currentlyAuthorized
+        ? const Duration(minutes: 30)
+        : const Duration(seconds: 15);
     if (_automaticActivationBusy ||
         (_lastAutomaticActivationAttempt != null &&
-            now.difference(_lastAutomaticActivationAttempt!) <
-                const Duration(seconds: 15))) {
+            now.difference(_lastAutomaticActivationAttempt!) < minimumInterval)) {
       return null;
     }
     _automaticActivationBusy = true;

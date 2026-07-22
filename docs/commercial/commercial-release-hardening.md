@@ -42,9 +42,10 @@ support/update access tied to valid authorization.
 
 Commercial macOS and Windows packaging rejects missing platform certificates by default. Linux requires `KEYLESSPASS_LINUX_GPG_KEY_ID` and emits `SHA256SUMS.asc`. `KEYLESSPASS_ALLOW_UNSIGNED=1` is for local testing only and must not be published.
 
-5. Distribute through customer-specific channels. Keep release artifacts,
+5. Put installers in `admin_backend/downloads/`, set `KEYLESSPASS_RELEASE_DIRECTORY` on the offline vendor workstation, and run `cargo run -- issue-release-manifest > downloads/release-manifest.json`. The backend refuses to list files absent from this vendor-signed manifest or whose size/hash changed.
+6. Distribute through customer-specific channels. Keep release artifacts,
    `licenseId`, `organizationId`, signing `keyId`, and contract records linked.
-6. Require a valid device grant for commercial support and updates.
+7. Require a valid device grant for commercial support and updates.
 
 ## Anti-Abuse Model
 
@@ -90,7 +91,7 @@ KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON={"old-key-id":"old-public-key","new-key-id
 Evaluation/source builds keep a non-blocking default so the project remains
 reviewable. Commercial release automation must use
 `tools/commercial/build_commercial_release.sh` or an equivalent CI job that sets
-the same variables.
+the same variables. The commercial entry point requires the vendor-root key ID and public key explicitly; there is no production key-ID default.
 
 Runtime environment variables may enable stricter checks for testing, but a
 commercial build must not rely on a runtime switch for enforcement.

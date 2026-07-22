@@ -178,6 +178,20 @@ impl Db {
             "CREATE UNIQUE INDEX IF NOT EXISTS idx_devices_device_key_id ON devices(device_key_id) WHERE device_key_id <> ''",
             [],
         )?;
+        conn.execute(
+            r#"
+            UPDATE devices
+            SET request_id = request_id || '-' || id
+            WHERE rowid NOT IN (
+                SELECT MIN(rowid) FROM devices GROUP BY request_id
+            )
+            "#,
+            [],
+        )?;
+        conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_devices_request_id ON devices(request_id)",
+            [],
+        )?;
         let now = Utc::now().to_rfc3339();
         conn.execute(
             r#"
@@ -1327,6 +1341,31 @@ mod tests {
         assert!(error
             .to_string()
             .contains("already registered to another device"));
+    }
+
+    #[test]
+    fn one_request_id_cannot_be_replayed_for_another_identity() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = Db::open(dir.path().join("admin.sqlite3")).unwrap();
+        db.create_organization(make_org("org-a", "A"), "test")
+            .unwrap();
+        let first = signed_device_request_with_seed(Some("org-a".to_string()), 51);
+        db.import_device_request(ImportDeviceRequestBody {
+            request_json: serde_json::to_string(&first).unwrap(),
+            organization_id: None,
+            seat_label: None,
+        })
+        .unwrap();
+        let mut replay = signed_device_request_with_seed(Some("org-a".to_string()), 52);
+        replay.request_id = first.request_id;
+        resign_device_request(&mut replay, 52);
+        assert!(db
+            .import_device_request(ImportDeviceRequestBody {
+                request_json: serde_json::to_string(&replay).unwrap(),
+                organization_id: None,
+                seat_label: None,
+            })
+            .is_err());
     }
 
     #[test]

@@ -4,12 +4,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TARGET_PLATFORM="${1:-$(uname -s)}"
 
-if [[ -z "${KEYLESSPASS_LICENSE_PUBLIC_KEY_B64:-}" ]]; then
+if [[ -z "${KEYLESSPASS_LICENSE_PUBLIC_KEY_B64:-}" || -z "${KEYLESSPASS_LICENSE_KEY_ID:-}" ]]; then
   cat >&2 <<'EOF'
-KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 is required.
+KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 and KEYLESSPASS_LICENSE_KEY_ID are required.
 
 This must be the KeyLessPass vendor root public key, never a customer-site key:
-  KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<vendor root public key>' CODESIGN_IDENTITY='<Developer ID>' tools/commercial/build_commercial_release.sh macos
+  KEYLESSPASS_LICENSE_KEY_ID='<vendor root key ID>' KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<vendor root public key>' CODESIGN_IDENTITY='<Developer ID>' tools/commercial/build_commercial_release.sh macos
 EOF
   exit 1
 fi
@@ -38,14 +38,14 @@ if ring:
         raise SystemExit("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON must be a non-empty JSON object")
     if any(not key or len(decode(value)) != 32 for key, value in keys.items()):
         raise SystemExit("every trusted key must have an ID and decode to 32 bytes")
-    active_id = os.environ.get("KEYLESSPASS_LICENSE_KEY_ID", "keylesspass-license-2026-q3")
+    active_id = os.environ["KEYLESSPASS_LICENSE_KEY_ID"]
     if active_id in keys and decode(keys[active_id]) != decode(current):
         raise SystemExit("trusted key ring conflicts with the active license key ID")
 PY
 
 export KEYLESSPASS_REQUIRE_LICENSE=1
 export KEYLESSPASS_BUILD_CHANNEL="${KEYLESSPASS_BUILD_CHANNEL:-commercial}"
-export KEYLESSPASS_LICENSE_KEY_ID="${KEYLESSPASS_LICENSE_KEY_ID:-keylesspass-license-2026-q3}"
+export KEYLESSPASS_LICENSE_KEY_ID
 export KEYLESSPASS_APP_MAJOR_VERSION="${KEYLESSPASS_APP_MAJOR_VERSION:-1}"
 
 if [[ "$KEYLESSPASS_BUILD_CHANNEL" == "desktop" || "$KEYLESSPASS_BUILD_CHANNEL" == "evaluation" ]]; then
@@ -72,7 +72,7 @@ Run the Windows commercial build from PowerShell so Authenticode and Inno Setup 
 
   $env:KEYLESSPASS_REQUIRE_LICENSE="1"
   $env:KEYLESSPASS_BUILD_CHANNEL="commercial"
-  $env:KEYLESSPASS_LICENSE_KEY_ID="keylesspass-license-2026-q3"
+  $env:KEYLESSPASS_LICENSE_KEY_ID="<must-match-the-vendor-entitlement-key-id>"
   $env:KEYLESSPASS_LICENSE_PUBLIC_KEY_B64="<KeyLessPass vendor root public key>"
   $env:KEYLESSPASS_APP_MAJOR_VERSION="1"
   $env:KEYLESSPASS_MANAGED_LICENSE_FILE="C:\ProgramData\KeyLessPass\license-bundle.json"

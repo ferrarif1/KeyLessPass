@@ -7,9 +7,10 @@ use crate::{
     db::Db,
     license::{
         build_payload, bundle_record_from_envelope, generate_key_output,
-        issue_customer_entitlement_output, load_customer_entitlement, sign_payload,
-        site_public_key_output, verify_customer_entitlement_for_site, SigningMaterial,
-        VerifiedCustomerEntitlement,
+        issue_customer_entitlement_output, issue_release_manifest_output,
+        load_customer_entitlement, sign_payload, site_public_key_output,
+        verify_customer_entitlement_for_site, verify_release_manifest_file,
+        ReleaseArtifactManifest, SigningMaterial, VerifiedCustomerEntitlement,
     },
     model::{
         ActivateLicenseRequest, AdminSnapshot, AdminStatus, ApiMessage, AutomaticActivationRequest,
@@ -20,7 +21,8 @@ use crate::{
 };
 use anyhow::{anyhow, Context, Result};
 use axum::{
-    extract::{DefaultBodyLimit, Path as AxumPath, Query, State},
+    body::Body,
+    extract::{ConnectInfo, DefaultBodyLimit, Path as AxumPath, Query, State},
     http::{
         header::{AUTHORIZATION, CONTENT_DISPOSITION, CONTENT_TYPE, HOST},
         HeaderMap, HeaderValue, StatusCode,
@@ -33,9 +35,15 @@ use chrono::{DateTime, Duration, Utc};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::io::Read;
-use std::{collections::HashSet, net::SocketAddr, path::PathBuf, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    net::{IpAddr, SocketAddr},
+    path::PathBuf,
+    sync::Arc,
+    time::Instant,
+};
 use tokio::sync::Mutex;
-use tower_http::services::ServeDir;
+use tokio_util::io::ReaderStream;
 use tower_http::trace::TraceLayer;
 
 #[derive(Clone)]
@@ -46,6 +54,8 @@ struct AppState {
     issuance_lock: Arc<Mutex<()>>,
     customer_entitlement: VerifiedCustomerEntitlement,
     automatic_organization_id: String,
+    release_manifest: Vec<ReleaseArtifactManifest>,
+    automatic_rate_limits: Arc<Mutex<HashMap<IpAddr, (Instant, u32)>>>,
 }
 
 #[derive(Clone)]
@@ -60,6 +70,10 @@ struct Config {
     public_base_url: Option<String>,
     customer_entitlement_file: Option<PathBuf>,
     max_automatic_registrations: Option<u32>,
+    automatic_lease_hours: u32,
+    automatic_grace_days: u32,
+    release_manifest_file: PathBuf,
+    automatic_requests_per_minute: u32,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -191,6 +205,10 @@ async fn main() -> Result<()> {
             print!("{}", site_public_key_output()?);
             return Ok(());
         }
+        Some("issue-release-manifest") => {
+            print!("{}", issue_release_manifest_output()?);
+            return Ok(());
+        }
         _ => {}
     }
 
@@ -205,8 +223,13 @@ async fn main() -> Result<()> {
     let db = Db::open(&config.database_path)?;
     let signing = SigningMaterial::from_env()?;
     let customer_entitlement = load_customer_entitlement(&signing)?;
-    let automatic_organization_id =
-        ensure_automatic_organization(&db, &customer_entitlement, &config.issuer)?;
+    let release_manifest = load_release_manifest(&config)?;
+    let automatic_organization_id = ensure_automatic_organization(
+        &db,
+        &customer_entitlement,
+        &config.issuer,
+        config.automatic_grace_days,
+    )?;
     let state = AppState {
         db,
         signing,
@@ -214,15 +237,16 @@ async fn main() -> Result<()> {
         issuance_lock: Arc::new(Mutex::new(())),
         customer_entitlement,
         automatic_organization_id,
+        release_manifest,
+        automatic_rate_limits: Arc::new(Mutex::new(HashMap::new())),
     };
 
-    let download_service =
-        ServeDir::new(&state.config.download_dir).append_index_html_on_directories(false);
     let app = Router::new()
         .route("/", get(index))
         .route("/download", get(download_page))
         .route("/api/downloads", get(list_downloads))
         .route("/keylesspass-client-config.json", get(client_config))
+        .route("/downloads/:file_name", get(download_file))
         .route("/healthz", get(healthz))
         .route("/api/status", get(api_status))
         .route("/api/snapshot", get(api_snapshot))
@@ -250,7 +274,6 @@ async fn main() -> Result<()> {
         )
         .route("/api/grants/:grant_id/revoke", post(revoke_grant))
         .route("/api/audit.csv", get(export_audit_csv))
-        .nest_service("/downloads", download_service)
         .layer(DefaultBodyLimit::max(1024 * 1024))
         .layer(TraceLayer::new_for_http())
         .with_state(state.clone());
@@ -266,10 +289,13 @@ async fn main() -> Result<()> {
     let listener = tokio::net::TcpListener::bind(state.config.bind)
         .await
         .context("bind admin backend listener")?;
-    axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal())
-        .await
-        .context("run admin backend")?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .with_graceful_shutdown(shutdown_signal())
+    .await
+    .context("run admin backend")?;
     Ok(())
 }
 
@@ -350,6 +376,18 @@ impl Config {
                     .context("KEYLESSPASS_MAX_AUTOMATIC_REGISTRATIONS must be an integer")
             })
             .transpose()?;
+        let automatic_lease_hours = env_u32("KEYLESSPASS_AUTOMATIC_LEASE_HOURS", 24)?;
+        if !(1..=168).contains(&automatic_lease_hours) {
+            return Err(anyhow!(
+                "KEYLESSPASS_AUTOMATIC_LEASE_HOURS must be between 1 and 168"
+            ));
+        }
+        let automatic_grace_days = env_u32("KEYLESSPASS_AUTOMATIC_GRACE_DAYS", 1)?;
+        let release_manifest_file = std::env::var("KEYLESSPASS_RELEASE_MANIFEST_FILE")
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| download_dir.join("release-manifest.json"));
+        let automatic_requests_per_minute =
+            env_u32("KEYLESSPASS_AUTOMATIC_REQUESTS_PER_MINUTE", 20)?.max(1);
         Ok(Self {
             bind,
             users,
@@ -361,14 +399,50 @@ impl Config {
             public_base_url,
             customer_entitlement_file,
             max_automatic_registrations,
+            automatic_lease_hours,
+            automatic_grace_days,
+            release_manifest_file,
+            automatic_requests_per_minute,
         })
     }
+}
+
+fn load_release_manifest(config: &Config) -> Result<Vec<ReleaseArtifactManifest>> {
+    if config.release_manifest_file.is_file() {
+        return verify_release_manifest_file(&config.release_manifest_file, &config.download_dir);
+    }
+    let contains_installer = std::fs::read_dir(&config.download_dir)
+        .ok()
+        .into_iter()
+        .flatten()
+        .flatten()
+        .any(|entry| is_download_artifact(&entry.file_name().to_string_lossy()));
+    if contains_installer {
+        return Err(anyhow!(
+            "signed release manifest is required at {}",
+            config.release_manifest_file.display()
+        ));
+    }
+    Ok(Vec::new())
+}
+
+fn env_u32(name: &str, default: u32) -> Result<u32> {
+    std::env::var(name)
+        .ok()
+        .map(|value| {
+            value
+                .parse()
+                .with_context(|| format!("{name} must be an integer"))
+        })
+        .transpose()
+        .map(|value| value.unwrap_or(default))
 }
 
 fn ensure_automatic_organization(
     db: &Db,
     entitlement: &VerifiedCustomerEntitlement,
     issuer: &str,
+    automatic_grace_days: u32,
 ) -> Result<String> {
     let digest = Sha256::digest(entitlement.payload.customer_id.as_bytes());
     let organization_id = format!("org-auto-{}", hex_prefix(&digest, 12));
@@ -385,7 +459,9 @@ fn ensure_automatic_organization(
         valid_days: None,
         valid_until: Some(entitlement.payload.valid_until.clone()),
         features: entitlement.payload.features.clone(),
-        offline_grace_days: Some(entitlement.payload.max_offline_grace_days),
+        offline_grace_days: Some(
+            automatic_grace_days.min(entitlement.payload.max_offline_grace_days),
+        ),
         allowed_major_versions: entitlement.payload.allowed_major_versions.clone(),
     };
     if db.organization(&organization_id)?.is_none() {
@@ -439,7 +515,10 @@ async fn index() -> Html<&'static str> {
 }
 
 async fn list_downloads(State(state): State<AppState>) -> Json<Vec<DownloadArtifact>> {
-    Json(download_artifacts(&state.config.download_dir))
+    Json(download_artifacts(
+        &state.config.download_dir,
+        &state.release_manifest,
+    ))
 }
 
 async fn client_config(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Response> {
@@ -491,7 +570,7 @@ async fn client_config(State(state): State<AppState>, headers: HeaderMap) -> Api
 }
 
 async fn download_page(State(state): State<AppState>) -> Html<String> {
-    let links = download_artifacts(&state.config.download_dir)
+    let links = download_artifacts(&state.config.download_dir, &state.release_manifest)
         .into_iter()
         .map(|item| {
             format!(
@@ -511,35 +590,71 @@ async fn download_page(State(state): State<AppState>) -> Html<String> {
     ))
 }
 
-fn download_artifacts(directory: &std::path::Path) -> Vec<DownloadArtifact> {
-    let Ok(entries) = std::fs::read_dir(directory) else {
-        return Vec::new();
-    };
-    let mut artifacts = entries
-        .flatten()
-        .filter_map(|entry| {
-            let metadata = entry.metadata().ok()?;
-            if !metadata.is_file() {
-                return None;
-            }
-            let file_name = entry.file_name().to_str()?.to_string();
-            if !file_name
-                .bytes()
-                .all(|value| value.is_ascii_alphanumeric() || b"._-".contains(&value))
-                || !is_download_artifact(&file_name)
+async fn download_file(
+    State(state): State<AppState>,
+    AxumPath(file_name): AxumPath<String>,
+) -> ApiResult<Response> {
+    let expected = state
+        .release_manifest
+        .iter()
+        .find(|item| item.file_name == file_name)
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "release artifact is not listed"))?;
+    let path = state.config.download_dir.join(&expected.file_name);
+    let metadata = path.metadata().map_err(|_| {
+        api_error(
+            StatusCode::NOT_FOUND,
+            "release artifact is missing from the server",
+        )
+    })?;
+    if !metadata.is_file()
+        || metadata.len() != expected.size_bytes
+        || sha256_file(&path).as_deref() != Some(expected.sha256.as_str())
+    {
+        return Err(api_error(
+            StatusCode::CONFLICT,
+            "release artifact no longer matches the vendor-signed manifest",
+        ));
+    }
+    let file = tokio::fs::File::open(&path)
+        .await
+        .map_err(|error| internal_error(anyhow!(error)))?;
+    let mut response = Body::from_stream(ReaderStream::new(file)).into_response();
+    response.headers_mut().insert(
+        CONTENT_TYPE,
+        HeaderValue::from_static("application/octet-stream"),
+    );
+    response.headers_mut().insert(
+        CONTENT_DISPOSITION,
+        HeaderValue::from_str(&format!("attachment; filename=\"{}\"", expected.file_name))
+            .map_err(|error| internal_error(anyhow!(error)))?,
+    );
+    Ok(response)
+}
+
+fn download_artifacts(
+    directory: &std::path::Path,
+    manifest: &[ReleaseArtifactManifest],
+) -> Vec<DownloadArtifact> {
+    manifest
+        .iter()
+        .filter_map(|expected| {
+            let path = directory.join(&expected.file_name);
+            let metadata = path.metadata().ok()?;
+            let sha256 = sha256_file(&path)?;
+            if !metadata.is_file()
+                || metadata.len() != expected.size_bytes
+                || sha256 != expected.sha256
             {
                 return None;
             }
             Some(DownloadArtifact {
-                download_url: format!("/downloads/{file_name}"),
-                file_name,
+                download_url: format!("/downloads/{}", expected.file_name),
+                file_name: expected.file_name.clone(),
                 size_bytes: metadata.len(),
-                sha256: sha256_file(&entry.path())?,
+                sha256,
             })
         })
-        .collect::<Vec<_>>();
-    artifacts.sort_by(|left, right| left.file_name.cmp(&right.file_name));
-    artifacts
+        .collect()
 }
 
 fn sha256_file(path: &std::path::Path) -> Option<String> {
@@ -921,6 +1036,7 @@ async fn activate_license(
     let parsed_request: DeviceAuthorizationRequest =
         serde_json::from_str(request.request_json.trim())
             .map_err(|_| bad_request(anyhow!("device authorization request JSON is invalid")))?;
+    validate_fresh_automatic_request(&parsed_request).map_err(bad_request)?;
     let existing_device = state
         .db
         .device_by_identity(
@@ -988,12 +1104,15 @@ async fn activate_license(
 
 async fn automatic_activate_license(
     State(state): State<AppState>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
     Json(request): Json<AutomaticActivationRequest>,
 ) -> ApiResult<Response> {
+    enforce_automatic_rate_limit(&state, peer.ip()).await?;
     let _issuance_guard = state.issuance_lock.lock().await;
     let parsed_request: DeviceAuthorizationRequest =
         serde_json::from_str(request.request_json.trim())
             .map_err(|_| bad_request(anyhow!("device authorization request JSON is invalid")))?;
+    validate_fresh_automatic_request(&parsed_request).map_err(bad_request)?;
     let existing_device = state
         .db
         .device_by_identity(
@@ -1102,12 +1221,16 @@ async fn automatic_activate_license(
                     "active device grant has no license bundle",
                 )
             })?;
-        return Ok(Json(AutomaticActivationResponse {
-            status: "authorized".to_string(),
-            device_key_id: device.device_key_id,
-            envelope_json: Some(bundle.envelope_json),
-        })
-        .into_response());
+        if !automatic_bundle_needs_renewal(&bundle, state.config.automatic_lease_hours)
+            .map_err(internal_error)?
+        {
+            return Ok(Json(AutomaticActivationResponse {
+                status: "authorized".to_string(),
+                device_key_id: device.device_key_id,
+                envelope_json: Some(bundle.envelope_json),
+            })
+            .into_response());
+        }
     }
     if active_ids.len() as u32 >= org.max_seats && !active_ids.contains(&device.id) {
         return Err(api_error(
@@ -1121,7 +1244,16 @@ async fn automatic_activate_license(
             organization_id: org.id.clone(),
             device_ids: vec![device.id.clone()],
             valid_days: None,
-            valid_until: None,
+            valid_until: Some(
+                (Utc::now() + Duration::hours(state.config.automatic_lease_hours as i64))
+                    .min(
+                        DateTime::parse_from_rfc3339(&org.valid_until)
+                            .context("automatic organization validUntil is invalid")
+                            .map_err(internal_error)?
+                            .with_timezone(&Utc),
+                    )
+                    .to_rfc3339(),
+            ),
             include_revocations: Some(true),
         },
     )
@@ -1142,6 +1274,55 @@ async fn automatic_activate_license(
         envelope_json: Some(response.envelope_json),
     })
     .into_response())
+}
+
+async fn enforce_automatic_rate_limit(state: &AppState, address: IpAddr) -> ApiResult<()> {
+    let now = Instant::now();
+    let mut limits = state.automatic_rate_limits.lock().await;
+    limits.retain(|_, (started, _)| now.duration_since(*started).as_secs() < 120);
+    let entry = limits.entry(address).or_insert((now, 0));
+    if now.duration_since(entry.0).as_secs() >= 60 {
+        *entry = (now, 0);
+    }
+    if entry.1 >= state.config.automatic_requests_per_minute {
+        return Err(api_error(
+            StatusCode::TOO_MANY_REQUESTS,
+            "automatic activation rate limit exceeded; retry later",
+        ));
+    }
+    entry.1 += 1;
+    Ok(())
+}
+
+fn validate_fresh_automatic_request(request: &DeviceAuthorizationRequest) -> Result<()> {
+    let request_id = request
+        .request_id
+        .strip_prefix("req-")
+        .unwrap_or(&request.request_id);
+    uuid::Uuid::parse_str(request_id).context("automatic requestId must contain a UUID")?;
+    let created_at = DateTime::parse_from_rfc3339(&request.created_at)
+        .context("automatic request createdAt must be RFC3339")?
+        .with_timezone(&Utc);
+    let now = Utc::now();
+    if created_at < now - Duration::minutes(15) || created_at > now + Duration::minutes(5) {
+        return Err(anyhow!(
+            "automatic device request is stale; check the client clock and retry"
+        ));
+    }
+    Ok(())
+}
+
+fn automatic_bundle_needs_renewal(bundle: &BundleRecord, lease_hours: u32) -> Result<bool> {
+    let issued_at = DateTime::parse_from_rfc3339(&bundle.issued_at)
+        .context("stored automatic bundle issuedAt is invalid")?
+        .with_timezone(&Utc);
+    let valid_until = DateTime::parse_from_rfc3339(&bundle.valid_until)
+        .context("stored automatic bundle validUntil is invalid")?
+        .with_timezone(&Utc);
+    let lease = Duration::hours(lease_hours as i64);
+    let renewal_window = Duration::hours((lease_hours / 4).max(1) as i64);
+    let is_bounded_lease = valid_until <= issued_at + lease + Duration::minutes(5);
+    Ok(!is_bounded_lease || valid_until <= Utc::now() + renewal_window)
 }
 
 fn issue_bundle_inner(
@@ -1627,7 +1808,7 @@ mod automatic_activation_tests {
             },
         };
         let automatic_organization_id =
-            ensure_automatic_organization(&db, &customer_entitlement, "Site Test").unwrap();
+            ensure_automatic_organization(&db, &customer_entitlement, "Site Test", 1).unwrap();
         let state = AppState {
             db,
             signing,
@@ -1647,10 +1828,16 @@ mod automatic_activation_tests {
                 public_base_url: None,
                 customer_entitlement_file: None,
                 max_automatic_registrations: None,
+                automatic_lease_hours: 24,
+                automatic_grace_days: 1,
+                release_manifest_file: directory.path().join("release-manifest.json"),
+                automatic_requests_per_minute: 20,
             },
             issuance_lock: Arc::new(Mutex::new(())),
             customer_entitlement,
             automatic_organization_id,
+            release_manifest: Vec::new(),
+            automatic_rate_limits: Arc::new(Mutex::new(HashMap::new())),
         };
         (directory, state)
     }
@@ -1661,6 +1848,7 @@ mod automatic_activation_tests {
         let (_directory, state) = test_state(Vec::new());
         let response = automatic_activate_license(
             State(state.clone()),
+            ConnectInfo("127.0.0.1:41001".parse().unwrap()),
             Json(AutomaticActivationRequest {
                 request_json: serde_json::to_string(&request).unwrap(),
                 seat_label: None,
@@ -1674,11 +1862,82 @@ mod automatic_activation_tests {
     }
 
     #[tokio::test]
+    async fn stale_automatic_request_is_rejected_before_registration() {
+        let mut request = device_request(43);
+        request.created_at = (Utc::now() - Duration::minutes(16)).to_rfc3339();
+        let key = SigningKey::from_bytes(&[43; 32]);
+        request.device_proof =
+            URL_SAFE_NO_PAD.encode(key.sign(&request.proof_message()).to_bytes());
+        let (_directory, state) = test_state(Vec::new());
+        let error = automatic_activate_license(
+            State(state.clone()),
+            ConnectInfo("127.0.0.1:41002".parse().unwrap()),
+            Json(AutomaticActivationRequest {
+                request_json: serde_json::to_string(&request).unwrap(),
+                seat_label: None,
+            }),
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(error.0, StatusCode::BAD_REQUEST);
+        assert!(state.db.devices(None).unwrap().is_empty());
+    }
+
+    #[test]
+    fn long_lived_or_nearly_expired_automatic_bundles_are_renewed() {
+        let now = Utc::now();
+        let bundle = |issued_at: DateTime<Utc>, valid_until: DateTime<Utc>| BundleRecord {
+            id: "row".to_string(),
+            bundle_id: "bundle".to_string(),
+            organization_id: "org".to_string(),
+            license_id: "license".to_string(),
+            device_count: 1,
+            revoked_count: 0,
+            valid_until: valid_until.to_rfc3339(),
+            issued_at: issued_at.to_rfc3339(),
+            envelope_json: "{}".to_string(),
+        };
+        assert!(automatic_bundle_needs_renewal(
+            &bundle(now - Duration::hours(1), now + Duration::days(30)),
+            24,
+        )
+        .unwrap());
+        assert!(automatic_bundle_needs_renewal(
+            &bundle(now - Duration::hours(18), now + Duration::hours(5)),
+            24,
+        )
+        .unwrap());
+        assert!(
+            !automatic_bundle_needs_renewal(&bundle(now, now + Duration::hours(24)), 24,).unwrap()
+        );
+    }
+
+    #[tokio::test]
+    async fn automatic_activation_is_rate_limited_per_source_ip() {
+        let (_directory, mut state) = test_state(Vec::new());
+        state.config.automatic_requests_per_minute = 2;
+        let address: IpAddr = "10.20.30.40".parse().unwrap();
+        enforce_automatic_rate_limit(&state, address).await.unwrap();
+        enforce_automatic_rate_limit(&state, address).await.unwrap();
+        assert_eq!(
+            enforce_automatic_rate_limit(&state, address)
+                .await
+                .unwrap_err()
+                .0,
+            StatusCode::TOO_MANY_REQUESTS
+        );
+        enforce_automatic_rate_limit(&state, "10.20.30.41".parse().unwrap())
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
     async fn vendor_approved_automatic_device_receives_one_grant() {
         let request = device_request(42);
         let (_directory, state) = test_state(vec![request.device_key_id.clone()]);
         let response = automatic_activate_license(
             State(state.clone()),
+            ConnectInfo("127.0.0.1:41003".parse().unwrap()),
             Json(AutomaticActivationRequest {
                 request_json: serde_json::to_string(&request).unwrap(),
                 seat_label: None,
@@ -1698,6 +1957,7 @@ mod automatic_activation_tests {
         );
         let second = automatic_activate_license(
             State(state.clone()),
+            ConnectInfo("127.0.0.1:41003".parse().unwrap()),
             Json(AutomaticActivationRequest {
                 request_json: serde_json::to_string(&request).unwrap(),
                 seat_label: None,

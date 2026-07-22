@@ -53,6 +53,8 @@ KEYLESSPASS_PUBLIC_BASE_URL=http://10.20.30.40:8787
 3. 收到更高序列号的 `customer-entitlement.json` 后，点击“Import vendor approval”；
 4. 服务自动重启；客户端轮询后自动变成已授权。
 
+已授权客户端也会每 30 分钟续签。服务端默认只签发 24 小时租约，另有 1 天离线宽限；撤销或取消批准后不再续签，旧授权最迟在租约和宽限结束后失效。可在 `.env` 调整 `KEYLESSPASS_AUTOMATIC_LEASE_HOURS` 和 `KEYLESSPASS_AUTOMATIC_GRACE_DAYS`，但宽限不能超过厂商 entitlement。
+
 这个 token 只用于离线批准文件的导入、导出和故障维护。普通下载、设备登记、自动授权都不发送它。
 
 ## 厂商怎么批准
@@ -72,6 +74,19 @@ cargo run -- issue-customer-entitlement > customer-entitlement.json
 
 初始授权可使用传统环境变量签发，并把 `KEYLESSPASS_AUTHORIZED_DEVICE_KEY_IDS` 留空。空白名单只能启动服务器和收集设备，不能签发任何终端授权。
 
+## 发布安装包
+
+安装包必须先完成 macOS Developer ID/公证、Windows Authenticode 或 Linux GPG 签名，再由厂商离线根密钥签发不可变清单：
+
+```bash
+export KEYLESSPASS_VENDOR_SIGNING_KEY_B64='<厂商根私钥 seed>'
+export KEYLESSPASS_VENDOR_KEY_ID='<明确的厂商根 key ID>'
+export KEYLESSPASS_RELEASE_DIRECTORY="$PWD/downloads"
+cargo run -- issue-release-manifest > downloads/release-manifest.json
+```
+
+后台启动时验证该清单，并只在下载页列出文件名、大小和 SHA-256 全部匹配的安装包。替换安装包后必须重新签发清单；根 key ID 不再有默认值。
+
 ## 端口和防火墙
 
 | 端口 | 用途 | 是否必须 |
@@ -81,6 +96,8 @@ cargo run -- issue-customer-entitlement > customer-entitlement.json
 
 只向客户内网开放。跨不可信网段时用 HTTPS 反向代理，并限制根路径及 `/api/offline-approval/*` 的访问；不要暴露到互联网。
 
+自动激活默认按源 IP 每分钟最多 20 次。若反向代理让大量终端显示为同一源 IP，请在代理侧保留真实源地址，或按容量调整 `KEYLESSPASS_AUTOMATIC_REQUESTS_PER_MINUTE`，同时继续使用终端 VLAN ACL。
+
 ## 安全边界
 
 - 客户现场私钥只能在厂商签名额度及设备白名单内签发；
@@ -89,4 +106,4 @@ cargo run -- issue-customer-entitlement > customer-entitlement.json
 - 席位分配使用数据库事务，终端授权与设备 key、指纹、版本和期限绑定；
 - 服务只处理授权元数据，不得接收助记词、`Kmaster`、因子秘密、服务密码或派生密码。
 
-必须备份 `.env`、SQLite volume、当前 entitlement 和厂商签发台账。纯离线软件不能即时吊销已发出的长期包，也不能绝对识别完整虚拟机克隆；高对抗场景应缩短有效期或改用厂商在线/TPM/HSM/硬件授权。
+必须备份 `.env`、SQLite volume、当前 entitlement 和厂商签发台账。当前纯内网模式按“厂商批准的设备身份数量”收费，不承诺客户控制后台时仍能严格限制同时在线数，也不能绝对识别完整虚拟机克隆。高对抗场景应改用厂商在线、TPM/HSM 或硬件授权。

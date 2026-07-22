@@ -53,6 +53,8 @@ After all target clients have started once, open the service root and enter the 
 3. import the returned higher-serial `customer-entitlement.json`;
 4. the service restarts and polling clients authorize themselves.
 
+Authorized clients also renew every 30 minutes. The server defaults to a 24-hour signed lease plus one offline grace day. Revoked or de-approved devices receive no renewal, so the last lease stops no later than the end of that bounded window. `KEYLESSPASS_AUTOMATIC_LEASE_HOURS` and `KEYLESSPASS_AUTOMATIC_GRACE_DAYS` are configurable, but grace cannot exceed the vendor entitlement.
+
 The token is only for batch exchange and maintenance. Public downloads, automatic registration, and automatic activation never receive it.
 
 ## Vendor approval
@@ -72,6 +74,19 @@ The batch embeds the previous vendor-signed entitlement. The command verifies it
 
 The initial entitlement can still be produced with the traditional environment variables and an empty allowlist. An empty allowlist permits startup and collection but cannot authorize any device.
 
+## Publish installers
+
+First apply Developer ID/notarization, Authenticode, or Linux GPG signing. Then create an immutable vendor-signed release manifest on the offline vendor workstation:
+
+```bash
+export KEYLESSPASS_VENDOR_SIGNING_KEY_B64='<offline vendor root seed>'
+export KEYLESSPASS_VENDOR_KEY_ID='<explicit vendor root key ID>'
+export KEYLESSPASS_RELEASE_DIRECTORY="$PWD/downloads"
+cargo run -- issue-release-manifest > downloads/release-manifest.json
+```
+
+At startup the backend verifies this manifest and lists only installers whose name, size, and SHA-256 match. Re-sign the manifest whenever an installer changes. Root key IDs have no production default.
+
 ## Ports and security
 
 | Port | Purpose | Required |
@@ -81,6 +96,8 @@ The initial entitlement can still be produced with the traditional environment v
 
 Expose these only to the customer intranet. Across untrusted segments, use an HTTPS reverse proxy and restrict the root and `/api/offline-approval/*`; never publish the service to the Internet.
 
+Automatic activation defaults to 20 requests per source IP per minute. If a reverse proxy makes many endpoints share one source address, preserve the real source address or size `KEYLESSPASS_AUTOMATIC_REQUESTS_PER_MINUTE` appropriately while retaining endpoint-VLAN ACLs.
+
 The customer-site key can sign only within a vendor-signed quota and device allowlist. Commercial clients trust only the vendor root. Device requests prove possession of a per-device Ed25519 key, and seat allocation is transactional. The backend handles licensing metadata only and must never receive password or factor secrets.
 
-Back up `.env`, the SQLite volume, the current entitlement, and the vendor issuance ledger. Pure offline software cannot deliver immediate revocation of a long-lived grant or perfectly detect a complete VM clone. Use shorter terms or vendor-online/TPM/HSM/hardware licensing for high-adversary deployments.
+Back up `.env`, the SQLite volume, the current entitlement, and the vendor issuance ledger. This pure-intranet edition is sold by vendor-approved device identity; it does not promise strict floating concurrency against a customer-controlled backend and cannot perfectly detect complete VM clones. Use vendor-online, TPM/HSM, or hardware licensing for high-adversary deployments.

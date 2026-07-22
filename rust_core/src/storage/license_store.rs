@@ -21,6 +21,7 @@ pub struct LicenseStore {
     commercial_device_id_path: PathBuf,
     license_envelope_path: PathBuf,
     security_state_path: PathBuf,
+    history_marker_path: PathBuf,
 }
 
 impl LicenseStore {
@@ -30,6 +31,7 @@ impl LicenseStore {
             commercial_device_id_path: root.join("commercial-device-id"),
             license_envelope_path: root.join("license-envelope.json"),
             security_state_path: root.join("security-state-v2.bin"),
+            history_marker_path: paths.app_dir.join(".license-history-v2.bin"),
             root,
         }
     }
@@ -88,5 +90,18 @@ impl LicenseStore {
     ) -> Result<()> {
         let protected = provider.protect_local_package(&serde_json::to_vec(state)?)?;
         crate::platform::fallback::write_private_file(&self.security_state_path, &protected)
+    }
+
+    pub fn has_license_history(&self, provider: &dyn PlatformFactorProvider) -> Result<bool> {
+        if !self.history_marker_path.is_file() {
+            return Ok(false);
+        }
+        let plaintext = provider.unprotect_local_package(&fs::read(&self.history_marker_path)?)?;
+        Ok(plaintext == b"KeyLessPass/license-history/v2")
+    }
+
+    pub fn write_license_history(&self, provider: &dyn PlatformFactorProvider) -> Result<()> {
+        let protected = provider.protect_local_package(b"KeyLessPass/license-history/v2")?;
+        crate::platform::fallback::write_private_file(&self.history_marker_path, &protected)
     }
 }

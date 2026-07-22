@@ -12,8 +12,38 @@ use base64::{
 use chrono::{DateTime, Duration, Utc};
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use rand::{rngs::OsRng, RngCore};
-use std::collections::HashSet;
+use sha2::{Digest, Sha256};
+use std::{collections::HashSet, io::Read, path::Path};
 use uuid::Uuid;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReleaseArtifactManifest {
+    pub file_name: String,
+    pub size_bytes: u64,
+    pub sha256: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ReleaseManifestPayload {
+    schema_version: u32,
+    release_id: String,
+    issued_at: String,
+    artifacts: Vec<ReleaseArtifactManifest>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SignedReleaseManifest {
+    schema_version: u32,
+    #[serde(rename = "type")]
+    envelope_type: String,
+    payload: String,
+    signature_algorithm: String,
+    key_id: String,
+    signature: String,
+}
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -51,7 +81,7 @@ pub struct VerifiedCustomerEntitlement {
 impl SigningMaterial {
     pub fn from_env() -> Result<Self> {
         let key_id = std::env::var("KEYLESSPASS_LICENSE_KEY_ID")
-            .unwrap_or_else(|_| "keylesspass-license-2026-q3".to_string());
+            .context("KEYLESSPASS_LICENSE_KEY_ID is required")?;
         let private_key = std::env::var("KEYLESSPASS_LICENSE_SIGNING_KEY_B64").context(
             "KEYLESSPASS_LICENSE_SIGNING_KEY_B64 must contain a base64 Ed25519 32-byte seed",
         )?;
@@ -72,7 +102,7 @@ impl SigningMaterial {
 
     fn vendor_from_env() -> Result<Self> {
         let key_id = std::env::var("KEYLESSPASS_VENDOR_KEY_ID")
-            .unwrap_or_else(|_| "keylesspass-vendor-root-2026".to_string());
+            .context("KEYLESSPASS_VENDOR_KEY_ID is required")?;
         let private_key = std::env::var("KEYLESSPASS_VENDOR_SIGNING_KEY_B64").context(
             "KEYLESSPASS_VENDOR_SIGNING_KEY_B64 must contain the offline vendor Ed25519 seed",
         )?;
@@ -106,12 +136,149 @@ pub fn load_customer_entitlement(
     verify_customer_entitlement_for_site(&envelope_json, site_signing)
 }
 
+pub fn issue_release_manifest_output() -> Result<String> {
+    let signing = SigningMaterial::vendor_from_env()?;
+    let directory = std::env::var("KEYLESSPASS_RELEASE_DIRECTORY")
+        .context("KEYLESSPASS_RELEASE_DIRECTORY is required")?;
+    let payload = ReleaseManifestPayload {
+        schema_version: 1,
+        release_id: format!("release-{}", Uuid::new_v4()),
+        issued_at: Utc::now().to_rfc3339(),
+        artifacts: release_artifacts(Path::new(&directory))?,
+    };
+    if payload.artifacts.is_empty() {
+        return Err(anyhow!(
+            "release directory contains no supported installers"
+        ));
+    }
+    let payload_bytes = serde_json::to_vec(&payload)?;
+    let envelope = SignedReleaseManifest {
+        schema_version: 1,
+        envelope_type: "keylesspass-release-manifest".to_string(),
+        payload: URL_SAFE_NO_PAD.encode(&payload_bytes),
+        signature_algorithm: "Ed25519".to_string(),
+        key_id: signing.key_id.clone(),
+        signature: URL_SAFE_NO_PAD.encode(signing.signing_key.sign(&payload_bytes).to_bytes()),
+    };
+    Ok(format!("{}\n", serde_json::to_string_pretty(&envelope)?))
+}
+
+pub fn verify_release_manifest_file(
+    path: &Path,
+    download_directory: &Path,
+) -> Result<Vec<ReleaseArtifactManifest>> {
+    let envelope: SignedReleaseManifest = serde_json::from_slice(
+        &std::fs::read(path)
+            .with_context(|| format!("read release manifest {}", path.display()))?,
+    )?;
+    let vendor_key_id = std::env::var("KEYLESSPASS_VENDOR_KEY_ID")
+        .context("KEYLESSPASS_VENDOR_KEY_ID is required")?;
+    if envelope.schema_version != 1
+        || envelope.envelope_type != "keylesspass-release-manifest"
+        || envelope.signature_algorithm != "Ed25519"
+        || envelope.key_id != vendor_key_id
+    {
+        return Err(anyhow!("release manifest envelope is invalid"));
+    }
+    let payload_bytes = URL_SAFE_NO_PAD.decode(&envelope.payload)?;
+    let signature: [u8; 64] = URL_SAFE_NO_PAD
+        .decode(&envelope.signature)?
+        .try_into()
+        .map_err(|_| anyhow!("release manifest signature must be 64 bytes"))?;
+    let public_key = decode_key(
+        &std::env::var("KEYLESSPASS_VENDOR_PUBLIC_KEY_B64")
+            .context("KEYLESSPASS_VENDOR_PUBLIC_KEY_B64 is required")?,
+    )?;
+    VerifyingKey::from_bytes(&public_key)?
+        .verify(&payload_bytes, &Signature::from_bytes(&signature))
+        .map_err(|_| anyhow!("release manifest signature is invalid"))?;
+    let payload: ReleaseManifestPayload = serde_json::from_slice(&payload_bytes)?;
+    if payload.schema_version != 1 || payload.artifacts.is_empty() {
+        return Err(anyhow!("release manifest payload is invalid"));
+    }
+    let actual = release_artifacts(download_directory)?;
+    for expected in &payload.artifacts {
+        if !valid_release_file_name(&expected.file_name)
+            || !actual.iter().any(|item| {
+                item.file_name == expected.file_name
+                    && item.size_bytes == expected.size_bytes
+                    && item.sha256 == expected.sha256
+            })
+        {
+            return Err(anyhow!(
+                "release artifact is missing or does not match manifest: {}",
+                expected.file_name
+            ));
+        }
+    }
+    Ok(payload.artifacts)
+}
+
+fn release_artifacts(directory: &Path) -> Result<Vec<ReleaseArtifactManifest>> {
+    let mut artifacts = std::fs::read_dir(directory)
+        .with_context(|| format!("read release directory {}", directory.display()))?
+        .filter_map(|entry| entry.ok())
+        .filter_map(|entry| {
+            let file_name = entry.file_name().to_str()?.to_string();
+            let metadata = entry.metadata().ok()?;
+            if !metadata.is_file() || !valid_release_file_name(&file_name) {
+                return None;
+            }
+            let sha256 = sha256_file(&entry.path()).ok()?;
+            Some(ReleaseArtifactManifest {
+                file_name,
+                size_bytes: metadata.len(),
+                sha256,
+            })
+        })
+        .collect::<Vec<_>>();
+    artifacts.sort_by(|left, right| left.file_name.cmp(&right.file_name));
+    Ok(artifacts)
+}
+
+fn valid_release_file_name(file_name: &str) -> bool {
+    file_name
+        .bytes()
+        .all(|value| value.is_ascii_alphanumeric() || b"._-".contains(&value))
+        && [
+            ".dmg",
+            ".pkg",
+            ".exe",
+            ".msi",
+            ".zip",
+            ".deb",
+            ".rpm",
+            ".appimage",
+            ".tar.gz",
+        ]
+        .iter()
+        .any(|suffix| file_name.to_ascii_lowercase().ends_with(suffix))
+}
+
+fn sha256_file(path: &Path) -> Result<String> {
+    let mut file = std::fs::File::open(path)?;
+    let mut digest = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    loop {
+        let read = file.read(&mut buffer)?;
+        if read == 0 {
+            break;
+        }
+        digest.update(&buffer[..read]);
+    }
+    Ok(digest
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect())
+}
+
 pub fn verify_customer_entitlement_for_site(
     envelope_json: &str,
     site_signing: &SigningMaterial,
 ) -> Result<VerifiedCustomerEntitlement> {
     let vendor_key_id = std::env::var("KEYLESSPASS_VENDOR_KEY_ID")
-        .unwrap_or_else(|_| "keylesspass-vendor-root-2026".to_string());
+        .context("KEYLESSPASS_VENDOR_KEY_ID is required")?;
     let vendor_public_key = std::env::var("KEYLESSPASS_VENDOR_PUBLIC_KEY_B64")
         .context("KEYLESSPASS_VENDOR_PUBLIC_KEY_B64 is required")?;
     let verified = verify_customer_entitlement(envelope_json, &vendor_key_id, &vendor_public_key)?;
@@ -643,5 +810,41 @@ mod tests {
         verify_device_batch_entitlement(&request, &vendor).unwrap();
         request.purchased_device_limit = 300;
         assert!(verify_device_batch_entitlement(&request, &vendor).is_err());
+    }
+
+    #[test]
+    fn vendor_release_manifest_detects_installer_replacement() {
+        let directory = tempfile::tempdir().unwrap();
+        let artifact = directory.path().join("KeyLessPass-test.exe");
+        std::fs::write(&artifact, b"official installer").unwrap();
+        let signing = SigningKey::from_bytes(&[77; 32]);
+        std::env::set_var(
+            "KEYLESSPASS_VENDOR_SIGNING_KEY_B64",
+            STANDARD.encode(signing.to_bytes()),
+        );
+        std::env::set_var("KEYLESSPASS_VENDOR_KEY_ID", "vendor-release-test");
+        std::env::set_var(
+            "KEYLESSPASS_VENDOR_PUBLIC_KEY_B64",
+            STANDARD.encode(signing.verifying_key().to_bytes()),
+        );
+        std::env::set_var("KEYLESSPASS_RELEASE_DIRECTORY", directory.path());
+        let manifest_path = directory.path().join("release-manifest.json");
+        std::fs::write(&manifest_path, issue_release_manifest_output().unwrap()).unwrap();
+        assert_eq!(
+            verify_release_manifest_file(&manifest_path, directory.path())
+                .unwrap()
+                .len(),
+            1
+        );
+        std::fs::write(&artifact, b"replaced installer").unwrap();
+        assert!(verify_release_manifest_file(&manifest_path, directory.path()).is_err());
+        for name in [
+            "KEYLESSPASS_VENDOR_SIGNING_KEY_B64",
+            "KEYLESSPASS_VENDOR_KEY_ID",
+            "KEYLESSPASS_VENDOR_PUBLIC_KEY_B64",
+            "KEYLESSPASS_RELEASE_DIRECTORY",
+        ] {
+            std::env::remove_var(name);
+        }
     }
 }

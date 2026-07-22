@@ -120,6 +120,20 @@ fn signed_license_bundle_with_device_keys(
     payload: &LicenseBundlePayload,
     authorized_device_key_ids: Vec<String>,
 ) -> String {
+    signed_license_bundle_with_entitlement_until(
+        signing_key,
+        payload,
+        authorized_device_key_ids,
+        (Utc::now() + Duration::days(365)).to_rfc3339(),
+    )
+}
+
+fn signed_license_bundle_with_entitlement_until(
+    signing_key: &SigningKey,
+    payload: &LicenseBundlePayload,
+    authorized_device_key_ids: Vec<String>,
+    entitlement_valid_until: String,
+) -> String {
     let mut payload = payload.clone();
     let entitlement_payload = CustomerEntitlement {
         schema_version: LICENSE_SCHEMA_VERSION,
@@ -136,7 +150,7 @@ fn signed_license_bundle_with_device_keys(
         max_offline_grace_days: 30,
         authorized_device_key_ids,
         valid_from: (Utc::now() - Duration::days(1)).to_rfc3339(),
-        valid_until: (Utc::now() + Duration::days(365)).to_rfc3339(),
+        valid_until: entitlement_valid_until,
         features: vec![
             "desktop-client".to_string(),
             "offline-activation".to_string(),
@@ -1083,6 +1097,124 @@ fn signed_license_bundle_authorizes_intended_device() {
 }
 
 #[test]
+fn missing_license_security_state_fails_closed() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-state");
+    let signing_key = SigningKey::from_bytes(&[49_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(1)).to_rfc3339(), 1);
+    let bundle_json = signed_license_bundle(&signing_key, &payload);
+    import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: bundle_json.clone(),
+        },
+    )
+    .unwrap();
+
+    std::fs::remove_file(paths.app_dir.join("license/security-state-v2.bin")).unwrap();
+    let status = get_license_status_at(&paths, &provider, &verifier).unwrap();
+    assert_eq!(status.status, "invalid");
+    assert!(!status.authorized);
+    assert!(status.message.contains("security state is missing"));
+    assert!(import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    )
+    .is_err());
+}
+
+#[test]
+fn cleared_license_cannot_reset_rollback_history_by_deleting_security_state() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-history");
+    let signing_key = SigningKey::from_bytes(&[51_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(1)).to_rfc3339(), 1);
+    let bundle_json = signed_license_bundle(&signing_key, &payload);
+    import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: bundle_json.clone(),
+        },
+    )
+    .unwrap();
+    crate::service::license::clear_license_at(&paths, &provider).unwrap();
+    std::fs::remove_file(paths.app_dir.join("license/security-state-v2.bin")).unwrap();
+    let error = import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    )
+    .unwrap_err();
+    assert!(error.to_string().contains("security state is missing"));
+}
+
+#[test]
+fn vendor_entitlement_expiry_honors_the_signed_offline_grace() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-grace");
+    let signing_key = SigningKey::from_bytes(&[50_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let expired_at = (Utc::now() - Duration::days(1)).to_rfc3339();
+    let payload = license_payload_for_request(&request, expired_at.clone(), 7);
+    let bundle_json = signed_license_bundle_with_entitlement_until(
+        &signing_key,
+        &payload,
+        vec![request.device_key_id],
+        expired_at,
+    );
+    let status = import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    )
+    .unwrap();
+    assert_eq!(status.status, "grace");
+    assert!(status.authorized);
+}
+
+#[test]
 fn managed_license_file_auto_imports_a_valid_bundle() {
     let app_dir = tempfile::tempdir().unwrap();
     let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
@@ -1213,12 +1345,13 @@ fn older_signed_bundle_is_rejected_after_a_newer_bundle_was_seen() {
     newer.bundle_id = Uuid::new_v4().to_string();
     newer.issued_at = Utc::now().to_rfc3339();
 
+    let newer_json = signed_license_bundle(&signing_key, &newer);
     import_license_bundle_at(
         &paths,
         &provider,
         &verifier,
         ImportLicenseBundleRequest {
-            bundle_json: signed_license_bundle(&signing_key, &newer),
+            bundle_json: newer_json.clone(),
         },
     )
     .unwrap();
@@ -1232,6 +1365,12 @@ fn older_signed_bundle_is_rejected_after_a_newer_bundle_was_seen() {
     )
     .unwrap_err();
     assert!(error.to_string().contains("rollback"));
+    let stored: SignedLicenseEnvelope = serde_json::from_slice(
+        &std::fs::read(paths.app_dir.join("license/license-envelope.json")).unwrap(),
+    )
+    .unwrap();
+    let expected: SignedLicenseEnvelope = serde_json::from_str(&newer_json).unwrap();
+    assert_eq!(stored.payload, expected.payload);
 }
 
 #[test]

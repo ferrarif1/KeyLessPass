@@ -133,27 +133,51 @@ pub fn write_private_file(path: &PathBuf, bytes: &[u8]) -> Result<()> {
         fs::create_dir_all(parent)?;
     }
 
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        let mut file = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .mode(0o600)
-            .open(path)?;
-        file.write_all(bytes)?;
-        Ok(())
-    }
+    let temporary = path.with_extension(format!("tmp-{}", Uuid::new_v4()));
+    let write_result = (|| -> Result<()> {
+        #[cfg(unix)]
+        let mut file = {
+            use std::os::unix::fs::OpenOptionsExt;
+            OpenOptions::new()
+                .create_new(true)
+                .write(true)
+                .mode(0o600)
+                .open(&temporary)?
+        };
 
-    #[cfg(not(unix))]
-    {
+        #[cfg(not(unix))]
         let mut file = OpenOptions::new()
-            .create(true)
-            .truncate(true)
+            .create_new(true)
             .write(true)
-            .open(path)?;
+            .open(&temporary)?;
+
         file.write_all(bytes)?;
+        file.sync_all()?;
+        drop(file);
+
+        #[cfg(unix)]
+        fs::rename(&temporary, path)?;
+
+        #[cfg(not(unix))]
+        {
+            let backup = path.with_extension(format!("bak-{}", Uuid::new_v4()));
+            if path.exists() {
+                fs::rename(path, &backup)?;
+            }
+            if let Err(error) = fs::rename(&temporary, path) {
+                if backup.exists() {
+                    let _ = fs::rename(&backup, path);
+                }
+                return Err(error.into());
+            }
+            if backup.exists() {
+                fs::remove_file(backup)?;
+            }
+        }
         Ok(())
+    })();
+    if write_result.is_err() && temporary.exists() {
+        let _ = fs::remove_file(temporary);
     }
+    write_result
 }

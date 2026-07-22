@@ -226,7 +226,7 @@ cd admin_backend
 ```
 
 脚本首次运行会生成管理员 token 和客户现场 Ed25519 密钥，然后等待厂商返回
-`customer-entitlement.json` 和厂商根公钥。现场私钥只保存在内网后台；厂商根私钥永不交付客户。在线激活必须通过 HTTPS 暴露服务。`/download` 无需登录，管理操作需要 Admin token。
+`customer-entitlement.json` 和厂商根公钥。现场私钥只保存在内网后台；厂商根私钥永不交付客户。`/download` 无需登录，管理操作需要 Admin token；正式管理访问使用 HTTPS 和管理网段 ACL。客户端每 30 分钟续签默认 24 小时授权，下载页只列出厂商签名发布清单中哈希匹配的安装包。
 
 ### 构建强制授权商业客户端
 
