@@ -31,18 +31,21 @@ pub struct CancelRotationRequest {
 pub fn rotate_credential(
     request: RotateCredentialRequest,
 ) -> std::result::Result<CredentialDescriptionRecord, String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     rotate_credential_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn confirm_rotation(request: ConfirmRotationRequest) -> std::result::Result<(), String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     confirm_rotation_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn cancel_rotation(request: CancelRotationRequest) -> std::result::Result<(), String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     cancel_rotation_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -53,6 +56,12 @@ pub fn rotate_credential_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: RotateCredentialRequest,
 ) -> Result<CredentialDescriptionRecord> {
+    crate::service::license::require_license_feature_at(
+        paths,
+        provider,
+        &crate::service::license::default_license_verifier(),
+        "desktop-client",
+    )?;
     let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let mut previous = store.get(request.record_id, None)?;
@@ -89,6 +98,12 @@ pub fn confirm_rotation_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: ConfirmRotationRequest,
 ) -> Result<()> {
+    crate::service::license::require_license_feature_at(
+        paths,
+        provider,
+        &crate::service::license::default_license_verifier(),
+        "desktop-client",
+    )?;
     let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let mut new_record = store.get(request.record_id, Some(request.version))?;
@@ -120,6 +135,12 @@ pub fn cancel_rotation_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: CancelRotationRequest,
 ) -> Result<()> {
+    crate::service::license::require_license_feature_at(
+        paths,
+        provider,
+        &crate::service::license::default_license_verifier(),
+        "desktop-client",
+    )?;
     let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let record = store.get(request.record_id, Some(request.version))?;

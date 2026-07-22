@@ -197,9 +197,9 @@ The Rust core is intentionally independent from platform-specific secure storage
 
 Commercial device authorization is implemented as an outer product layer. The
 `admin_backend` service supports offline bundles and HTTPS online activation;
-the desktop client verifies every result locally with an embedded public key.
-Commercial builds should set `KEYLESSPASS_REQUIRE_LICENSE=1` and inject the
-admin public key at compile time. Managed deployments can push a bundle to the
+the desktop client verifies every result locally with an embedded vendor-root public key.
+Commercial builds should set `KEYLESSPASS_REQUIRE_LICENSE=1` and inject only the
+vendor root at compile time. A customer-site key is vendor-delegated and may grant only vendor-approved device keys. Managed deployments can push a bundle to the
 platform managed path. This layer never receives mnemonic phrases,
 `Kmaster`, factor secrets, CDR secrets, service passwords, or derived passwords.
 
@@ -210,16 +210,18 @@ cd admin_backend
 ./scripts/intranet_deploy.sh
 ```
 
-The script starts a Docker Compose deployment, prints the local URL and admin
-token, and generates a fresh Ed25519 signing seed on first run. Embed the
-displayed public key into the matching commercial client build before shipping
-that build to customers. For online activation, place the service behind HTTPS;
+The script generates an Admin token and customer-site Ed25519 key on first run,
+then waits for a vendor-signed `customer-entitlement.json`. Embed the vendor root
+public key, never the displayed site key, into commercial client builds. Public
+downloads require no login; administrative operations require the token. For online activation, place the service behind HTTPS;
 the administration UI also supports roles, device CSV, and audit export.
 
 ### Build a Commercial Client
 
 ```bash
-KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<public key from admin_backend>' \
+KEYLESSPASS_LICENSE_KEY_ID='keylesspass-vendor-root-2026' \
+KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<vendor root public key>' \
+CODESIGN_IDENTITY='Developer ID Application: Your Company (TEAMID)' \
 tools/commercial/build_commercial_release.sh macos
 ```
 

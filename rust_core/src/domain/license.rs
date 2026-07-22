@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 pub const LICENSE_ENVELOPE_TYPE: &str = "keylesspass-license-bundle";
+pub const CUSTOMER_ENTITLEMENT_TYPE: &str = "keylesspass-customer-entitlement";
 pub const LICENSE_SIGNATURE_ALGORITHM: &str = "Ed25519";
-pub const LICENSE_SCHEMA_VERSION: u32 = 1;
+pub const LICENSE_SCHEMA_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -21,12 +22,52 @@ pub struct SignedLicenseEnvelope {
 pub struct LicenseBundlePayload {
     pub schema_version: u32,
     pub bundle_id: String,
+    pub customer_entitlement: SignedCustomerEntitlementEnvelope,
     pub organization_license: OrganizationLicense,
     #[serde(default)]
     pub device_grants: Vec<DeviceGrant>,
     #[serde(default)]
     pub revoked_grant_ids: Vec<String>,
     pub issued_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SignedCustomerEntitlementEnvelope {
+    pub schema_version: u32,
+    #[serde(rename = "type")]
+    pub envelope_type: String,
+    pub payload: String,
+    pub signature_algorithm: String,
+    pub key_id: String,
+    pub signature: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CustomerEntitlement {
+    pub schema_version: u32,
+    pub entitlement_id: String,
+    pub entitlement_serial: u64,
+    pub customer_id: String,
+    pub customer_name: String,
+    pub product: String,
+    pub site_key_id: String,
+    pub site_public_key: String,
+    pub max_registered_devices: u32,
+    pub max_concurrent_devices: u32,
+    pub max_offline_borrowed: u32,
+    pub max_offline_grace_days: u32,
+    #[serde(default)]
+    pub authorized_device_key_ids: Vec<String>,
+    pub valid_from: String,
+    pub valid_until: String,
+    #[serde(default)]
+    pub features: Vec<String>,
+    #[serde(default)]
+    pub allowed_major_versions: Vec<u32>,
+    pub issued_at: String,
+    pub issuer: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -59,6 +100,8 @@ pub struct DeviceGrant {
     pub organization_id: String,
     pub commercial_device_id: String,
     pub device_fingerprint: String,
+    pub device_key_id: String,
+    pub device_public_key: String,
     #[serde(default)]
     pub seat_label: String,
     pub valid_from: String,
@@ -80,12 +123,34 @@ pub struct DeviceAuthorizationRequest {
     pub organization_id: Option<String>,
     pub commercial_device_id: String,
     pub device_fingerprint: String,
+    pub device_key_id: String,
+    pub device_public_key: String,
+    pub device_proof: String,
     pub platform: String,
     pub app_version: String,
     pub build_channel: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub seat_label: Option<String>,
     pub created_at: String,
+}
+
+impl DeviceAuthorizationRequest {
+    pub fn proof_message(&self) -> Vec<u8> {
+        [
+            "KeyLessPass/device-authorization-request/v2",
+            &self.request_id,
+            &self.commercial_device_id,
+            &self.device_fingerprint,
+            &self.device_key_id,
+            &self.device_public_key,
+            &self.platform,
+            &self.app_version,
+            &self.build_channel,
+            &self.created_at,
+        ]
+        .join("\0")
+        .into_bytes()
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

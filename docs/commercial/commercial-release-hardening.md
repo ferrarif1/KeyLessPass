@@ -10,10 +10,9 @@ support/update access tied to valid authorization.
 ## Principles
 
 - Never put a licensing private key or shared activation secret in the client.
-- Commercial clients embed only public verification keys.
+- Commercial clients embed only vendor-root public verification keys and never directly trust a customer-site key.
 - Commercial clients must be built with `KEYLESSPASS_REQUIRE_LICENSE=1`.
-- License bundles are signed by the issuer and bound to
-  `commercialDeviceId + deviceFingerprint`.
+- License bundles verify both the vendor entitlement and site signature, then bind to a device identity key, `deviceKeyId`, and fingerprint.
 - A copied license bundle does not authorize another machine unless it contains
   a grant for that machine.
 - License metadata is separate from password security material and must never
@@ -24,12 +23,14 @@ support/update access tied to valid authorization.
 
 ## Release Pipeline
 
-1. Deploy `admin_backend` on an internal host.
-2. Copy the admin page `publicKeyB64` for the signing key.
-3. Build commercial clients with compile-time enforcement:
+1. The vendor issues an offline customer entitlement that delegates the site key and lists approved `deviceKeyId` values.
+2. Install that entitlement and deploy `admin_backend`.
+3. Build commercial clients with the vendor root and compile-time enforcement:
 
    ```bash
-   KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<public key from admin_backend>' \
+   KEYLESSPASS_LICENSE_KEY_ID='keylesspass-vendor-root-2026' \
+   KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<vendor root public key>' \
+   CODESIGN_IDENTITY='Developer ID Application: Your Company (TEAMID)' \
    tools/commercial/build_commercial_release.sh macos
    ```
 
@@ -38,6 +39,8 @@ support/update access tied to valid authorization.
    - macOS: Developer ID Application signing, notarization, and stapling.
    - Windows: Authenticode signing of binaries and installer.
    - Linux: signed repository metadata or signed release checksum manifest.
+
+Commercial macOS and Windows packaging rejects missing platform certificates by default. Linux requires `KEYLESSPASS_LINUX_GPG_KEY_ID` and emits `SHA256SUMS.asc`. `KEYLESSPASS_ALLOW_UNSIGNED=1` is for local testing only and must not be published.
 
 5. Distribute through customer-specific channels. Keep release artifacts,
    `licenseId`, `organizationId`, signing `keyId`, and contract records linked.
@@ -51,6 +54,7 @@ This design raises the cost and reduces the value of unauthorized redistribution
   compiled in.
 - A copied license bundle is tied to the original commercial device identity and
   fingerprint.
+- A modified customer backend cannot authorize a device absent from the vendor-signed allowlist.
 - Customer bundles contain organization/license/grant identifiers, giving every
   distributed activation package an audit trail.
 - Revoked grants are carried in later offline bundles.
@@ -77,7 +81,7 @@ KEYLESSPASS_APP_MAJOR_VERSION=1
 KEYLESSPASS_MANAGED_LICENSE_FILE=<managed bundle path>
 ```
 
-During signing-key rotation, add the overlapping public-key map:
+These key values identify the vendor root. During vendor-root rotation, add the overlapping public-key map:
 
 ```text
 KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON={"old-key-id":"old-public-key","new-key-id":"new-public-key"}

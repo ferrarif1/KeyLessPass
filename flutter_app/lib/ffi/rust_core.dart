@@ -63,29 +63,36 @@ class RustCore {
 
   static DynamicLibrary _openLibrary() {
     final executableDir = File(Platform.resolvedExecutable).parent;
+    const releaseMode = bool.fromEnvironment('dart.vm.product');
     final candidates = <String>[
       if (Platform.isMacOS) ...[
         '${executableDir.parent.path}/Frameworks/libkeylesspass_core.dylib',
-        '${executableDir.path}/libkeylesspass_core.dylib',
-        'libkeylesspass_core.dylib',
-        '../rust_core/target/debug/libkeylesspass_core.dylib',
-        '../../rust_core/target/debug/libkeylesspass_core.dylib',
-        'rust_core/target/debug/libkeylesspass_core.dylib',
+        if (!releaseMode) ...[
+          '${executableDir.path}/libkeylesspass_core.dylib',
+          'libkeylesspass_core.dylib',
+          '../rust_core/target/debug/libkeylesspass_core.dylib',
+          '../../rust_core/target/debug/libkeylesspass_core.dylib',
+          'rust_core/target/debug/libkeylesspass_core.dylib',
+        ],
       ],
       if (Platform.isLinux) ...[
         '${executableDir.path}/lib/libkeylesspass_core.so',
-        '${executableDir.path}/libkeylesspass_core.so',
-        'libkeylesspass_core.so',
-        '../rust_core/target/debug/libkeylesspass_core.so',
-        '../../rust_core/target/debug/libkeylesspass_core.so',
-        'rust_core/target/debug/libkeylesspass_core.so',
+        if (!releaseMode) ...[
+          '${executableDir.path}/libkeylesspass_core.so',
+          'libkeylesspass_core.so',
+          '../rust_core/target/debug/libkeylesspass_core.so',
+          '../../rust_core/target/debug/libkeylesspass_core.so',
+          'rust_core/target/debug/libkeylesspass_core.so',
+        ],
       ],
       if (Platform.isWindows) ...[
         '${executableDir.path}\\keylesspass_core.dll',
-        'keylesspass_core.dll',
-        r'..\rust_core\target\debug\keylesspass_core.dll',
-        r'..\..\rust_core\target\debug\keylesspass_core.dll',
-        r'rust_core\target\debug\keylesspass_core.dll',
+        if (!releaseMode) ...[
+          'keylesspass_core.dll',
+          r'..\rust_core\target\debug\keylesspass_core.dll',
+          r'..\..\rust_core\target\debug\keylesspass_core.dll',
+          r'rust_core\target\debug\keylesspass_core.dll',
+        ],
       ],
     ];
 

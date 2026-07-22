@@ -1,5 +1,6 @@
 pub mod credentials;
 pub mod derive;
+pub(crate) mod device_identity;
 pub mod enrollment;
 pub(crate) mod factor_keys;
 pub mod license;

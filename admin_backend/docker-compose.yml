@@ -9,10 +9,14 @@ services:
     environment:
       KEYLESSPASS_ADMIN_BIND: 0.0.0.0:8787
       KEYLESSPASS_ADMIN_DB: /data/keylesspass-admin.sqlite3
+      KEYLESSPASS_DOWNLOAD_DIR: /downloads
+      KEYLESSPASS_CUSTOMER_ENTITLEMENT_FILE: /license/customer-entitlement.json
     ports:
-      - "${KEYLESSPASS_ADMIN_PORT:-8787}:8787"
+      - "127.0.0.1:${KEYLESSPASS_ADMIN_PORT:-8787}:8787"
     volumes:
       - keylesspass-admin-data:/data
+      - ./downloads:/downloads:ro
+      - ./license:/license:ro
     restart: unless-stopped
 
 volumes:

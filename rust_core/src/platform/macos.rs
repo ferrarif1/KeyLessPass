@@ -55,7 +55,19 @@ impl MacOSPlatformFactorProvider {
     }
 
     fn keychain_wrapping_key(&self) -> Result<[u8; 32]> {
-        let secret = self.keychain_secret()?;
+        if !self.use_keychain {
+            return Err(KeylessPassError::MissingFactor(
+                "macOS Keychain protection is disabled".to_string(),
+            ));
+        }
+        let secret = match read_keychain_password() {
+            Ok(value) => SecretBytes::new(b64_decode(value.trim())?),
+            Err(_) => {
+                let encoded = b64_encode(&crate::crypto::random_bytes(32));
+                write_keychain_password(&encoded)?;
+                SecretBytes::new(b64_decode(&encoded)?)
+            }
+        };
         kdf::derive_fallback_package_key(secret.expose(), b"macOS Keychain local package key")
     }
 }
@@ -81,43 +93,36 @@ impl PlatformFactorProvider for MacOSPlatformFactorProvider {
         if !self.use_keychain {
             return self.fallback.protect_local_package(plaintext);
         }
-
-        match self.keychain_wrapping_key() {
-            Ok(key) => {
-                let (nonce, ciphertext, tag) =
-                    aead::encrypt(&key, plaintext, b"macos-keychain-local-package")?;
-                let envelope = KeychainEnvelope {
-                    version: 1,
-                    nonce: b64_encode(&nonce),
-                    ciphertext: b64_encode(&ciphertext),
-                    tag: b64_encode(&tag),
-                };
-                Ok(serde_json::to_vec(&envelope)?)
-            }
-            Err(_) => self.fallback.protect_local_package(plaintext),
-        }
+        let key = self.keychain_wrapping_key()?;
+        let (nonce, ciphertext, tag) =
+            aead::encrypt(&key, plaintext, b"macos-keychain-local-package")?;
+        let envelope = KeychainEnvelope {
+            version: 1,
+            nonce: b64_encode(&nonce),
+            ciphertext: b64_encode(&ciphertext),
+            tag: b64_encode(&tag),
+        };
+        Ok(serde_json::to_vec(&envelope)?)
     }
 
     fn unprotect_local_package(&self, protected: &[u8]) -> Result<Vec<u8>> {
-        if self.use_keychain {
-            if let Ok(envelope) = serde_json::from_slice::<KeychainEnvelope>(protected) {
-                if envelope.version != 1 {
-                    return Err(KeylessPassError::Validation(
-                        "unsupported macOS protected envelope version".to_string(),
-                    ));
-                }
-                if let Ok(key) = self.keychain_wrapping_key() {
-                    return aead::decrypt(
-                        &key,
-                        &b64_decode(&envelope.nonce)?,
-                        &b64_decode(&envelope.ciphertext)?,
-                        &b64_decode(&envelope.tag)?,
-                        b"macos-keychain-local-package",
-                    );
-                }
-            }
+        if !self.use_keychain {
+            return self.fallback.unprotect_local_package(protected);
         }
-        self.fallback.unprotect_local_package(protected)
+        let envelope: KeychainEnvelope = serde_json::from_slice(protected)?;
+        if envelope.version != 1 {
+            return Err(KeylessPassError::Validation(
+                "unsupported macOS protected envelope version".to_string(),
+            ));
+        }
+        let key = self.keychain_wrapping_key()?;
+        aead::decrypt(
+            &key,
+            &b64_decode(&envelope.nonce)?,
+            &b64_decode(&envelope.ciphertext)?,
+            &b64_decode(&envelope.tag)?,
+            b"macos-keychain-local-package",
+        )
     }
 }
 

@@ -1,15 +1,18 @@
 use crate::crypto::signing::{b64url_decode, LicenseVerifier};
 use crate::domain::{
-    DeviceAuthorizationRequest, DeviceGrant, LicenseBundlePayload, LicenseStatus,
-    SignedLicenseEnvelope, LICENSE_ENVELOPE_TYPE, LICENSE_SCHEMA_VERSION,
+    CustomerEntitlement, DeviceAuthorizationRequest, DeviceGrant, LicenseBundlePayload,
+    LicenseStatus, SignedCustomerEntitlementEnvelope, SignedLicenseEnvelope,
+    CUSTOMER_ENTITLEMENT_TYPE, LICENSE_ENVELOPE_TYPE, LICENSE_SCHEMA_VERSION,
     LICENSE_SIGNATURE_ALGORITHM,
 };
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
-use crate::storage::{LicenseStore, StoragePaths};
+use crate::service::device_identity::DeviceIdentity;
+use crate::storage::{LicenseSecurityState, LicenseStore, StoragePaths};
 use chrono::{DateTime, Duration, Utc};
+use hmac::{Hmac, Mac};
 use serde::Deserialize;
-use sha2::{Digest, Sha256};
+use sha2::Sha256;
 use std::{collections::BTreeMap, fs, path::PathBuf};
 use uuid::Uuid;
 
@@ -127,9 +130,10 @@ pub fn get_license_status_at(
             "No commercial device grant has been imported.",
         ));
     };
-    match verify_and_parse_bundle(&envelope, verifier)
-        .and_then(|bundle| status_from_bundle(context.clone(), &bundle))
-    {
+    match verify_and_parse_bundle(&envelope, verifier).and_then(|bundle| {
+        update_security_state(paths, provider, &bundle)?;
+        status_from_bundle(context.clone(), &bundle)
+    }) {
         Ok(status) => Ok(status),
         Err(error) => Ok(LicenseStatus {
             status: "invalid".to_string(),
@@ -155,7 +159,8 @@ pub fn export_device_authorization_request_at(
     request: ExportDeviceAuthorizationRequest,
 ) -> Result<DeviceAuthorizationRequest> {
     let context = license_context(paths, provider)?;
-    Ok(DeviceAuthorizationRequest {
+    let identity = DeviceIdentity::load_or_create(paths, provider)?;
+    let mut authorization_request = DeviceAuthorizationRequest {
         schema_version: LICENSE_SCHEMA_VERSION,
         request_id: Uuid::new_v4().to_string(),
         organization_id: request
@@ -164,6 +169,9 @@ pub fn export_device_authorization_request_at(
             .filter(|value| !value.is_empty()),
         commercial_device_id: context.commercial_device_id,
         device_fingerprint: context.device_fingerprint,
+        device_key_id: context.device_key_id,
+        device_public_key: context.device_public_key,
+        device_proof: String::new(),
         platform: std::env::consts::OS.to_string(),
         app_version: env!("CARGO_PKG_VERSION").to_string(),
         build_channel: option_env!("KEYLESSPASS_BUILD_CHANNEL")
@@ -174,7 +182,10 @@ pub fn export_device_authorization_request_at(
             .map(|value| value.trim().to_string())
             .filter(|value| !value.is_empty()),
         created_at: Utc::now().to_rfc3339(),
-    })
+    };
+    authorization_request.device_proof =
+        identity.sign_b64url(&authorization_request.proof_message());
+    Ok(authorization_request)
 }
 
 pub fn import_license_bundle_at(
@@ -190,6 +201,7 @@ pub fn import_license_bundle_at(
         return Err(KeylessPassError::Validation(status.message));
     }
     LicenseStore::new(paths).write_license_envelope(&envelope)?;
+    update_security_state(paths, provider, &bundle)?;
     Ok(status)
 }
 
@@ -211,10 +223,10 @@ pub fn default_license_verifier() -> LicenseVerifier {
     let public_key = option_env!("KEYLESSPASS_LICENSE_PUBLIC_KEY_B64")
         .unwrap_or(EVALUATION_LICENSE_PUBLIC_KEY_B64);
     let mut keys = BTreeMap::new();
-    if let Some(json) = std::env::var("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON")
-        .ok()
-        .or_else(|| option_env!("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON").map(str::to_string))
-    {
+    // Trusted keys are build inputs. Reading this value from the process
+    // environment would let a local user add their own signing key and mint a
+    // valid-looking commercial license at runtime.
+    if let Some(json) = option_env!("KEYLESSPASS_LICENSE_TRUSTED_KEYS_JSON") {
         if let Ok(configured) = serde_json::from_str::<BTreeMap<String, String>>(&json) {
             keys.extend(configured);
         }
@@ -293,13 +305,7 @@ fn current_app_major_version() -> u32 {
 }
 
 fn status_authorizes_feature(status: &LicenseStatus, feature: &str, channel: &str) -> bool {
-    if !status.authorized
-        || !(status.features.iter().any(|value| value == feature)
-            || status
-                .features
-                .iter()
-                .any(|value| value == "desktop-client"))
-    {
+    if !status.authorized || !status.features.iter().any(|value| value == feature) {
         return false;
     }
     matches!(channel, "desktop" | "evaluation")
@@ -311,7 +317,7 @@ fn status_authorizes_feature(status: &LicenseStatus, feature: &str, channel: &st
 
 fn verify_and_parse_bundle(
     envelope: &SignedLicenseEnvelope,
-    verifier: &LicenseVerifier,
+    vendor_verifier: &LicenseVerifier,
 ) -> Result<LicenseBundlePayload> {
     if envelope.schema_version != LICENSE_SCHEMA_VERSION {
         return Err(KeylessPassError::Validation(
@@ -329,20 +335,145 @@ fn verify_and_parse_bundle(
         ));
     }
     let payload = b64url_decode(&envelope.payload)?;
-    verifier.verify(&envelope.key_id, &payload, &envelope.signature)?;
     let bundle: LicenseBundlePayload = serde_json::from_slice(&payload)?;
     if bundle.schema_version != LICENSE_SCHEMA_VERSION {
         return Err(KeylessPassError::Validation(
             "unsupported license bundle schema".to_string(),
         ));
     }
+    let entitlement = verify_customer_entitlement(&bundle.customer_entitlement, vendor_verifier)?;
+    let site_verifier = LicenseVerifier::new([(
+        entitlement.site_key_id.clone(),
+        entitlement.site_public_key.clone(),
+    )]);
+    site_verifier.verify(&envelope.key_id, &payload, &envelope.signature)?;
+    validate_entitlement_constraints(&bundle, &entitlement)?;
     Ok(bundle)
+}
+
+fn verify_customer_entitlement(
+    envelope: &SignedCustomerEntitlementEnvelope,
+    vendor_verifier: &LicenseVerifier,
+) -> Result<CustomerEntitlement> {
+    if envelope.schema_version != LICENSE_SCHEMA_VERSION
+        || envelope.envelope_type != CUSTOMER_ENTITLEMENT_TYPE
+        || envelope.signature_algorithm != LICENSE_SIGNATURE_ALGORITHM
+    {
+        return Err(KeylessPassError::Validation(
+            "customer entitlement envelope is invalid".to_string(),
+        ));
+    }
+    let payload = b64url_decode(&envelope.payload)?;
+    vendor_verifier.verify(&envelope.key_id, &payload, &envelope.signature)?;
+    let entitlement: CustomerEntitlement = serde_json::from_slice(&payload)?;
+    if entitlement.schema_version != LICENSE_SCHEMA_VERSION
+        || entitlement.product != "KeyLessPass"
+        || entitlement.max_concurrent_devices > entitlement.max_registered_devices
+        || entitlement.max_offline_borrowed > entitlement.max_registered_devices
+        || entitlement.authorized_device_key_ids.len() > entitlement.max_registered_devices as usize
+    {
+        return Err(KeylessPassError::Integrity(
+            "customer entitlement payload is invalid".to_string(),
+        ));
+    }
+    Ok(entitlement)
+}
+
+fn validate_entitlement_constraints(
+    bundle: &LicenseBundlePayload,
+    entitlement: &CustomerEntitlement,
+) -> Result<()> {
+    let organization = &bundle.organization_license;
+    if organization.max_seats > entitlement.max_registered_devices
+        || organization.max_seats > entitlement.max_concurrent_devices
+        || organization.offline_grace_days > entitlement.max_offline_grace_days
+        || organization
+            .features
+            .iter()
+            .any(|feature| !entitlement.features.contains(feature))
+        || organization
+            .allowed_major_versions
+            .iter()
+            .any(|version| !entitlement.allowed_major_versions.contains(version))
+        || bundle.device_grants.iter().any(|grant| {
+            grant.offline_grace_days > entitlement.max_offline_grace_days
+                || grant.features.iter().any(|feature| {
+                    !entitlement.features.contains(feature)
+                        || !organization.features.contains(feature)
+                })
+                || !entitlement
+                    .authorized_device_key_ids
+                    .contains(&grant.device_key_id)
+        })
+    {
+        return Err(KeylessPassError::Integrity(
+            "license bundle exceeds the vendor entitlement".to_string(),
+        ));
+    }
+    let now = Utc::now();
+    let entitlement_from = parse_rfc3339(&entitlement.valid_from)?;
+    let entitlement_until = parse_rfc3339(&entitlement.valid_until)?;
+    if now < entitlement_from
+        || now > entitlement_until
+        || parse_rfc3339(&organization.valid_until)? > entitlement_until
+    {
+        return Err(KeylessPassError::Validation(
+            "vendor entitlement is expired or not yet valid".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn update_security_state(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    bundle: &LicenseBundlePayload,
+) -> Result<()> {
+    let entitlement_payload = b64url_decode(&bundle.customer_entitlement.payload)?;
+    let entitlement: CustomerEntitlement = serde_json::from_slice(&entitlement_payload)?;
+    let now = Utc::now();
+    let bundle_issued_at = parse_rfc3339(&bundle.issued_at)?;
+    let store = LicenseStore::new(paths);
+    let next = if let Some(current) = store.read_security_state(provider)? {
+        let max_seen = parse_rfc3339(&current.max_seen_time)?;
+        let latest_bundle = parse_rfc3339(&current.latest_bundle_issued_at)?;
+        if now + Duration::minutes(5) < max_seen {
+            return Err(KeylessPassError::Integrity(
+                "system clock moved backwards beyond the allowed tolerance".to_string(),
+            ));
+        }
+        if entitlement.entitlement_serial < current.max_entitlement_serial
+            || bundle_issued_at < latest_bundle
+        {
+            return Err(KeylessPassError::Integrity(
+                "license rollback was detected".to_string(),
+            ));
+        }
+        LicenseSecurityState {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            max_entitlement_serial: current
+                .max_entitlement_serial
+                .max(entitlement.entitlement_serial),
+            latest_bundle_issued_at: bundle_issued_at.max(latest_bundle).to_rfc3339(),
+            max_seen_time: now.max(max_seen).to_rfc3339(),
+        }
+    } else {
+        LicenseSecurityState {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            max_entitlement_serial: entitlement.entitlement_serial,
+            latest_bundle_issued_at: bundle_issued_at.to_rfc3339(),
+            max_seen_time: now.to_rfc3339(),
+        }
+    };
+    store.write_security_state(provider, &next)
 }
 
 #[derive(Debug, Clone)]
 struct LicenseContext {
     commercial_device_id: String,
     device_fingerprint: String,
+    device_key_id: String,
+    device_public_key: String,
 }
 
 fn license_context(
@@ -352,24 +483,44 @@ fn license_context(
     let store = LicenseStore::new(paths);
     let commercial_device_id = store.read_or_create_commercial_device_id()?;
     let non_secret_device_id = provider.get_or_create_device_id()?;
-    let device_fingerprint = device_fingerprint(&commercial_device_id, &non_secret_device_id);
+    let device_secret = provider.get_or_create_device_secret()?;
+    let identity = DeviceIdentity::load_or_create(paths, provider)?;
+    identity.prove_possession()?;
+    let device_key_id = identity.key_id();
+    let device_public_key = identity.public_key_b64url();
+    let device_fingerprint = device_fingerprint(
+        &commercial_device_id,
+        &non_secret_device_id,
+        &device_key_id,
+        device_secret.expose(),
+    )?;
     Ok(LicenseContext {
         commercial_device_id,
         device_fingerprint,
+        device_key_id,
+        device_public_key,
     })
 }
 
-fn device_fingerprint(commercial_device_id: &str, non_secret_device_id: &str) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(b"KeyLessPass/license/device-fingerprint/v1");
-    hasher.update(commercial_device_id.as_bytes());
-    hasher.update([0]);
-    hasher.update(non_secret_device_id.as_bytes());
-    hasher.update([0]);
-    hasher.update(std::env::consts::OS.as_bytes());
-    hasher.update([0]);
-    hasher.update(std::env::consts::ARCH.as_bytes());
-    to_hex(&hasher.finalize())
+fn device_fingerprint(
+    commercial_device_id: &str,
+    non_secret_device_id: &str,
+    device_key_id: &str,
+    device_secret: &[u8],
+) -> Result<String> {
+    let mut mac = Hmac::<Sha256>::new_from_slice(device_secret)
+        .map_err(|_| KeylessPassError::Crypto("invalid device binding secret".to_string()))?;
+    mac.update(b"KeyLessPass/license/device-fingerprint/v2");
+    mac.update(commercial_device_id.as_bytes());
+    mac.update(&[0]);
+    mac.update(non_secret_device_id.as_bytes());
+    mac.update(&[0]);
+    mac.update(device_key_id.as_bytes());
+    mac.update(&[0]);
+    mac.update(std::env::consts::OS.as_bytes());
+    mac.update(&[0]);
+    mac.update(std::env::consts::ARCH.as_bytes());
+    Ok(to_hex(&mac.finalize().into_bytes()))
 }
 
 fn status_from_bundle(
@@ -409,6 +560,8 @@ fn status_from_bundle(
     let grant = bundle.device_grants.iter().find(|grant| {
         grant.commercial_device_id == context.commercial_device_id
             && grant.device_fingerprint == context.device_fingerprint
+            && grant.device_key_id == context.device_key_id
+            && grant.device_public_key == context.device_public_key
     });
     let Some(grant) = grant else {
         return Ok(LicenseStatus {
@@ -609,5 +762,27 @@ mod tests {
             "desktop-client",
             "evaluation"
         ));
+        assert!(!status_authorizes_feature(
+            &status(&["desktop-client"]),
+            "future-premium-feature",
+            "evaluation"
+        ));
+    }
+
+    #[test]
+    fn commercial_compile_flag_rejects_an_unlicensed_device() {
+        if !commercial_enforcement_enabled() {
+            return;
+        }
+        let dir = tempfile::tempdir().unwrap();
+        let paths = StoragePaths::from_app_dir(dir.path().to_path_buf());
+        let provider = crate::platform::fallback::FallbackPlatformFactorProvider::new(
+            paths.app_dir.clone(),
+            "commercial-guard-test",
+        );
+        let verifier = LicenseVerifier::new(Vec::<(String, String)>::new());
+        let error =
+            require_license_feature_at(&paths, &provider, &verifier, "desktop-client").unwrap_err();
+        assert!(error.to_string().contains("does not authorize"));
     }
 }

@@ -33,12 +33,14 @@ pub struct UpdateCredentialDisplayRequest {
 pub fn add_credential(
     request: AddCredentialRequest,
 ) -> std::result::Result<CredentialDescriptionRecord, String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     add_credential_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn list_credentials() -> std::result::Result<Vec<CredentialDescriptionRecord>, String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     list_credentials_at(&paths).map_err(String::from)
 }
@@ -46,6 +48,7 @@ pub fn list_credentials() -> std::result::Result<Vec<CredentialDescriptionRecord
 pub fn update_credential_display(
     request: UpdateCredentialDisplayRequest,
 ) -> std::result::Result<CredentialDescriptionRecord, String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     update_credential_display_with_provider(&paths, provider.as_ref(), request)
@@ -57,6 +60,12 @@ pub fn add_credential_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: AddCredentialRequest,
 ) -> Result<CredentialDescriptionRecord> {
+    crate::service::license::require_license_feature_at(
+        paths,
+        provider,
+        &crate::service::license::default_license_verifier(),
+        "desktop-client",
+    )?;
     let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     store.init()?;
@@ -87,6 +96,12 @@ pub fn update_credential_display_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: UpdateCredentialDisplayRequest,
 ) -> Result<CredentialDescriptionRecord> {
+    crate::service::license::require_license_feature_at(
+        paths,
+        provider,
+        &crate::service::license::default_license_verifier(),
+        "desktop-client",
+    )?;
     let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let mut record = store.get(request.record_id, Some(request.version))?;

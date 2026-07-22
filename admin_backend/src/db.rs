@@ -3,9 +3,12 @@ use crate::model::{
     GrantRecord, ImportDeviceRequestBody, OrganizationRecord, LICENSE_SCHEMA_VERSION,
 };
 use anyhow::{anyhow, Context, Result};
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use chrono::{DateTime, Duration, Utc};
-use rusqlite::{params, Connection, OptionalExtension};
+use ed25519_dalek::{Signature, Verifier, VerifyingKey};
+use rusqlite::{params, Connection, OptionalExtension, TransactionBehavior};
 use serde::{de::DeserializeOwned, Serialize};
+use sha2::Digest;
 use std::{
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
@@ -71,6 +74,8 @@ impl Db {
                 request_id TEXT NOT NULL,
                 commercial_device_id TEXT NOT NULL,
                 device_fingerprint TEXT NOT NULL,
+                device_key_id TEXT NOT NULL,
+                device_public_key TEXT NOT NULL,
                 platform TEXT NOT NULL,
                 app_version TEXT NOT NULL,
                 build_channel TEXT NOT NULL,
@@ -111,6 +116,20 @@ impl Db {
                 FOREIGN KEY(device_id) REFERENCES devices(id) ON DELETE CASCADE
             );
 
+            CREATE TABLE IF NOT EXISTS seat_allocations (
+                seat_id TEXT PRIMARY KEY,
+                organization_id TEXT NOT NULL,
+                device_id TEXT NOT NULL,
+                status TEXT NOT NULL,
+                allocated_at TEXT NOT NULL,
+                expires_at TEXT NOT NULL,
+                released_at TEXT,
+                version INTEGER NOT NULL DEFAULT 1,
+                UNIQUE(organization_id, device_id),
+                FOREIGN KEY(organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+                FOREIGN KEY(device_id) REFERENCES devices(id) ON DELETE CASCADE
+            );
+
             CREATE TABLE IF NOT EXISTS audit_log (
                 id TEXT PRIMARY KEY,
                 actor TEXT NOT NULL,
@@ -128,6 +147,18 @@ impl Db {
                 [],
             )?;
         }
+        if !table_has_column(&conn, "devices", "device_key_id")? {
+            conn.execute(
+                "ALTER TABLE devices ADD COLUMN device_key_id TEXT NOT NULL DEFAULT ''",
+                [],
+            )?;
+        }
+        if !table_has_column(&conn, "devices", "device_public_key")? {
+            conn.execute(
+                "ALTER TABLE devices ADD COLUMN device_public_key TEXT NOT NULL DEFAULT ''",
+                [],
+            )?;
+        }
         let mut stmt = conn.prepare(
             "SELECT id FROM organizations WHERE activation_code IS NULL OR activation_code = ''",
         )?;
@@ -142,6 +173,41 @@ impl Db {
         conn.execute(
             "CREATE UNIQUE INDEX IF NOT EXISTS idx_organizations_activation_code ON organizations(activation_code)",
             [],
+        )?;
+        conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_devices_device_key_id ON devices(device_key_id) WHERE device_key_id <> ''",
+            [],
+        )?;
+        let now = Utc::now().to_rfc3339();
+        conn.execute(
+            r#"
+            INSERT OR IGNORE INTO seat_allocations (
+                seat_id, organization_id, device_id, status, allocated_at,
+                expires_at, released_at, version
+            )
+            SELECT
+                'seat-migrated-' || device_id,
+                organization_id,
+                device_id,
+                CASE
+                    WHEN MAX(CASE WHEN revoked = 0 AND valid_until > ?1 THEN 1 ELSE 0 END) = 1
+                        THEN 'active'
+                    WHEN MAX(CASE WHEN revoked = 1 THEN 1 ELSE 0 END) = 1
+                        THEN 'revoked'
+                    ELSE 'expired'
+                END,
+                MIN(created_at),
+                MAX(valid_until),
+                CASE
+                    WHEN MAX(CASE WHEN revoked = 0 AND valid_until > ?1 THEN 1 ELSE 0 END) = 1
+                        THEN NULL
+                    ELSE ?1
+                END,
+                1
+            FROM grants
+            GROUP BY organization_id, device_id
+            "#,
+            params![now],
         )?;
         Ok(())
     }
@@ -287,6 +353,7 @@ impl Db {
         if request.schema_version != LICENSE_SCHEMA_VERSION {
             return Err(anyhow!("unsupported device authorization request schema"));
         }
+        verify_device_request_proof(&request)?;
         let organization_id = body
             .organization_id
             .or(request.organization_id.clone())
@@ -301,8 +368,48 @@ impl Db {
             .or(request.seat_label.clone())
             .unwrap_or_else(|| request.commercial_device_id.chars().take(12).collect());
         let now = Utc::now().to_rfc3339();
-        let row_id = self
-            .device_by_identity(&request.commercial_device_id, &request.device_fingerprint)?
+        let existing =
+            self.device_by_identity(&request.commercial_device_id, &request.device_fingerprint)?;
+        if existing
+            .as_ref()
+            .is_some_and(|device| device.organization_id != organization_id)
+        {
+            return Err(anyhow!(
+                "device identity is already assigned to another organization"
+            ));
+        }
+        if existing
+            .as_ref()
+            .is_some_and(|device| device.device_key_id != request.device_key_id)
+        {
+            return Err(anyhow!(
+                "device identity key cannot be replaced; retire and reapprove the device"
+            ));
+        }
+        {
+            let conn = self.lock()?;
+            let conflicting_identity: Option<String> = conn
+                .query_row(
+                    r#"
+                    SELECT id FROM devices
+                    WHERE device_key_id = ?1
+                      AND NOT (commercial_device_id = ?2 AND device_fingerprint = ?3)
+                    "#,
+                    params![
+                        request.device_key_id,
+                        request.commercial_device_id,
+                        request.device_fingerprint
+                    ],
+                    |row| row.get(0),
+                )
+                .optional()?;
+            if conflicting_identity.is_some() {
+                return Err(anyhow!(
+                    "device identity key is already registered to another device"
+                ));
+            }
+        }
+        let row_id = existing
             .map(|device| device.id)
             .unwrap_or_else(|| format!("dev-{}", Uuid::new_v4()));
 
@@ -311,13 +418,16 @@ impl Db {
             r#"
             INSERT INTO devices (
                 id, organization_id, request_id, commercial_device_id, device_fingerprint,
-                platform, app_version, build_channel, seat_label, request_json, created_at, updated_at
+                device_key_id, device_public_key, platform, app_version, build_channel,
+                seat_label, request_json, created_at, updated_at
             )
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)
             ON CONFLICT(commercial_device_id, device_fingerprint)
             DO UPDATE SET
                 organization_id = excluded.organization_id,
                 request_id = excluded.request_id,
+                device_key_id = excluded.device_key_id,
+                device_public_key = excluded.device_public_key,
                 platform = excluded.platform,
                 app_version = excluded.app_version,
                 build_channel = excluded.build_channel,
@@ -331,6 +441,8 @@ impl Db {
                 request.request_id,
                 request.commercial_device_id,
                 request.device_fingerprint,
+                request.device_key_id,
+                request.device_public_key,
                 request.platform,
                 request.app_version,
                 request.build_channel,
@@ -351,7 +463,8 @@ impl Db {
             let mut stmt = conn.prepare(
                 r#"
                 SELECT id, organization_id, request_id, commercial_device_id, device_fingerprint,
-                       platform, app_version, build_channel, seat_label, created_at, updated_at
+                       device_key_id, device_public_key, platform, app_version, build_channel,
+                       seat_label, created_at, updated_at
                 FROM devices
                 WHERE organization_id = ?1
                 ORDER BY updated_at DESC
@@ -364,7 +477,8 @@ impl Db {
             let mut stmt = conn.prepare(
                 r#"
                 SELECT id, organization_id, request_id, commercial_device_id, device_fingerprint,
-                       platform, app_version, build_channel, seat_label, created_at, updated_at
+                       device_key_id, device_public_key, platform, app_version, build_channel,
+                       seat_label, created_at, updated_at
                 FROM devices
                 ORDER BY updated_at DESC
                 "#,
@@ -384,7 +498,11 @@ impl Db {
             return self.devices(Some(organization_id));
         }
         let mut devices = Vec::with_capacity(device_ids.len());
+        let mut seen = std::collections::HashSet::new();
         for id in device_ids {
+            if !seen.insert(id) {
+                continue;
+            }
             let Some(device) = self.device(id)? else {
                 return Err(anyhow!("device does not exist: {id}"));
             };
@@ -403,9 +521,67 @@ impl Db {
         bundle: &BundleRecord,
         grants: &[crate::model::DeviceGrant],
         devices: &[DeviceRecord],
+        max_seats: u32,
     ) -> Result<()> {
-        let conn = self.lock()?;
-        conn.execute(
+        if grants.len() != devices.len() {
+            return Err(anyhow!("grant and device counts do not match"));
+        }
+        let mut conn = self.lock()?;
+        let transaction = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let now = Utc::now().to_rfc3339();
+        transaction.execute(
+            r#"
+            UPDATE seat_allocations
+            SET status = 'expired', released_at = ?1, version = version + 1
+            WHERE organization_id = ?2 AND status = 'active' AND expires_at <= ?1
+            "#,
+            params![now, bundle.organization_id],
+        )?;
+        let active_count: i64 = transaction.query_row(
+            "SELECT COUNT(*) FROM seat_allocations WHERE organization_id = ?1 AND status = 'active'",
+            params![bundle.organization_id],
+            |row| row.get(0),
+        )?;
+        let mut new_count = 0_i64;
+        for device in devices {
+            let status = transaction
+                .query_row(
+                    "SELECT status FROM seat_allocations WHERE organization_id = ?1 AND device_id = ?2",
+                    params![bundle.organization_id, device.id],
+                    |row| row.get::<_, String>(0),
+                )
+                .optional()?;
+            if status.as_deref() != Some("active") {
+                new_count += 1;
+            }
+        }
+        if active_count + new_count > max_seats as i64 {
+            return Err(anyhow!("issued devices exceed organization maxSeats"));
+        }
+        for device in devices {
+            transaction.execute(
+                r#"
+                INSERT INTO seat_allocations (
+                    seat_id, organization_id, device_id, status, allocated_at,
+                    expires_at, released_at, version
+                ) VALUES (?1, ?2, ?3, 'active', ?4, ?5, NULL, 1)
+                ON CONFLICT(organization_id, device_id) DO UPDATE SET
+                    status = 'active',
+                    allocated_at = excluded.allocated_at,
+                    expires_at = excluded.expires_at,
+                    released_at = NULL,
+                    version = seat_allocations.version + 1
+                "#,
+                params![
+                    format!("seat-{}", Uuid::new_v4()),
+                    bundle.organization_id,
+                    device.id,
+                    now,
+                    bundle.valid_until,
+                ],
+            )?;
+        }
+        transaction.execute(
             r#"
             INSERT INTO bundles (
                 id, bundle_id, organization_id, license_id, device_count,
@@ -427,7 +603,7 @@ impl Db {
         )?;
 
         for (grant, device) in grants.iter().zip(devices.iter()) {
-            conn.execute(
+            transaction.execute(
                 r#"
                 INSERT INTO grants (
                     id, grant_id, bundle_id, organization_id, device_id,
@@ -448,6 +624,7 @@ impl Db {
                 ],
             )?;
         }
+        transaction.commit()?;
         Ok(())
     }
 
@@ -498,19 +675,51 @@ impl Db {
     }
 
     pub fn revoke_grant(&self, grant_id: &str) -> Result<()> {
-        let conn = self.lock()?;
-        let changed = conn.execute(
+        let mut conn = self.lock()?;
+        let transaction = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let device_id: Option<String> = transaction
+            .query_row(
+                "SELECT device_id FROM grants WHERE grant_id = ?1",
+                params![grant_id],
+                |row| row.get(0),
+            )
+            .optional()?;
+        let Some(device_id) = device_id else {
+            return Err(anyhow!("grant does not exist: {grant_id}"));
+        };
+        let now = Utc::now().to_rfc3339();
+        let changed = transaction.execute(
             r#"
             UPDATE grants
             SET revoked = 1, revoked_at = ?2
-            WHERE grant_id = ?1
+            WHERE device_id = (SELECT device_id FROM grants WHERE grant_id = ?1)
+              AND revoked = 0
             "#,
-            params![grant_id, Utc::now().to_rfc3339()],
+            params![grant_id, now],
         )?;
         if changed == 0 {
             return Err(anyhow!("grant does not exist: {grant_id}"));
         }
+        transaction.execute(
+            r#"
+            UPDATE seat_allocations
+            SET status = 'revoked', released_at = ?2, version = version + 1
+            WHERE device_id = ?1 AND status = 'active'
+            "#,
+            params![device_id, now],
+        )?;
+        transaction.commit()?;
         Ok(())
+    }
+
+    pub fn device_has_revoked_grant(&self, device_id: &str) -> Result<bool> {
+        let conn = self.lock()?;
+        let count: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM grants WHERE device_id = ?1 AND revoked = 1",
+            params![device_id],
+            |row| row.get(0),
+        )?;
+        Ok(count > 0)
     }
 
     pub fn counts(&self) -> Result<(u32, u32, u32)> {
@@ -525,12 +734,14 @@ impl Db {
         let conn = self.lock()?;
         let mut stmt = conn.prepare(
             r#"
-            SELECT DISTINCT device_id
-            FROM grants
-            WHERE organization_id = ?1 AND revoked = 0
+            SELECT device_id
+            FROM seat_allocations
+            WHERE organization_id = ?1 AND status = 'active' AND expires_at > ?2
             "#,
         )?;
-        let rows = stmt.query_map(params![organization_id], |row| row.get(0))?;
+        let rows = stmt.query_map(params![organization_id, Utc::now().to_rfc3339()], |row| {
+            row.get(0)
+        })?;
         collect_rows(rows)
     }
 
@@ -590,7 +801,8 @@ impl Db {
         conn.query_row(
             r#"
             SELECT id, organization_id, request_id, commercial_device_id, device_fingerprint,
-                   platform, app_version, build_channel, seat_label, created_at, updated_at
+                   device_key_id, device_public_key, platform, app_version, build_channel,
+                   seat_label, created_at, updated_at
             FROM devices
             WHERE id = ?1
             "#,
@@ -610,7 +822,8 @@ impl Db {
         conn.query_row(
             r#"
             SELECT id, organization_id, request_id, commercial_device_id, device_fingerprint,
-                   platform, app_version, build_channel, seat_label, created_at, updated_at
+                   device_key_id, device_public_key, platform, app_version, build_channel,
+                   seat_label, created_at, updated_at
             FROM devices
             WHERE commercial_device_id = ?1 AND device_fingerprint = ?2
             "#,
@@ -730,13 +943,41 @@ fn device_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<DeviceRecord> {
         request_id: row.get(2)?,
         commercial_device_id: row.get(3)?,
         device_fingerprint: row.get(4)?,
-        platform: row.get(5)?,
-        app_version: row.get(6)?,
-        build_channel: row.get(7)?,
-        seat_label: row.get(8)?,
-        created_at: row.get(9)?,
-        updated_at: row.get(10)?,
+        device_key_id: row.get(5)?,
+        device_public_key: row.get(6)?,
+        platform: row.get(7)?,
+        app_version: row.get(8)?,
+        build_channel: row.get(9)?,
+        seat_label: row.get(10)?,
+        created_at: row.get(11)?,
+        updated_at: row.get(12)?,
     })
+}
+
+fn verify_device_request_proof(request: &DeviceAuthorizationRequest) -> Result<()> {
+    let public_key = URL_SAFE_NO_PAD
+        .decode(&request.device_public_key)
+        .context("device public key must be base64url")?;
+    let public_key: [u8; 32] = public_key
+        .try_into()
+        .map_err(|_| anyhow!("device public key must be 32 bytes"))?;
+    let expected_key_id: String = sha2::Sha256::digest(public_key)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    if request.device_key_id != expected_key_id {
+        return Err(anyhow!("device key ID does not match public key"));
+    }
+    let signature = URL_SAFE_NO_PAD
+        .decode(&request.device_proof)
+        .context("device proof must be base64url")?;
+    let signature: [u8; 64] = signature
+        .try_into()
+        .map_err(|_| anyhow!("device proof must be 64 bytes"))?;
+    VerifyingKey::from_bytes(&public_key)
+        .context("device public key is invalid")?
+        .verify(&request.proof_message(), &Signature::from_bytes(&signature))
+        .map_err(|_| anyhow!("device authorization proof is invalid"))
 }
 
 fn bundle_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<BundleRecord> {
@@ -788,6 +1029,101 @@ fn collect_rows<T>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ed25519_dalek::{Signer, SigningKey};
+
+    fn signed_device_request(organization_id: Option<String>) -> DeviceAuthorizationRequest {
+        signed_device_request_with_seed(organization_id, 31)
+    }
+
+    fn make_org(id: &str, name: &str) -> CreateOrganizationRequest {
+        CreateOrganizationRequest {
+            organization_id: Some(id.to_string()),
+            activation_code: None,
+            name: name.to_string(),
+            plan: None,
+            max_seats: Some(2),
+            valid_days: Some(30),
+            valid_until: None,
+            features: vec![],
+            offline_grace_days: None,
+            allowed_major_versions: vec![],
+        }
+    }
+
+    fn signed_device_request_with_seed(
+        organization_id: Option<String>,
+        seed: u8,
+    ) -> DeviceAuthorizationRequest {
+        let key = SigningKey::from_bytes(&[seed; 32]);
+        let public_key = key.verifying_key().to_bytes();
+        let mut request = DeviceAuthorizationRequest {
+            schema_version: LICENSE_SCHEMA_VERSION,
+            request_id: format!("req-{}", Uuid::new_v4()),
+            organization_id,
+            commercial_device_id: format!("commercial-device-{seed}"),
+            device_fingerprint: format!("fingerprint-{seed}"),
+            device_key_id: sha2::Sha256::digest(public_key)
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect(),
+            device_public_key: URL_SAFE_NO_PAD.encode(public_key),
+            device_proof: String::new(),
+            platform: "macos".to_string(),
+            app_version: "0.1.0".to_string(),
+            build_channel: "commercial".to_string(),
+            seat_label: Some("Finance laptop".to_string()),
+            created_at: Utc::now().to_rfc3339(),
+        };
+        request.device_proof =
+            URL_SAFE_NO_PAD.encode(key.sign(&request.proof_message()).to_bytes());
+        request
+    }
+
+    fn resign_device_request(request: &mut DeviceAuthorizationRequest, seed: u8) {
+        let key = SigningKey::from_bytes(&[seed; 32]);
+        request.device_proof =
+            URL_SAFE_NO_PAD.encode(key.sign(&request.proof_message()).to_bytes());
+    }
+
+    fn bundle_and_grant(
+        org: &OrganizationRecord,
+        device: &DeviceRecord,
+        suffix: &str,
+        valid_until: String,
+    ) -> (BundleRecord, crate::model::DeviceGrant) {
+        let now = Utc::now().to_rfc3339();
+        let bundle_id = format!("bundle-{suffix}");
+        (
+            BundleRecord {
+                id: format!("bundle-row-{suffix}"),
+                bundle_id: bundle_id.clone(),
+                organization_id: org.id.clone(),
+                license_id: org.license_id.clone(),
+                device_count: 1,
+                revoked_count: 0,
+                valid_until: valid_until.clone(),
+                issued_at: now.clone(),
+                envelope_json: "{}".to_string(),
+            },
+            crate::model::DeviceGrant {
+                schema_version: LICENSE_SCHEMA_VERSION,
+                grant_id: format!("grant-{suffix}"),
+                license_id: org.license_id.clone(),
+                organization_id: org.id.clone(),
+                commercial_device_id: device.commercial_device_id.clone(),
+                device_fingerprint: device.device_fingerprint.clone(),
+                device_key_id: device.device_key_id.clone(),
+                device_public_key: device.device_public_key.clone(),
+                seat_label: device.seat_label.clone(),
+                valid_from: now.clone(),
+                valid_until,
+                features: vec![],
+                offline_grace_days: 0,
+                issued_at: now,
+                issuer: "test".to_string(),
+            },
+        )
+    }
 
     #[test]
     fn organization_and_device_request_round_trip() {
@@ -810,18 +1146,7 @@ mod tests {
                 "test",
             )
             .unwrap();
-        let request = DeviceAuthorizationRequest {
-            schema_version: LICENSE_SCHEMA_VERSION,
-            request_id: "req-1".to_string(),
-            organization_id: Some(org.id.clone()),
-            commercial_device_id: "commercial-device".to_string(),
-            device_fingerprint: "fingerprint".to_string(),
-            platform: "macos".to_string(),
-            app_version: "0.1.0".to_string(),
-            build_channel: "desktop".to_string(),
-            seat_label: Some("Finance laptop".to_string()),
-            created_at: Utc::now().to_rfc3339(),
-        };
+        let request = signed_device_request(Some(org.id.clone()));
         let device = db
             .import_device_request(ImportDeviceRequestBody {
                 request_json: serde_json::to_string(&request).unwrap(),
@@ -844,5 +1169,140 @@ mod tests {
                 .id,
             org.id
         );
+    }
+
+    #[test]
+    fn device_identity_cannot_move_between_organizations() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = Db::open(dir.path().join("admin.sqlite3")).unwrap();
+        let make_org = |id: &str, name: &str| CreateOrganizationRequest {
+            organization_id: Some(id.to_string()),
+            activation_code: None,
+            name: name.to_string(),
+            plan: None,
+            max_seats: Some(2),
+            valid_days: Some(30),
+            valid_until: None,
+            features: vec![],
+            offline_grace_days: None,
+            allowed_major_versions: vec![],
+        };
+        db.create_organization(make_org("org-a", "A"), "test")
+            .unwrap();
+        db.create_organization(make_org("org-b", "B"), "test")
+            .unwrap();
+        let request = signed_device_request(None);
+        let request_json = serde_json::to_string(&request).unwrap();
+        db.import_device_request(ImportDeviceRequestBody {
+            request_json: request_json.clone(),
+            organization_id: Some("org-a".to_string()),
+            seat_label: None,
+        })
+        .unwrap();
+        let error = db
+            .import_device_request(ImportDeviceRequestBody {
+                request_json,
+                organization_id: Some("org-b".to_string()),
+                seat_label: None,
+            })
+            .unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("already assigned to another organization"));
+    }
+
+    #[test]
+    fn invalid_device_proof_is_rejected() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = Db::open(dir.path().join("admin.sqlite3")).unwrap();
+        db.create_organization(make_org("org-a", "A"), "test")
+            .unwrap();
+        let mut request = signed_device_request(Some("org-a".to_string()));
+        request.platform = "tampered-platform".to_string();
+        let error = db
+            .import_device_request(ImportDeviceRequestBody {
+                request_json: serde_json::to_string(&request).unwrap(),
+                organization_id: None,
+                seat_label: None,
+            })
+            .unwrap_err();
+        assert!(error.to_string().contains("proof"));
+    }
+
+    #[test]
+    fn one_device_key_cannot_register_multiple_device_identities() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = Db::open(dir.path().join("admin.sqlite3")).unwrap();
+        db.create_organization(make_org("org-a", "A"), "test")
+            .unwrap();
+        let request = signed_device_request(Some("org-a".to_string()));
+        db.import_device_request(ImportDeviceRequestBody {
+            request_json: serde_json::to_string(&request).unwrap(),
+            organization_id: None,
+            seat_label: None,
+        })
+        .unwrap();
+
+        let mut duplicate = request;
+        duplicate.request_id = format!("req-{}", Uuid::new_v4());
+        duplicate.commercial_device_id = "another-commercial-device".to_string();
+        duplicate.device_fingerprint = "another-fingerprint".to_string();
+        duplicate.created_at = Utc::now().to_rfc3339();
+        resign_device_request(&mut duplicate, 31);
+        let error = db
+            .import_device_request(ImportDeviceRequestBody {
+                request_json: serde_json::to_string(&duplicate).unwrap(),
+                organization_id: None,
+                seat_label: None,
+            })
+            .unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("already registered to another device"));
+    }
+
+    #[test]
+    fn seat_allocation_transaction_refuses_over_issue() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = Db::open(dir.path().join("admin.sqlite3")).unwrap();
+        let org = db
+            .create_organization(
+                CreateOrganizationRequest {
+                    organization_id: Some("org-seat-cap".to_string()),
+                    activation_code: None,
+                    name: "Seat Cap".to_string(),
+                    plan: None,
+                    max_seats: Some(1),
+                    valid_days: Some(30),
+                    valid_until: None,
+                    features: vec![],
+                    offline_grace_days: None,
+                    allowed_major_versions: vec![],
+                },
+                "test",
+            )
+            .unwrap();
+        let import = |seed| {
+            let request = signed_device_request_with_seed(Some(org.id.clone()), seed);
+            db.import_device_request(ImportDeviceRequestBody {
+                request_json: serde_json::to_string(&request).unwrap(),
+                organization_id: None,
+                seat_label: None,
+            })
+            .unwrap()
+        };
+        let first = import(41);
+        let second = import(42);
+        let valid_until = (Utc::now() + Duration::days(30)).to_rfc3339();
+        let (first_bundle, first_grant) =
+            bundle_and_grant(&org, &first, "first", valid_until.clone());
+        db.store_bundle(&first_bundle, &[first_grant], &[first], 1)
+            .unwrap();
+        let (second_bundle, second_grant) = bundle_and_grant(&org, &second, "second", valid_until);
+        let error = db
+            .store_bundle(&second_bundle, &[second_grant], &[second], 1)
+            .unwrap_err();
+        assert!(error.to_string().contains("maxSeats"));
+        assert_eq!(db.active_licensed_device_ids(&org.id).unwrap().len(), 1);
     }
 }

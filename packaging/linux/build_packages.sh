@@ -8,6 +8,19 @@ APP_ID="${APP_ID:-com.keylesspass.desktop}"
 PACKAGE_NAME="${PACKAGE_NAME:-keylesspass}"
 ARCH="${ARCH:-amd64}"
 
+if [[ "${KEYLESSPASS_REQUIRE_LICENSE:-}" != "1" && "${KEYLESSPASS_ALLOW_EVALUATION_PACKAGE:-}" != "1" ]]; then
+  echo "Refusing to package an unlicensed build. Use tools/commercial/build_commercial_release.sh or set KEYLESSPASS_ALLOW_EVALUATION_PACKAGE=1 for an explicitly marked evaluation artifact." >&2
+  exit 1
+fi
+if [[ "${KEYLESSPASS_REQUIRE_LICENSE:-}" == "1" && -z "${KEYLESSPASS_LICENSE_PUBLIC_KEY_B64:-}" ]]; then
+  echo "KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 is required for a commercial package." >&2
+  exit 1
+fi
+if [[ "${KEYLESSPASS_REQUIRE_LICENSE:-}" == "1" && -z "${KEYLESSPASS_LINUX_GPG_KEY_ID:-}" && "${KEYLESSPASS_ALLOW_UNSIGNED:-}" != "1" ]]; then
+  echo "Commercial Linux packages require KEYLESSPASS_LINUX_GPG_KEY_ID. Use KEYLESSPASS_ALLOW_UNSIGNED=1 only for local testing." >&2
+  exit 1
+fi
+
 if [[ "$(uname -s)" != "Linux" ]]; then
   echo "Linux packaging must run on a Linux host." >&2
   exit 1
@@ -179,3 +192,17 @@ EOF
 else
   echo "appimagetool not found; skipped AppImage package."
 fi
+
+find "$DIST" -maxdepth 1 -type f \
+  \( -name '*.tar.gz' -o -name '*.deb' -o -name '*.AppImage' \) \
+  -print0 | sort -z | xargs -0 sha256sum >"$DIST/SHA256SUMS"
+if [[ -n "${KEYLESSPASS_LINUX_GPG_KEY_ID:-}" ]]; then
+  if ! command -v gpg >/dev/null 2>&1; then
+    echo "gpg is required to sign commercial Linux checksums." >&2
+    exit 1
+  fi
+  gpg --batch --yes --armor --detach-sign \
+    --local-user "$KEYLESSPASS_LINUX_GPG_KEY_ID" \
+    --output "$DIST/SHA256SUMS.asc" "$DIST/SHA256SUMS"
+fi
+echo "Linux checksum manifest: $DIST/SHA256SUMS"

@@ -187,7 +187,7 @@ Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过
 商业设备授权是外层产品授权能力，不属于密码派生安全边界。`admin_backend`
 可在企业内网部署，支持离线授权包和 HTTPS 在线激活，并提供角色权限、设备 CSV、
 审计导出和跨批次席位控制。桌面客户端对所有授权结果进行本地签名校验，MDM 可向
-平台托管路径下发授权包。该后台只保存商业授权元数据，不接收助记短语、`Kmaster`、因子 secret、CDR secret、服务密码或派生密码。商业客户端应在编译期启用授权强制检查，并嵌入该后台对应的授权公钥。
+平台托管路径下发授权包。该后台只保存商业授权元数据，不接收助记短语、`Kmaster`、因子 secret、CDR secret、服务密码或派生密码。商业客户端应在编译期启用授权强制检查，并且只嵌入厂商根公钥。客户现场公钥必须由厂商授权委托，设备密钥还必须出现在厂商签名白名单中。
 
 ## 快速开始
 
@@ -225,14 +225,15 @@ cd admin_backend
 ./scripts/intranet_deploy.sh
 ```
 
-脚本会启动 Docker Compose 服务，首次运行时生成管理员 token 和 Ed25519
-签名种子，并打印本机访问地址。页面上显示的公钥需要嵌入对应商业客户端构建；
-签名私钥只应保存在内网授权后台。在线激活必须通过 HTTPS 暴露服务。
+脚本首次运行会生成管理员 token 和客户现场 Ed25519 密钥，然后等待厂商返回
+`customer-entitlement.json` 和厂商根公钥。现场私钥只保存在内网后台；厂商根私钥永不交付客户。在线激活必须通过 HTTPS 暴露服务。`/download` 无需登录，管理操作需要 Admin token。
 
 ### 构建强制授权商业客户端
 
 ```bash
-KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<来自 admin_backend 的 publicKeyB64>' \
+KEYLESSPASS_LICENSE_KEY_ID='keylesspass-vendor-root-2026' \
+KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<厂商根公钥>' \
+CODESIGN_IDENTITY='Developer ID Application: 你的公司 (TEAMID)' \
 tools/commercial/build_commercial_release.sh macos
 ```
 

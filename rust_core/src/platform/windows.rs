@@ -1,5 +1,9 @@
+#[cfg(windows)]
+use crate::crypto::b64_decode;
 use crate::crypto::SecretBytes;
 use crate::error::Result;
+#[cfg(windows)]
+use crate::platform::fallback::write_private_file;
 use crate::platform::fallback::FallbackPlatformFactorProvider;
 use crate::platform::PlatformFactorProvider;
 use std::path::PathBuf;
@@ -7,12 +11,19 @@ use std::path::PathBuf;
 #[derive(Debug, Clone)]
 pub struct WindowsPlatformFactorProvider {
     fallback: FallbackPlatformFactorProvider,
+    #[cfg(windows)]
+    app_dir: PathBuf,
 }
 
 impl WindowsPlatformFactorProvider {
     pub fn new(app_dir: PathBuf) -> Self {
         Self {
-            fallback: FallbackPlatformFactorProvider::new(app_dir, "windows-dpapi-fallback"),
+            fallback: FallbackPlatformFactorProvider::new(
+                app_dir.clone(),
+                "windows-dpapi-fallback",
+            ),
+            #[cfg(windows)]
+            app_dir,
         }
     }
 }
@@ -34,16 +45,37 @@ impl PlatformFactorProvider for WindowsPlatformFactorProvider {
     }
 
     fn get_or_create_device_secret(&self) -> Result<SecretBytes> {
-        self.fallback.get_or_create_device_secret()
+        #[cfg(windows)]
+        {
+            let protected_path = self.app_dir.join("windows-dpapi-device-secret.bin");
+            if protected_path.is_file() {
+                return Ok(SecretBytes::new(dpapi_unprotect(&std::fs::read(
+                    protected_path,
+                )?)?));
+            }
+
+            let legacy_path = self.app_dir.join("windows-dpapi-fallback-device-secret");
+            let secret = if legacy_path.is_file() {
+                b64_decode(std::fs::read_to_string(&legacy_path)?.trim())?
+            } else {
+                crate::crypto::random_bytes(32)
+            };
+            write_private_file(&protected_path, &dpapi_protect(&secret)?)?;
+            if legacy_path.is_file() {
+                std::fs::remove_file(legacy_path)?;
+            }
+            return Ok(SecretBytes::new(secret));
+        }
+        #[cfg(not(windows))]
+        {
+            self.fallback.get_or_create_device_secret()
+        }
     }
 
     fn protect_local_package(&self, plaintext: &[u8]) -> Result<Vec<u8>> {
         #[cfg(windows)]
         {
-            match dpapi_protect(plaintext) {
-                Ok(value) => return Ok(value),
-                Err(_) => return self.fallback.protect_local_package(plaintext),
-            }
+            return dpapi_protect(plaintext);
         }
         #[cfg(not(windows))]
         {
@@ -54,10 +86,7 @@ impl PlatformFactorProvider for WindowsPlatformFactorProvider {
     fn unprotect_local_package(&self, protected: &[u8]) -> Result<Vec<u8>> {
         #[cfg(windows)]
         {
-            match dpapi_unprotect(protected) {
-                Ok(value) => return Ok(value),
-                Err(_) => return self.fallback.unprotect_local_package(protected),
-            }
+            return dpapi_unprotect(protected);
         }
         #[cfg(not(windows))]
         {
@@ -72,7 +101,7 @@ fn dpapi_protect(plaintext: &[u8]) -> Result<Vec<u8>> {
     use std::ptr::{null, null_mut};
     use windows_sys::Win32::Foundation::LocalFree;
     use windows_sys::Win32::Security::Cryptography::{
-        CryptProtectData, CRYPTPROTECT_UI_FORBIDDEN, CRYPT_INTEGER_BLOB,
+        CryptProtectData, CRYPTPROTECT_LOCAL_MACHINE, CRYPTPROTECT_UI_FORBIDDEN, CRYPT_INTEGER_BLOB,
     };
 
     let mut input = CRYPT_INTEGER_BLOB {
@@ -90,7 +119,7 @@ fn dpapi_protect(plaintext: &[u8]) -> Result<Vec<u8>> {
             null_mut(),
             null_mut(),
             null_mut(),
-            CRYPTPROTECT_UI_FORBIDDEN,
+            CRYPTPROTECT_UI_FORBIDDEN | CRYPTPROTECT_LOCAL_MACHINE,
             &mut output,
         )
     };

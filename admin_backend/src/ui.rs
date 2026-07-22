@@ -496,7 +496,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
           <p class="hero-copy">Manage enterprise seats, import desktop device requests, and ship signed license bundles for intranet KeyLessPass deployments.</p>
         </div>
         <div class="hero-actions">
-          <button class="secondary" id="copyPublicKeyTopButton">Copy public key</button>
+          <button class="secondary" id="copyPublicKeyTopButton">Copy site public key</button>
           <button id="jumpIssueButton">Issue bundle</button>
         </div>
       </section>
@@ -547,12 +547,12 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
         <div class="card" id="signingCard">
           <div class="section-head">
             <div>
-              <h2>Signing key</h2>
-              <p>Public verifier for commercial clients.</p>
+              <h2>Customer-site signing key</h2>
+              <p>Delegated by the vendor entitlement.</p>
             </div>
             <span class="badge purple" id="keyIdBadge">keylesspass-license-2026-q3</span>
           </div>
-          <div class="callout info">Embed the public key in commercial builds. Keep the signing seed only on this admin host.</div>
+          <div class="callout warn">Do not embed this site key in clients. Send it to the vendor for entitlement delegation; commercial clients embed only the vendor root public key.</div>
           <div class="key-box" id="statusBox">
             <div class="empty"><strong>No status loaded</strong>Connect with the admin token.</div>
           </div>
@@ -618,7 +618,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
               <label for="deviceSeat">Seat label</label>
               <input id="deviceSeat" placeholder="Finance laptop 01">
               <label for="deviceRequestJson">Request JSON</label>
-              <textarea id="deviceRequestJson" placeholder='{"schemaVersion":1,...}'></textarea>
+              <textarea id="deviceRequestJson" placeholder='{"schemaVersion":2,...}'></textarea>
               <div class="toolbar" style="margin-top:14px">
                 <button id="importDeviceButton">Import request</button>
               </div>
@@ -780,7 +780,7 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     };
     const $ = (id) => document.getElementById(id);
 
-    function token() { return localStorage.getItem("klpAdminToken") || ""; }
+    function token() { return sessionStorage.getItem("klpAdminToken") || ""; }
     function headers() {
       return { "content-type": "application/json", "authorization": `Bearer ${token()}` };
     }
@@ -863,6 +863,10 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     }
     function renderStatusBox(status) {
       $("statusBox").innerHTML = [
+        keyLine("customer", status.customerId, false),
+        keyLine("entitlement serial", String(status.entitlementSerial), false),
+        keyLine("approved devices", `${status.approvedDeviceCount} / ${status.maxRegisteredDevices}`, false),
+        keyLine("entitlement expires", status.entitlementValidUntil, false),
         keyLine("keyId", status.keyId, false),
         keyLine("publicKeyB64", status.publicKeyB64, true, "publicKeyB64"),
         keyLine("publicKeyB64Url", status.publicKeyB64url, true, "publicKeyB64url"),
@@ -1082,11 +1086,11 @@ pub const INDEX_HTML: &str = r##"<!doctype html>
     renderTokenState();
 
     $("saveTokenButton").addEventListener("click", async () => {
-      localStorage.setItem("klpAdminToken", $("tokenInput").value.trim());
+      sessionStorage.setItem("klpAdminToken", $("tokenInput").value.trim());
       await withBusy($("saveTokenButton"), "Connecting", refresh);
     });
     $("clearTokenButton").addEventListener("click", () => {
-      localStorage.removeItem("klpAdminToken");
+      sessionStorage.removeItem("klpAdminToken");
       $("tokenInput").value = "";
       state.snapshot = null;
       render();

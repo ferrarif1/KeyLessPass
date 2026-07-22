@@ -8,8 +8,8 @@ if [[ -z "${KEYLESSPASS_LICENSE_PUBLIC_KEY_B64:-}" ]]; then
   cat >&2 <<'EOF'
 KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 is required.
 
-Deploy admin_backend first, open the admin page, copy publicKeyB64, then run:
-  KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<public key>' tools/commercial/build_commercial_release.sh macos
+This must be the KeyLessPass vendor root public key, never a customer-site key:
+  KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<vendor root public key>' CODESIGN_IDENTITY='<Developer ID>' tools/commercial/build_commercial_release.sh macos
 EOF
   exit 1
 fi
@@ -73,9 +73,10 @@ Run the Windows commercial build from PowerShell so Authenticode and Inno Setup 
   $env:KEYLESSPASS_REQUIRE_LICENSE="1"
   $env:KEYLESSPASS_BUILD_CHANNEL="commercial"
   $env:KEYLESSPASS_LICENSE_KEY_ID="keylesspass-license-2026-q3"
-  $env:KEYLESSPASS_LICENSE_PUBLIC_KEY_B64="<public key from admin_backend>"
+  $env:KEYLESSPASS_LICENSE_PUBLIC_KEY_B64="<KeyLessPass vendor root public key>"
   $env:KEYLESSPASS_APP_MAJOR_VERSION="1"
   $env:KEYLESSPASS_MANAGED_LICENSE_FILE="C:\ProgramData\KeyLessPass\license-bundle.json"
+  $env:KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1="<Authenticode certificate thumbprint>"
   packaging\windows\build_installer.ps1
 EOF
     exit 2

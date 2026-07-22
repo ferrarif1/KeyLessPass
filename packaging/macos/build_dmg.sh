@@ -7,6 +7,19 @@ CODESIGN_IDENTITY="${CODESIGN_IDENTITY:--}"
 FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 MACOS_RUST_TARGETS="${MACOS_RUST_TARGETS:-x86_64-apple-darwin,aarch64-apple-darwin}"
 
+if [[ "${KEYLESSPASS_REQUIRE_LICENSE:-}" != "1" && "${KEYLESSPASS_ALLOW_EVALUATION_PACKAGE:-}" != "1" ]]; then
+  echo "Refusing to package an unlicensed build. Use tools/commercial/build_commercial_release.sh or set KEYLESSPASS_ALLOW_EVALUATION_PACKAGE=1 for an explicitly marked evaluation artifact." >&2
+  exit 1
+fi
+if [[ "${KEYLESSPASS_REQUIRE_LICENSE:-}" == "1" && -z "${KEYLESSPASS_LICENSE_PUBLIC_KEY_B64:-}" ]]; then
+  echo "KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 is required for a commercial package." >&2
+  exit 1
+fi
+if [[ "${KEYLESSPASS_REQUIRE_LICENSE:-}" == "1" && "$CODESIGN_IDENTITY" == "-" && "${KEYLESSPASS_ALLOW_UNSIGNED:-}" != "1" ]]; then
+  echo "Commercial macOS packages require a Developer ID CODESIGN_IDENTITY. Use KEYLESSPASS_ALLOW_UNSIGNED=1 only for local testing." >&2
+  exit 1
+fi
+
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "macOS packaging must run on a macOS host." >&2
   exit 1
@@ -69,8 +82,13 @@ APP="$ROOT/flutter_app/build/macos/Build/Products/Release/$APP_NAME.app"
 ENTITLEMENTS="$ROOT/flutter_app/macos/Runner/Release.entitlements"
 mkdir -p "$APP/Contents/Frameworks"
 cp "$UNIVERSAL_CORE" "$APP/Contents/Frameworks/libkeylesspass_core.dylib"
-codesign --force --sign "$CODESIGN_IDENTITY" "$APP/Contents/Frameworks/libkeylesspass_core.dylib"
-codesign --force --deep --sign "$CODESIGN_IDENTITY" --entitlements "$ENTITLEMENTS" "$APP"
+if [[ "$CODESIGN_IDENTITY" == "-" ]]; then
+  codesign --force --sign - "$APP/Contents/Frameworks/libkeylesspass_core.dylib"
+  codesign --force --deep --sign - --entitlements "$ENTITLEMENTS" "$APP"
+else
+  codesign --force --options runtime --timestamp --sign "$CODESIGN_IDENTITY" "$APP/Contents/Frameworks/libkeylesspass_core.dylib"
+  codesign --force --deep --options runtime --timestamp --sign "$CODESIGN_IDENTITY" --entitlements "$ENTITLEMENTS" "$APP"
+fi
 
 echo "macOS .app output: $APP"
 

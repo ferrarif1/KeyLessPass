@@ -1,8 +1,9 @@
 use crate::crypto::kdf;
 use crate::crypto::signing::{b64url_encode, LicenseVerifier};
 use crate::domain::{
-    CredentialState, DeviceGrant, EncodingDescriptor, LicenseBundlePayload, OrganizationLicense,
-    PasswordDerivationAlgorithm, SignedLicenseEnvelope, LICENSE_ENVELOPE_TYPE,
+    CredentialState, CustomerEntitlement, DeviceGrant, EncodingDescriptor, LicenseBundlePayload,
+    OrganizationLicense, PasswordDerivationAlgorithm, SignedCustomerEntitlementEnvelope,
+    SignedLicenseEnvelope, CUSTOMER_ENTITLEMENT_TYPE, LICENSE_ENVELOPE_TYPE,
     LICENSE_SCHEMA_VERSION, LICENSE_SIGNATURE_ALGORITHM,
 };
 use crate::platform::fallback::FallbackPlatformFactorProvider;
@@ -103,7 +104,58 @@ fn license_verifier(signing_key: &SigningKey) -> LicenseVerifier {
 }
 
 fn signed_license_bundle(signing_key: &SigningKey, payload: &LicenseBundlePayload) -> String {
-    let payload_bytes = serde_json::to_vec(payload).unwrap();
+    signed_license_bundle_with_device_keys(
+        signing_key,
+        payload,
+        payload
+            .device_grants
+            .iter()
+            .map(|grant| grant.device_key_id.clone())
+            .collect(),
+    )
+}
+
+fn signed_license_bundle_with_device_keys(
+    signing_key: &SigningKey,
+    payload: &LicenseBundlePayload,
+    authorized_device_key_ids: Vec<String>,
+) -> String {
+    let mut payload = payload.clone();
+    let entitlement_payload = CustomerEntitlement {
+        schema_version: LICENSE_SCHEMA_VERSION,
+        entitlement_id: "test-entitlement".to_string(),
+        entitlement_serial: 1,
+        customer_id: "acme".to_string(),
+        customer_name: "ACME Security".to_string(),
+        product: "KeyLessPass".to_string(),
+        site_key_id: TEST_LICENSE_KEY_ID.to_string(),
+        site_public_key: b64url_encode(signing_key.verifying_key().as_bytes()),
+        max_registered_devices: 100,
+        max_concurrent_devices: 100,
+        max_offline_borrowed: 10,
+        max_offline_grace_days: 30,
+        authorized_device_key_ids,
+        valid_from: (Utc::now() - Duration::days(1)).to_rfc3339(),
+        valid_until: (Utc::now() + Duration::days(365)).to_rfc3339(),
+        features: vec![
+            "desktop-client".to_string(),
+            "offline-activation".to_string(),
+            "batch-device-import".to_string(),
+        ],
+        allowed_major_versions: vec![1, 2],
+        issued_at: Utc::now().to_rfc3339(),
+        issuer: "KeyLessPass Vendor".to_string(),
+    };
+    let entitlement_bytes = serde_json::to_vec(&entitlement_payload).unwrap();
+    payload.customer_entitlement = SignedCustomerEntitlementEnvelope {
+        schema_version: LICENSE_SCHEMA_VERSION,
+        envelope_type: CUSTOMER_ENTITLEMENT_TYPE.to_string(),
+        payload: b64url_encode(&entitlement_bytes),
+        signature_algorithm: LICENSE_SIGNATURE_ALGORITHM.to_string(),
+        key_id: TEST_LICENSE_KEY_ID.to_string(),
+        signature: b64url_encode(&signing_key.sign(&entitlement_bytes).to_bytes()),
+    };
+    let payload_bytes = serde_json::to_vec(&payload).unwrap();
     let signature = signing_key.sign(&payload_bytes);
     let envelope = SignedLicenseEnvelope {
         schema_version: LICENSE_SCHEMA_VERSION,
@@ -127,6 +179,14 @@ fn license_payload_for_request(
     LicenseBundlePayload {
         schema_version: LICENSE_SCHEMA_VERSION,
         bundle_id: Uuid::new_v4().to_string(),
+        customer_entitlement: SignedCustomerEntitlementEnvelope {
+            schema_version: 0,
+            envelope_type: String::new(),
+            payload: String::new(),
+            signature_algorithm: String::new(),
+            key_id: String::new(),
+            signature: String::new(),
+        },
         organization_license: OrganizationLicense {
             schema_version: LICENSE_SCHEMA_VERSION,
             license_id: "LIC-ACME-001".to_string(),
@@ -159,6 +219,8 @@ fn license_payload_for_request(
                 .unwrap_or_else(|| "acme".to_string()),
             commercial_device_id: request.commercial_device_id.clone(),
             device_fingerprint: request.device_fingerprint.clone(),
+            device_key_id: request.device_key_id.clone(),
+            device_public_key: request.device_public_key.clone(),
             seat_label: request.seat_label.clone().unwrap_or_default(),
             valid_from,
             valid_until,
@@ -1099,6 +1161,125 @@ fn copied_license_bundle_does_not_authorize_another_device() {
 }
 
 #[test]
+fn site_signer_cannot_authorize_a_device_missing_from_vendor_entitlement() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "vendor-allowlist");
+    let signing_key = SigningKey::from_bytes(&[49_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    let bundle_json = signed_license_bundle_with_device_keys(&signing_key, &payload, vec![]);
+
+    let error = import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest { bundle_json },
+    )
+    .unwrap_err();
+    assert!(error.to_string().contains("exceeds the vendor entitlement"));
+}
+
+#[test]
+fn older_signed_bundle_is_rejected_after_a_newer_bundle_was_seen() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-rollback");
+    let signing_key = SigningKey::from_bytes(&[50_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let mut older =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    older.issued_at = (Utc::now() - Duration::hours(1)).to_rfc3339();
+    let mut newer = older.clone();
+    newer.bundle_id = Uuid::new_v4().to_string();
+    newer.issued_at = Utc::now().to_rfc3339();
+
+    import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: signed_license_bundle(&signing_key, &newer),
+        },
+    )
+    .unwrap();
+    let error = import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: signed_license_bundle(&signing_key, &older),
+        },
+    )
+    .unwrap_err();
+    assert!(error.to_string().contains("rollback"));
+}
+
+#[test]
+fn copied_public_device_ids_do_not_clone_a_license_fingerprint() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_paths = StoragePaths::from_app_dir(source_dir.path().to_path_buf());
+    let source_provider =
+        FallbackPlatformFactorProvider::new(source_paths.app_dir.clone(), "license-clone");
+    let source = export_device_authorization_request_at(
+        &source_paths,
+        &source_provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+
+    let target_dir = tempfile::tempdir().unwrap();
+    let target_paths = StoragePaths::from_app_dir(target_dir.path().to_path_buf());
+    std::fs::create_dir_all(target_paths.app_dir.join("license")).unwrap();
+    std::fs::copy(
+        source_paths.app_dir.join("license/commercial-device-id"),
+        target_paths.app_dir.join("license/commercial-device-id"),
+    )
+    .unwrap();
+    std::fs::copy(
+        source_paths.app_dir.join("license-clone-device-id"),
+        target_paths.app_dir.join("license-clone-device-id"),
+    )
+    .unwrap();
+    let target_provider =
+        FallbackPlatformFactorProvider::new(target_paths.app_dir.clone(), "license-clone");
+    let target = export_device_authorization_request_at(
+        &target_paths,
+        &target_provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(source.commercial_device_id, target.commercial_device_id);
+    assert_ne!(source.device_fingerprint, target.device_fingerprint);
+}
+
+#[test]
 fn tampered_license_bundle_signature_fails() {
     let app_dir = tempfile::tempdir().unwrap();
     let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
@@ -1175,6 +1356,54 @@ fn license_rejects_disallowed_major_version_and_excess_seats() {
         },
     )
     .is_err());
+}
+
+#[test]
+fn site_signer_cannot_expand_organization_features_or_offline_grace() {
+    let app_dir = tempfile::tempdir().unwrap();
+    let paths = StoragePaths::from_app_dir(app_dir.path().to_path_buf());
+    let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "license-policy");
+    let signing_key = SigningKey::from_bytes(&[51_u8; 32]);
+    let verifier = license_verifier(&signing_key);
+    let request = export_device_authorization_request_at(
+        &paths,
+        &provider,
+        ExportDeviceAuthorizationRequest {
+            organization_id: Some("acme".to_string()),
+            seat_label: None,
+        },
+    )
+    .unwrap();
+    let mut payload =
+        license_payload_for_request(&request, (Utc::now() + Duration::days(30)).to_rfc3339(), 7);
+    payload.organization_license.features = vec!["desktop-client".to_string()];
+    payload.device_grants[0].features = vec!["offline-activation".to_string()];
+    assert!(import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: signed_license_bundle(&signing_key, &payload),
+        },
+    )
+    .unwrap_err()
+    .to_string()
+    .contains("vendor entitlement"));
+
+    payload.device_grants[0].features = vec!["desktop-client".to_string()];
+    payload.organization_license.offline_grace_days = 31;
+    payload.device_grants[0].offline_grace_days = 31;
+    assert!(import_license_bundle_at(
+        &paths,
+        &provider,
+        &verifier,
+        ImportLicenseBundleRequest {
+            bundle_json: signed_license_bundle(&signing_key, &payload),
+        },
+    )
+    .unwrap_err()
+    .to_string()
+    .contains("vendor entitlement"));
 }
 
 #[test]

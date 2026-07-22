@@ -37,8 +37,12 @@ impl StoragePaths {
 }
 
 pub fn default_app_dir() -> Result<PathBuf> {
-    if let Ok(value) = env::var("KEYLESSPASS_HOME") {
-        return Ok(PathBuf::from(value));
+    // A commercial build must not let an untrusted launcher redirect all
+    // application and license state through a runtime environment variable.
+    if option_env!("KEYLESSPASS_REQUIRE_LICENSE").is_none() {
+        if let Ok(value) = env::var("KEYLESSPASS_HOME") {
+            return Ok(PathBuf::from(value));
+        }
     }
 
     #[cfg(target_os = "windows")]

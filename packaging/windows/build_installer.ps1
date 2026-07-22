@@ -1,6 +1,25 @@
 $ErrorActionPreference = "Stop"
 $FlutterBin = if ($env:FLUTTER_BIN) { $env:FLUTTER_BIN } else { "flutter" }
 
+if ($env:KEYLESSPASS_REQUIRE_LICENSE -ne "1" -and $env:KEYLESSPASS_ALLOW_EVALUATION_PACKAGE -ne "1") {
+    throw "Refusing to package an unlicensed build. Set the commercial build variables, or KEYLESSPASS_ALLOW_EVALUATION_PACKAGE=1 for an explicitly marked evaluation artifact."
+}
+if ($env:KEYLESSPASS_REQUIRE_LICENSE -eq "1" -and !$env:KEYLESSPASS_LICENSE_PUBLIC_KEY_B64) {
+    throw "KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 is required for a commercial package."
+}
+if ($env:KEYLESSPASS_REQUIRE_LICENSE -eq "1" -and !$env:KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1 -and $env:KEYLESSPASS_ALLOW_UNSIGNED -ne "1") {
+    throw "Commercial Windows packages require KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1. Use KEYLESSPASS_ALLOW_UNSIGNED=1 only for local testing."
+}
+
+function Sign-KeyLessPassArtifact([string]$Path) {
+    if (!$env:KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1) { return }
+    $SignTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
+    if (!$SignTool) { throw "signtool.exe was not found" }
+    $TimestampUrl = if ($env:KEYLESSPASS_TIMESTAMP_URL) { $env:KEYLESSPASS_TIMESTAMP_URL } else { "http://timestamp.digicert.com" }
+    & $SignTool.Source sign /sha1 $env:KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1 /fd SHA256 /tr $TimestampUrl /td SHA256 $Path
+    if ($LASTEXITCODE -ne 0) { throw "Authenticode signing failed: $Path" }
+}
+
 $Root = Resolve-Path "$PSScriptRoot\..\.."
 $Pubspec = Join-Path $Root "flutter_app\pubspec.yaml"
 $VersionLine = Get-Content $Pubspec | Where-Object { $_ -match "^version:\s*(.+)$" } | Select-Object -First 1
@@ -56,6 +75,10 @@ if (!(Test-Path $CoreDll)) {
     throw "Rust Core DLL was not created: $CoreDll"
 }
 Copy-Item $CoreDll "$Output\" -Force
+Sign-KeyLessPassArtifact (Join-Path $Output "keylesspass_core.dll")
+$AppExe = Join-Path $Output "KeyLessPass.exe"
+if (!(Test-Path $AppExe)) { throw "Windows application executable was not created: $AppExe" }
+Sign-KeyLessPassArtifact $AppExe
 
 $InstallerOutput = "$Root\dist\windows"
 New-Item -ItemType Directory -Force -Path $InstallerOutput | Out-Null
@@ -77,6 +100,7 @@ $Installer = "$InstallerOutput\KeyLessPass-Setup-$AppVersion.exe"
 if (!(Test-Path $Installer)) {
     throw "Windows installer was not created: $Installer"
 }
+Sign-KeyLessPassArtifact $Installer
 
 Write-Host "Windows release directory: flutter_app\build\windows\x64\runner\Release"
 Write-Host "Windows installer output: dist\windows\KeyLessPass-Setup-$AppVersion.exe"

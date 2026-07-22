@@ -140,6 +140,10 @@ fn dispatch(request: FfiRequest) -> String {
 fn ensure_commercial_authorization(op: &str) -> Result<(), String> {
     match op {
         "enroll"
+        | "generateMnemonic"
+        | "listCredentials"
+        | "listUsbCandidates"
+        | "verifyUsbPackage"
         | "addCredential"
         | "updateCredentialDisplay"
         | "derivePassword"
@@ -149,6 +153,7 @@ fn ensure_commercial_authorization(op: &str) -> Result<(), String> {
         | "recoverUsb"
         | "recoverLocal"
         | "resetMnemonic"
+        | "getUsbCdrStatus"
         | "syncCdrToUsb"
         | "restoreCdrFromUsb" => require_license_feature("desktop-client"),
         _ => Ok(()),

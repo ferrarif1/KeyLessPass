@@ -31,6 +31,7 @@ pub struct DerivedPasswordResponse {
 pub fn derive_password(
     request: DerivePasswordRequest,
 ) -> std::result::Result<DerivedPasswordResponse, String> {
+    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     derive_password_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -41,6 +42,12 @@ pub fn derive_password_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: DerivePasswordRequest,
 ) -> Result<DerivedPasswordResponse> {
+    crate::service::license::require_license_feature_at(
+        paths,
+        provider,
+        &crate::service::license::default_license_verifier(),
+        "desktop-client",
+    )?;
     if request.mnemonic.trim().is_empty() {
         return Err(KeylessPassError::MissingFactor(
             "mnemonic phrase is required".to_string(),

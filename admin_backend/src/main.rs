@@ -6,8 +6,9 @@ mod ui;
 use crate::{
     db::Db,
     license::{
-        build_payload, bundle_record_from_envelope, generate_key_output, sign_payload,
-        SigningMaterial,
+        build_payload, bundle_record_from_envelope, generate_key_output,
+        issue_customer_entitlement_output, load_customer_entitlement, sign_payload,
+        site_public_key_output, SigningMaterial, VerifiedCustomerEntitlement,
     },
     model::{
         ActivateLicenseRequest, AdminSnapshot, AdminStatus, ApiMessage, BulkImportResult,
@@ -17,7 +18,7 @@ use crate::{
 };
 use anyhow::{anyhow, Context, Result};
 use axum::{
-    extract::{Path as AxumPath, Query, State},
+    extract::{DefaultBodyLimit, Path as AxumPath, Query, State},
     http::{header::AUTHORIZATION, HeaderMap, HeaderValue, StatusCode},
     response::{Html, IntoResponse, Response},
     routing::{get, post},
@@ -25,7 +26,11 @@ use axum::{
 };
 use chrono::{DateTime, Duration, Utc};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashSet, net::SocketAddr, path::PathBuf};
+use sha2::{Digest, Sha256};
+use std::io::Read;
+use std::{collections::HashSet, net::SocketAddr, path::PathBuf, sync::Arc};
+use tokio::sync::Mutex;
+use tower_http::services::ServeDir;
 use tower_http::trace::TraceLayer;
 
 #[derive(Clone)]
@@ -33,6 +38,8 @@ struct AppState {
     db: Db,
     signing: SigningMaterial,
     config: Config,
+    issuance_lock: Arc<Mutex<()>>,
+    customer_entitlement: VerifiedCustomerEntitlement,
 }
 
 #[derive(Clone)]
@@ -41,6 +48,7 @@ struct Config {
     users: Vec<AdminUser>,
     issuer: String,
     database_path: PathBuf,
+    download_dir: PathBuf,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -49,6 +57,8 @@ struct AdminUser {
     name: String,
     role: AdminRole,
     token: String,
+    #[serde(default)]
+    organization_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, PartialEq, Eq)]
@@ -96,6 +106,15 @@ struct ActivateLicenseResponse {
     envelope_json: String,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DownloadArtifact {
+    file_name: String,
+    size_bytes: u64,
+    download_url: String,
+    sha256: String,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct DevicesQuery {
@@ -106,9 +125,20 @@ type ApiResult<T> = std::result::Result<T, (StatusCode, Json<ApiError>)>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    if std::env::args().nth(1).as_deref() == Some("generate-key") {
-        print!("{}", generate_key_output());
-        return Ok(());
+    match std::env::args().nth(1).as_deref() {
+        Some("generate-key") => {
+            print!("{}", generate_key_output());
+            return Ok(());
+        }
+        Some("issue-customer-entitlement") => {
+            print!("{}", issue_customer_entitlement_output()?);
+            return Ok(());
+        }
+        Some("site-public-key") => {
+            print!("{}", site_public_key_output()?);
+            return Ok(());
+        }
+        _ => {}
     }
 
     tracing_subscriber::fmt()
@@ -121,14 +151,21 @@ async fn main() -> Result<()> {
     let config = Config::from_env()?;
     let db = Db::open(&config.database_path)?;
     let signing = SigningMaterial::from_env()?;
+    let customer_entitlement = load_customer_entitlement(&signing)?;
     let state = AppState {
         db,
         signing,
         config,
+        issuance_lock: Arc::new(Mutex::new(())),
+        customer_entitlement,
     };
 
+    let download_service =
+        ServeDir::new(&state.config.download_dir).append_index_html_on_directories(false);
     let app = Router::new()
         .route("/", get(index))
+        .route("/download", get(download_page))
+        .route("/api/downloads", get(list_downloads))
         .route("/healthz", get(healthz))
         .route("/api/status", get(api_status))
         .route("/api/snapshot", get(api_snapshot))
@@ -147,6 +184,8 @@ async fn main() -> Result<()> {
         .route("/api/activation/activate", post(activate_license))
         .route("/api/grants/:grant_id/revoke", post(revoke_grant))
         .route("/api/audit.csv", get(export_audit_csv))
+        .nest_service("/downloads", download_service)
+        .layer(DefaultBodyLimit::max(1024 * 1024))
         .layer(TraceLayer::new_for_http())
         .with_state(state.clone());
 
@@ -180,6 +219,7 @@ impl Config {
                 token: std::env::var("KEYLESSPASS_ADMIN_TOKEN").context(
                     "KEYLESSPASS_ADMIN_TOKEN or KEYLESSPASS_ADMIN_USERS_JSON must be set",
                 )?,
+                organization_id: None,
             }]
         };
         if users.is_empty()
@@ -200,11 +240,15 @@ impl Config {
             .unwrap_or_else(|_| PathBuf::from("./keylesspass-admin.sqlite3"));
         let issuer = std::env::var("KEYLESSPASS_LICENSE_ISSUER")
             .unwrap_or_else(|_| "KeyLessPass Commercial Admin".to_string());
+        let download_dir = std::env::var("KEYLESSPASS_DOWNLOAD_DIR")
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| PathBuf::from("./downloads"));
         Ok(Self {
             bind,
             users,
             issuer,
             database_path,
+            download_dir,
         })
     }
 }
@@ -217,6 +261,99 @@ async fn index() -> Html<&'static str> {
     Html(ui::INDEX_HTML)
 }
 
+async fn list_downloads(State(state): State<AppState>) -> Json<Vec<DownloadArtifact>> {
+    Json(download_artifacts(&state.config.download_dir))
+}
+
+async fn download_page(State(state): State<AppState>) -> Html<String> {
+    let links = download_artifacts(&state.config.download_dir)
+        .into_iter()
+        .map(|item| {
+            format!(
+                r#"<li><a href="{}">{}</a> <small>({} bytes)<br>SHA-256: {}</small></li>"#,
+                item.download_url, item.file_name, item.size_bytes, item.sha256
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    Html(format!(
+        r#"<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>KeyLessPass 下载</title><style>body{{font:16px system-ui;max-width:760px;margin:64px auto;padding:0 20px;background:#111;color:#eee}}a{{color:#efff3d}}li{{margin:14px 0}}small{{color:#aaa}}</style><h1>KeyLessPass 应用下载</h1><p>无需登录。请只安装由供应商签名并公布校验值的正式版本。</p><ul>{}</ul><p><a href="/">管理员登录</a></p></html>"#,
+        if links.is_empty() {
+            "<li>暂无可下载版本</li>".to_string()
+        } else {
+            links
+        }
+    ))
+}
+
+fn download_artifacts(directory: &std::path::Path) -> Vec<DownloadArtifact> {
+    let Ok(entries) = std::fs::read_dir(directory) else {
+        return Vec::new();
+    };
+    let mut artifacts = entries
+        .flatten()
+        .filter_map(|entry| {
+            let metadata = entry.metadata().ok()?;
+            if !metadata.is_file() {
+                return None;
+            }
+            let file_name = entry.file_name().to_str()?.to_string();
+            if !file_name
+                .bytes()
+                .all(|value| value.is_ascii_alphanumeric() || b"._-".contains(&value))
+                || !is_download_artifact(&file_name)
+            {
+                return None;
+            }
+            Some(DownloadArtifact {
+                download_url: format!("/downloads/{file_name}"),
+                file_name,
+                size_bytes: metadata.len(),
+                sha256: sha256_file(&entry.path())?,
+            })
+        })
+        .collect::<Vec<_>>();
+    artifacts.sort_by(|left, right| left.file_name.cmp(&right.file_name));
+    artifacts
+}
+
+fn sha256_file(path: &std::path::Path) -> Option<String> {
+    let mut file = std::fs::File::open(path).ok()?;
+    let mut digest = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    loop {
+        let read = file.read(&mut buffer).ok()?;
+        if read == 0 {
+            break;
+        }
+        digest.update(&buffer[..read]);
+    }
+    Some(
+        digest
+            .finalize()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect(),
+    )
+}
+
+fn is_download_artifact(file_name: &str) -> bool {
+    let lower = file_name.to_ascii_lowercase();
+    [
+        ".dmg",
+        ".pkg",
+        ".exe",
+        ".msi",
+        ".zip",
+        ".deb",
+        ".rpm",
+        ".appimage",
+        ".tar.gz",
+    ]
+    .iter()
+    .any(|suffix| lower.ends_with(suffix))
+}
+
 async fn healthz() -> impl IntoResponse {
     Json(ApiMessage {
         message: "ok".to_string(),
@@ -227,24 +364,30 @@ async fn api_status(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> ApiResult<Json<AdminStatus>> {
-    require_role(&headers, &state, AdminRole::Auditor)?;
-    Ok(Json(admin_status(&state).map_err(internal_error)?))
+    let actor = require_role(&headers, &state, AdminRole::Auditor)?;
+    Ok(Json(
+        status_for_user(&state, &actor).map_err(internal_error)?,
+    ))
 }
 
 async fn api_snapshot(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> ApiResult<Json<AdminSnapshot>> {
-    require_role(&headers, &state, AdminRole::Operator)?;
-    Ok(Json(snapshot(&state).map_err(internal_error)?))
+    let actor = require_role(&headers, &state, AdminRole::Operator)?;
+    Ok(Json(snapshot(&state, &actor).map_err(internal_error)?))
 }
 
 async fn list_organizations(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> ApiResult<Json<Vec<OrganizationRecord>>> {
-    require_role(&headers, &state, AdminRole::Operator)?;
-    Ok(Json(state.db.organizations().map_err(internal_error)?))
+    let actor = require_role(&headers, &state, AdminRole::Operator)?;
+    let mut organizations = state.db.organizations().map_err(internal_error)?;
+    if let Some(scope) = actor.organization_id.as_deref() {
+        organizations.retain(|organization| organization.id == scope);
+    }
+    Ok(Json(organizations))
 }
 
 async fn create_organization(
@@ -253,6 +396,13 @@ async fn create_organization(
     Json(request): Json<CreateOrganizationRequest>,
 ) -> ApiResult<Json<OrganizationRecord>> {
     let actor = require_role(&headers, &state, AdminRole::Admin)?;
+    if actor.organization_id.is_some() {
+        return Err(api_error(
+            StatusCode::FORBIDDEN,
+            "tenant administrators cannot create or resize organizations",
+        ));
+    }
+    validate_create_organization_request(&state, &request).map_err(bad_request)?;
     let record = state
         .db
         .create_organization(request, &state.config.issuer)
@@ -267,6 +417,7 @@ async fn import_device_request(
     Json(request): Json<ImportDeviceRequestBody>,
 ) -> ApiResult<Json<DeviceRecord>> {
     let actor = require_role(&headers, &state, AdminRole::Operator)?;
+    ensure_request_scope(&actor, &request)?;
     let record = state
         .db
         .import_device_request(request)
@@ -280,11 +431,12 @@ async fn list_devices(
     headers: HeaderMap,
     Query(query): Query<DevicesQuery>,
 ) -> ApiResult<Json<Vec<DeviceRecord>>> {
-    require_role(&headers, &state, AdminRole::Auditor)?;
+    let actor = require_role(&headers, &state, AdminRole::Auditor)?;
+    let organization_id = scoped_organization(&actor, query.organization_id.as_deref())?;
     Ok(Json(
         state
             .db
-            .devices(query.organization_id.as_deref())
+            .devices(organization_id.as_deref())
             .map_err(internal_error)?,
     ))
 }
@@ -300,7 +452,9 @@ async fn import_device_requests_csv(
         .from_reader(body.as_bytes());
     let mut requests = Vec::new();
     for row in reader.deserialize::<ImportDeviceRequestBody>() {
-        requests.push(row.map_err(|error| bad_request(anyhow!(error)))?);
+        let request = row.map_err(|error| bad_request(anyhow!(error)))?;
+        ensure_request_scope(&actor, &request)?;
+        requests.push(request);
     }
     if requests.is_empty() {
         return Err(bad_request(anyhow!("CSV contains no device requests")));
@@ -329,10 +483,11 @@ async fn export_devices_csv(
     headers: HeaderMap,
     Query(query): Query<DevicesQuery>,
 ) -> ApiResult<Response> {
-    require_role(&headers, &state, AdminRole::Auditor)?;
+    let actor = require_role(&headers, &state, AdminRole::Auditor)?;
+    let organization_id = scoped_organization(&actor, query.organization_id.as_deref())?;
     let devices = state
         .db
-        .devices(query.organization_id.as_deref())
+        .devices(organization_id.as_deref())
         .map_err(internal_error)?;
     let mut writer = csv::Writer::from_writer(Vec::new());
     for device in devices {
@@ -351,7 +506,13 @@ async fn export_audit_csv(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> ApiResult<Response> {
-    require_role(&headers, &state, AdminRole::Auditor)?;
+    let actor = require_role(&headers, &state, AdminRole::Auditor)?;
+    if actor.organization_id.is_some() {
+        return Err(api_error(
+            StatusCode::FORBIDDEN,
+            "tenant audit export is not available from the global audit stream",
+        ));
+    }
     let mut writer = csv::Writer::from_writer(Vec::new());
     for record in state.db.audit_log().map_err(internal_error)? {
         writer
@@ -371,6 +532,8 @@ async fn issue_bundle(
     Json(request): Json<IssueBundleRequest>,
 ) -> ApiResult<Json<IssueBundleResponse>> {
     let actor = require_role(&headers, &state, AdminRole::Operator)?;
+    ensure_org_access(&actor, &request.organization_id)?;
+    let _issuance_guard = state.issuance_lock.lock().await;
     let response = issue_bundle_inner(&state, request).map_err(bad_request)?;
     audit(
         &state,
@@ -386,6 +549,7 @@ async fn activate_license(
     State(state): State<AppState>,
     Json(request): Json<ActivateLicenseRequest>,
 ) -> ApiResult<Json<ActivateLicenseResponse>> {
+    let _issuance_guard = state.issuance_lock.lock().await;
     let org = state
         .db
         .organization_by_activation_code(request.activation_code.trim())
@@ -394,6 +558,25 @@ async fn activate_license(
     let parsed_request: DeviceAuthorizationRequest =
         serde_json::from_str(request.request_json.trim())
             .map_err(|_| bad_request(anyhow!("device authorization request JSON is invalid")))?;
+    if let Some(existing) = state
+        .db
+        .device_by_identity(
+            &parsed_request.commercial_device_id,
+            &parsed_request.device_fingerprint,
+        )
+        .map_err(internal_error)?
+    {
+        if state
+            .db
+            .device_has_revoked_grant(&existing.id)
+            .map_err(internal_error)?
+        {
+            return Err(api_error(
+                StatusCode::FORBIDDEN,
+                "this device has been revoked and cannot reactivate",
+            ));
+        }
+    }
     let active_ids: HashSet<String> = state
         .db
         .active_licensed_device_ids(&org.id)
@@ -453,6 +636,7 @@ fn issue_bundle_inner(
         .db
         .organization(&request.organization_id)?
         .ok_or_else(|| anyhow!("organization does not exist"))?;
+    validate_organization_entitlement(state, &org)?;
     let org_valid_until = DateTime::parse_from_rfc3339(&org.valid_until)
         .context("organization validUntil is invalid")?
         .with_timezone(&Utc);
@@ -462,6 +646,22 @@ fn issue_bundle_inner(
     let devices = state.db.selected_devices(&org.id, &request.device_ids)?;
     if devices.is_empty() {
         return Err(anyhow!("at least one device is required"));
+    }
+    let approved_keys: HashSet<&str> = state
+        .customer_entitlement
+        .payload
+        .authorized_device_key_ids
+        .iter()
+        .map(String::as_str)
+        .collect();
+    if let Some(device) = devices
+        .iter()
+        .find(|device| !approved_keys.contains(device.device_key_id.as_str()))
+    {
+        return Err(anyhow!(
+            "device {} has not been approved by the vendor entitlement",
+            device.device_key_id
+        ));
     }
     let mut licensed: HashSet<String> = state
         .db
@@ -479,17 +679,98 @@ fn issue_bundle_inner(
     } else {
         Vec::new()
     };
-    let payload = build_payload(&org, &devices, revoked_grant_ids, valid_until);
+    let payload = build_payload(
+        &org,
+        &devices,
+        revoked_grant_ids,
+        valid_until,
+        state.customer_entitlement.envelope.clone(),
+    );
     let envelope = sign_payload(&state.signing, &payload)?;
     let envelope_json = serde_json::to_string_pretty(&envelope)?;
     let bundle = bundle_record_from_envelope(&org, &payload, envelope_json.clone());
     state
         .db
-        .store_bundle(&bundle, &payload.device_grants, &devices)?;
+        .store_bundle(&bundle, &payload.device_grants, &devices, org.max_seats)?;
     Ok(IssueBundleResponse {
         bundle,
         envelope_json,
     })
+}
+
+fn validate_create_organization_request(
+    state: &AppState,
+    request: &CreateOrganizationRequest,
+) -> Result<()> {
+    let entitlement = &state.customer_entitlement.payload;
+    if request.max_seats.unwrap_or(25) > entitlement.max_registered_devices
+        || request.max_seats.unwrap_or(25) > entitlement.max_concurrent_devices
+    {
+        return Err(anyhow!("requested seats exceed the vendor entitlement"));
+    }
+    if request.offline_grace_days.unwrap_or(14) > entitlement.max_offline_grace_days {
+        return Err(anyhow!(
+            "requested offline grace exceeds the vendor entitlement"
+        ));
+    }
+    if request
+        .features
+        .iter()
+        .any(|feature| !entitlement.features.contains(feature))
+    {
+        return Err(anyhow!("requested features exceed the vendor entitlement"));
+    }
+    if request
+        .allowed_major_versions
+        .iter()
+        .any(|version| !entitlement.allowed_major_versions.contains(version))
+    {
+        return Err(anyhow!(
+            "requested application versions exceed the vendor entitlement"
+        ));
+    }
+    let requested_until = if let Some(value) = request.valid_until.as_deref() {
+        DateTime::parse_from_rfc3339(value)
+            .context("organization validUntil is invalid")?
+            .with_timezone(&Utc)
+    } else {
+        Utc::now() + Duration::days(request.valid_days.unwrap_or(365).max(1))
+    };
+    let entitlement_until = DateTime::parse_from_rfc3339(&entitlement.valid_until)
+        .context("customer entitlement validUntil is invalid")?
+        .with_timezone(&Utc);
+    if requested_until > entitlement_until {
+        return Err(anyhow!(
+            "organization validity exceeds the vendor entitlement"
+        ));
+    }
+    Ok(())
+}
+
+fn validate_organization_entitlement(
+    state: &AppState,
+    organization: &OrganizationRecord,
+) -> Result<()> {
+    let entitlement = &state.customer_entitlement.payload;
+    if organization.max_seats > entitlement.max_registered_devices
+        || organization.max_seats > entitlement.max_concurrent_devices
+        || organization.offline_grace_days > entitlement.max_offline_grace_days
+        || organization
+            .features
+            .iter()
+            .any(|feature| !entitlement.features.contains(feature))
+        || organization
+            .allowed_major_versions
+            .iter()
+            .any(|version| !entitlement.allowed_major_versions.contains(version))
+        || DateTime::parse_from_rfc3339(&organization.valid_until)?
+            > DateTime::parse_from_rfc3339(&entitlement.valid_until)?
+    {
+        return Err(anyhow!(
+            "organization exceeds its vendor-signed customer entitlement"
+        ));
+    }
+    Ok(())
 }
 
 async fn revoke_grant(
@@ -497,7 +778,15 @@ async fn revoke_grant(
     headers: HeaderMap,
     AxumPath(grant_id): AxumPath<String>,
 ) -> ApiResult<Json<ApiMessage>> {
-    let actor = require_role(&headers, &state, AdminRole::Admin)?;
+    let actor = require_role(&headers, &state, AdminRole::Operator)?;
+    let grant = state
+        .db
+        .grants()
+        .map_err(internal_error)?
+        .into_iter()
+        .find(|grant| grant.grant_id == grant_id)
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "grant does not exist"))?;
+    ensure_org_access(&actor, &grant.organization_id)?;
     state.db.revoke_grant(&grant_id).map_err(bad_request)?;
     audit(&state, &actor, "grant.revoke", &grant_id, "{}")?;
     Ok(Json(ApiMessage {
@@ -519,7 +808,7 @@ fn require_role(
         .config
         .users
         .iter()
-        .find(|user| user.token == actual)
+        .find(|user| constant_time_token_eq(&user.token, actual))
         .cloned()
         .ok_or_else(|| api_error(StatusCode::UNAUTHORIZED, "missing or invalid admin token"))?;
     if user.role.rank() < minimum_role.rank() {
@@ -531,6 +820,18 @@ fn require_role(
     Ok(user)
 }
 
+fn constant_time_token_eq(expected: &str, actual: &str) -> bool {
+    let expected = Sha256::digest(expected.as_bytes());
+    let actual = Sha256::digest(actual.as_bytes());
+    expected
+        .iter()
+        .zip(actual.iter())
+        .fold(0_u8, |difference, (left, right)| {
+            difference | (left ^ right)
+        })
+        == 0
+}
+
 fn admin_status(state: &AppState) -> Result<AdminStatus> {
     let (organization_count, device_count, bundle_count) = state.db.counts()?;
     Ok(AdminStatus {
@@ -539,21 +840,113 @@ fn admin_status(state: &AppState) -> Result<AdminStatus> {
         public_key_b64: state.signing.public_key_b64(),
         public_key_b64url: state.signing.public_key_b64url(),
         database_path: state.db.path().display().to_string(),
+        customer_id: state.customer_entitlement.payload.customer_id.clone(),
+        entitlement_serial: state.customer_entitlement.payload.entitlement_serial,
+        entitlement_valid_until: state.customer_entitlement.payload.valid_until.clone(),
+        max_registered_devices: state.customer_entitlement.payload.max_registered_devices,
+        approved_device_count: state
+            .customer_entitlement
+            .payload
+            .authorized_device_key_ids
+            .len() as u32,
         organization_count,
         device_count,
         bundle_count,
     })
 }
 
-fn snapshot(state: &AppState) -> Result<AdminSnapshot> {
+fn status_for_user(state: &AppState, user: &AdminUser) -> Result<AdminStatus> {
+    if user.organization_id.is_none() {
+        return admin_status(state);
+    }
+    Ok(snapshot(state, user)?.status)
+}
+
+fn snapshot(state: &AppState, user: &AdminUser) -> Result<AdminSnapshot> {
+    let scope = user.organization_id.as_deref();
+    let mut organizations = state.db.organizations()?;
+    let mut devices = state.db.devices(scope)?;
+    let mut grants = state.db.grants()?;
+    let mut bundles = state.db.bundles()?;
+    if let Some(scope) = scope {
+        organizations.retain(|item| item.id == scope);
+        devices.retain(|item| item.organization_id == scope);
+        grants.retain(|item| item.organization_id == scope);
+        bundles.retain(|item| item.organization_id == scope);
+    }
+    let status = if scope.is_some() {
+        AdminStatus {
+            service: "keylesspass-admin".to_string(),
+            key_id: state.signing.key_id.clone(),
+            public_key_b64: state.signing.public_key_b64(),
+            public_key_b64url: state.signing.public_key_b64url(),
+            database_path: "tenant-scoped".to_string(),
+            customer_id: state.customer_entitlement.payload.customer_id.clone(),
+            entitlement_serial: state.customer_entitlement.payload.entitlement_serial,
+            entitlement_valid_until: state.customer_entitlement.payload.valid_until.clone(),
+            max_registered_devices: state.customer_entitlement.payload.max_registered_devices,
+            approved_device_count: state
+                .customer_entitlement
+                .payload
+                .authorized_device_key_ids
+                .len() as u32,
+            organization_count: organizations.len() as u32,
+            device_count: devices.len() as u32,
+            bundle_count: bundles.len() as u32,
+        }
+    } else {
+        admin_status(state)?
+    };
     Ok(AdminSnapshot {
-        status: admin_status(state)?,
-        organizations: state.db.organizations()?,
-        devices: state.db.devices(None)?,
-        grants: state.db.grants()?,
-        bundles: state.db.bundles()?,
-        audit_log: state.db.audit_log()?,
+        status,
+        organizations,
+        devices,
+        grants,
+        bundles,
+        audit_log: if scope.is_some() {
+            Vec::new()
+        } else {
+            state.db.audit_log()?
+        },
     })
+}
+
+fn ensure_org_access(user: &AdminUser, organization_id: &str) -> ApiResult<()> {
+    if user
+        .organization_id
+        .as_deref()
+        .is_some_and(|scope| scope != organization_id)
+    {
+        return Err(api_error(
+            StatusCode::FORBIDDEN,
+            "administrator token is scoped to another organization",
+        ));
+    }
+    Ok(())
+}
+
+fn scoped_organization(user: &AdminUser, requested: Option<&str>) -> ApiResult<Option<String>> {
+    if let Some(scope) = user.organization_id.as_deref() {
+        if requested.is_some_and(|value| value != scope) {
+            return Err(api_error(
+                StatusCode::FORBIDDEN,
+                "administrator token is scoped to another organization",
+            ));
+        }
+        return Ok(Some(scope.to_string()));
+    }
+    Ok(requested.map(str::to_string))
+}
+
+fn ensure_request_scope(user: &AdminUser, body: &ImportDeviceRequestBody) -> ApiResult<()> {
+    let request: DeviceAuthorizationRequest = serde_json::from_str(body.request_json.trim())
+        .map_err(|_| bad_request(anyhow!("device authorization request JSON is invalid")))?;
+    let organization_id = body
+        .organization_id
+        .as_deref()
+        .or(request.organization_id.as_deref())
+        .ok_or_else(|| bad_request(anyhow!("organizationId is required")))?;
+    ensure_org_access(user, organization_id)
 }
 
 fn normalize_issue_valid_until(
