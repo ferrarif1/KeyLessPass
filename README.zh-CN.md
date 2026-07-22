@@ -26,6 +26,8 @@
   <a href="PRIVACY.md">Privacy</a>
   ·
   <a href="RELEASE.md">Release</a>
+  ·
+  <a href="DOCS.zh-CN.md">文档</a>
 </p>
 
 <p align="center">
@@ -273,15 +275,16 @@ Rust 测试覆盖派生稳定性、元数据不可变边界、路径字段敏感
 
 ## 文档
 
-- [SECURITY.md](SECURITY.md)
-- [PRIVACY.md](PRIVACY.md)
-- [RELEASE.md](RELEASE.md)
-- [CONTRIBUTING.md](CONTRIBUTING.md)
-- [DEVELOPMENT.md](DEVELOPMENT.md)
-- [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
-- [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)
-- [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)
-- [设备批量授权实现与使用指南](docs/commercial/device-batch-authorization-implementation.zh-CN.md)
+完整中英文文档地图：[DOCS.zh-CN.md](DOCS.zh-CN.md) / [English](DOCS.md)。
+
+| 你要做什么 | 看这里 |
+| --- | --- |
+| 本地运行桌面客户端 | [DEVELOPMENT.zh-CN.md](DEVELOPMENT.zh-CN.md) |
+| 在 macOS / Windows / Linux 构建 | [macOS](docs/MACOS_INSTALL.md)、[Windows](docs/WINDOWS_INSTALL.md)、[Linux](docs/LINUX_INSTALL.md) |
+| 部署授权后台 | [admin_backend/README.zh-CN.md](admin_backend/README.zh-CN.md) |
+| 给设备授权 | [设备批量授权实现与使用指南](docs/commercial/device-batch-authorization-implementation.zh-CN.md) |
+| 准备商业发布 | [RELEASE.zh-CN.md](RELEASE.zh-CN.md) 和 [商业发布加固](docs/commercial/commercial-release-hardening.zh-CN.md) |
+| 看安全和隐私说明 | [SECURITY.zh-CN.md](SECURITY.zh-CN.md)、[PRIVACY.zh-CN.md](PRIVACY.zh-CN.md) |
 
 ## 授权许可
 

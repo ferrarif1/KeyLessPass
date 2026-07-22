@@ -26,6 +26,8 @@
   <a href="PRIVACY.md">Privacy</a>
   ·
   <a href="RELEASE.md">Release</a>
+  ·
+  <a href="DOCS.md">Docs</a>
 </p>
 
 <p align="center">
@@ -231,9 +233,9 @@ signing so tampered builds are distinguishable from official releases.
 
 - Flutter Desktop SDK
 - Rust toolchain
-- macOS: Xcode for desktop builds. See [docs/MACOS_INSTALL.md](docs/MACOS_INSTALL.md).
-- Windows: Visual Studio Build Tools for desktop builds. See [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md).
-- Linux: Flutter Linux desktop dependencies. See [docs/LINUX_INSTALL.md](docs/LINUX_INSTALL.md).
+- macOS: Xcode for desktop builds. See [docs/MACOS_INSTALL.en.md](docs/MACOS_INSTALL.en.md) / [中文](docs/MACOS_INSTALL.md).
+- Windows: Visual Studio Build Tools for desktop builds. See [docs/WINDOWS_INSTALL.en.md](docs/WINDOWS_INSTALL.en.md) / [中文](docs/WINDOWS_INSTALL.md).
+- Linux: Flutter Linux desktop dependencies. See [docs/LINUX_INSTALL.en.md](docs/LINUX_INSTALL.en.md) / [中文](docs/LINUX_INSTALL.md).
 
 Each platform guide starts from Flutter installation and continues through Rust, local run, release build, and packaging notes.
 
@@ -296,14 +298,16 @@ The Rust test suite covers derivation stability, metadata immutability boundarie
 
 ## Documentation
 
-- [SECURITY.md](SECURITY.md)
-- [PRIVACY.md](PRIVACY.md)
-- [RELEASE.md](RELEASE.md)
-- [CONTRIBUTING.md](CONTRIBUTING.md)
-- [DEVELOPMENT.md](DEVELOPMENT.md)
-- [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md)
-- [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md)
-- [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)
+See the full bilingual documentation map: [DOCS.md](DOCS.md) / [中文](DOCS.zh-CN.md).
+
+| Goal | Read |
+| --- | --- |
+| Run the desktop client | [DEVELOPMENT.md](DEVELOPMENT.md) |
+| Build on macOS / Windows / Linux | [macOS](docs/MACOS_INSTALL.en.md), [Windows](docs/WINDOWS_INSTALL.en.md), [Linux](docs/LINUX_INSTALL.en.md) |
+| Deploy the authorization backend | [admin_backend/README.md](admin_backend/README.md) |
+| Authorize devices | [device authorization guide](docs/commercial/device-batch-authorization-implementation.md) |
+| Prepare a commercial release | [RELEASE.md](RELEASE.md) and [commercial hardening](docs/commercial/commercial-release-hardening.md) |
+| Review security and privacy | [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md) |
 
 ## License
 

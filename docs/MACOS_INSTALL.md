@@ -1,5 +1,7 @@
 # macOS 安装与构建说明
 
+English: [MACOS_INSTALL.en.md](MACOS_INSTALL.en.md)
+
 本文面向需要在 macOS 上构建和测试 KeyLessPass 桌面客户端的开发者或 PoC 测试人员。流程从安装 Flutter 开始，最终输出 `.app`，也可生成本地 DMG。
 
 ## 1. 系统要求

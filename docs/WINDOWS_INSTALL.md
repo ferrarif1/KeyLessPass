@@ -1,5 +1,7 @@
 # Windows 安装与构建说明
 
+English: [WINDOWS_INSTALL.en.md](WINDOWS_INSTALL.en.md)
+
 本文面向需要在 Windows 10/11 上构建 KeyLessPass 桌面客户端的开发者或测试人员。流程从安装 Flutter 开始，最终输出可运行的 Windows release 目录。
 
 ## 1. 安装 Flutter SDK

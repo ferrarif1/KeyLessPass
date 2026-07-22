@@ -1,5 +1,7 @@
 # Linux 安装与构建说明
 
+English: [LINUX_INSTALL.en.md](LINUX_INSTALL.en.md)
+
 本文面向需要在 Linux 桌面环境构建和测试 KeyLessPass 的开发者或 PoC 测试人员，覆盖 Ubuntu/Debian 系发行版，以及统信 UOS、麒麟等常见国产 Linux / 信创环境的构建要点。
 
 ## 1. 系统要求
