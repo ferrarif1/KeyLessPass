@@ -6,7 +6,6 @@ English: [DEVELOPMENT.md](DEVELOPMENT.md)
 
 - `flutter_app/`：Flutter Desktop UI 和 FFI 绑定。
 - `rust_core/`：密码学、CDR 存储、因子包、恢复和 JSON FFI。
-- `admin_backend/`：内网商业设备授权后台。
 - `packaging/`：macOS、Windows、Linux 打包入口。
 - `docs/`：架构、产品化、发布和使用说明。
 
@@ -26,15 +25,6 @@ flutter run -d macos
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer flutter run -d macos
 ```
-
-## 授权后台
-
-```bash
-cd admin_backend
-./scripts/intranet_deploy.sh
-```
-
-打开脚本输出的地址，输入脚本输出的 Admin token。给设备授权的流程看 [admin_backend/README.zh-CN.md](admin_backend/README.zh-CN.md) 和 [docs/commercial/device-batch-authorization-implementation.zh-CN.md](docs/commercial/device-batch-authorization-implementation.zh-CN.md)。
 
 ## i18n
 

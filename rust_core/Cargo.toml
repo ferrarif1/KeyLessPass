@@ -1,7 +1,7 @@
 [package]
 name = "keylesspass_core"
 version = "0.1.0"
-description = "KeylessPass storage-free local password derivation core"
+description = "KeyLessPass legacy service-password derivation and lifecycle core"
 edition = "2021"
 rust-version = "1.70"
 
@@ -9,26 +9,36 @@ rust-version = "1.70"
 name = "keylesspass_core"
 crate-type = ["rlib", "cdylib", "staticlib"]
 
+[features]
+default = []
+research = ["dep:aes", "dep:fpe", "dep:num-bigint", "dep:num-traits"]
+
 [dependencies]
+aes = { version = "0.8", optional = true }
 aes-gcm = "0.10"
 argon2 = "0.5"
 base64 = "0.22"
+bip39 = "2.2.2"
 chrono = { version = "0.4", features = ["serde"] }
-ed25519-dalek = "2"
 getrandom = "0.2"
 hkdf = "0.12"
 hmac = "0.12"
+fpe = { version = "0.6.1", optional = true }
+num-bigint = { version = "0.4", optional = true }
+num-traits = { version = "0.2", optional = true }
 pbkdf2 = "0.12"
 rand = "0.8"
 rusqlite = { version = "0.32", features = ["bundled"] }
 scrypt = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+serde_json_canonicalizer = "0.3.2"
 sha2 = "0.10"
 thiserror = "1"
 unicode-normalization = "0.1"
 uuid = { version = "1", features = ["serde", "v4"] }
 zeroize = { version = "1", features = ["derive"] }
+vsss-rs = { version = "5.4.0", default-features = false, features = ["std", "zeroize"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.59", features = [
@@ -42,3 +52,8 @@ libc = "0.2"
 
 [dev-dependencies]
 tempfile = "3"
+
+[[example]]
+name = "psppd_experiment"
+path = "examples/psppd_experiment.rs"
+required-features = ["research"]

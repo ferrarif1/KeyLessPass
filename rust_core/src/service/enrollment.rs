@@ -36,7 +36,6 @@ pub struct EnrollmentResponse {
 }
 
 pub fn enroll(request: EnrollmentRequest) -> std::result::Result<EnrollmentResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     enroll_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -47,12 +46,6 @@ pub fn enroll_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: EnrollmentRequest,
 ) -> Result<EnrollmentResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     paths.ensure()?;
     if paths.config_path.exists() || paths.local_factor_path.exists() || paths.db_path.exists() {
         return Err(KeylessPassError::Validation(

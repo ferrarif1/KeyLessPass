@@ -108,4 +108,4 @@ If `xcodebuild` is unavailable, use `DEVELOPER_DIR=/Applications/Xcode.app/Conte
 
 If USB is visible but not writable, click the folder button in the app and choose the USB root path, for example `/Volumes/WD`.
 
-If re-signing breaks USB or online activation, re-sign with `flutter_app/macos/Runner/Release.entitlements`; it contains removable-media, user-selected file access, and network-client permissions.
+If re-signing breaks USB access, re-sign with `flutter_app/macos/Runner/Release.entitlements`; it contains removable-media and user-selected file access permissions.

@@ -12,15 +12,11 @@ English: [DOCS.md](DOCS.md)
 | 在 macOS 构建或打包 | [docs/MACOS_INSTALL.en.md](docs/MACOS_INSTALL.en.md) | [docs/MACOS_INSTALL.md](docs/MACOS_INSTALL.md) |
 | 在 Windows 构建或打包 | [docs/WINDOWS_INSTALL.en.md](docs/WINDOWS_INSTALL.en.md) | [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md) |
 | 在 Linux 构建或打包 | [docs/LINUX_INSTALL.en.md](docs/LINUX_INSTALL.en.md) | [docs/LINUX_INSTALL.md](docs/LINUX_INSTALL.md) |
-| 部署授权后台 | [admin_backend/README.md](admin_backend/README.md) | [admin_backend/README.zh-CN.md](admin_backend/README.zh-CN.md) |
-| 给设备授权 | [docs/commercial/device-batch-authorization-implementation.md](docs/commercial/device-batch-authorization-implementation.md) | [docs/commercial/device-batch-authorization-implementation.zh-CN.md](docs/commercial/device-batch-authorization-implementation.zh-CN.md) |
-| 准备商业发布 | [docs/commercial/commercial-release-hardening.md](docs/commercial/commercial-release-hardening.md) | [docs/commercial/commercial-release-hardening.zh-CN.md](docs/commercial/commercial-release-hardening.zh-CN.md) |
 
 ## 产品和运维
 
 | 主题 | 英文 | 中文 |
 | --- | --- | --- |
-| 商业授权条款 | [COMMERCIAL.md](COMMERCIAL.md) | [COMMERCIAL.zh-CN.md](COMMERCIAL.zh-CN.md) |
 | 隐私说明 | [PRIVACY.md](PRIVACY.md) | [PRIVACY.zh-CN.md](PRIVACY.zh-CN.md) |
 | 安全政策 | [SECURITY.md](SECURITY.md) | [SECURITY.zh-CN.md](SECURITY.zh-CN.md) |
 | 发布说明 | [RELEASE.md](RELEASE.md) | [RELEASE.zh-CN.md](RELEASE.zh-CN.md) |
@@ -37,7 +33,6 @@ English: [DOCS.md](DOCS.md)
 | 产品化报告 | [docs/PRODUCTIZATION_REPORT.md](docs/PRODUCTIZATION_REPORT.md) | [docs/PRODUCTIZATION_REPORT.zh-CN.md](docs/PRODUCTIZATION_REPORT.zh-CN.md) |
 | 安全说明 | [docs/SECURITY.md](docs/SECURITY.md) | [docs/SECURITY.zh-CN.md](docs/SECURITY.zh-CN.md) |
 | 上架准备清单 | [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md) | [docs/STORE_READINESS_CHECKLIST.zh-CN.md](docs/STORE_READINESS_CHECKLIST.zh-CN.md) |
-| 设备授权设计 | [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md) | [docs/commercial/device-batch-authorization.zh-CN.md](docs/commercial/device-batch-authorization.zh-CN.md) |
 | 2-of-3 恢复实现说明 | [docs/security/2-of-3-recovery-implementation-notes.md](docs/security/2-of-3-recovery-implementation-notes.md) | [docs/security/2-of-3-recovery-implementation-notes.zh-CN.md](docs/security/2-of-3-recovery-implementation-notes.zh-CN.md) |
 
 ## 本地常用命令
@@ -63,11 +58,4 @@ flutter test
 ```bash
 cd flutter_app
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer flutter run -d macos
-```
-
-运行内网授权后台：
-
-```bash
-cd admin_backend
-./scripts/intranet_deploy.sh
 ```

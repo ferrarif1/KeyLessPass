@@ -2,29 +2,6 @@
 
 English: [RELEASE.md](RELEASE.md)
 
-## 商业授权构建
-
-商业包必须通过 `tools/commercial/build_commercial_release.sh` 或等价 CI 构建。构建时要：
-
-- 启用 `KEYLESSPASS_REQUIRE_LICENSE=1`；
-- 设置非 evaluation 发布渠道；
-- 设置托管授权包路径；
-- 嵌入授权后台对应的公钥。
-
-密钥轮换时，使用 [docs/commercial/commercial-release-hardening.zh-CN.md](docs/commercial/commercial-release-hardening.zh-CN.md) 中的多公钥信任配置。
-
-发布前必须验证：
-
-- HTTPS 在线激活；
-- 离线授权包导入；
-- MDM/托管授权包刷新；
-- 到期和宽限期；
-- 吊销刷新；
-- 席位耗尽；
-- 干净安装后的未授权状态。
-
-不要分发本地 ad-hoc 签名的授权测试包。
-
 ## macOS
 
 完整说明看：[docs/MACOS_INSTALL.md](docs/MACOS_INSTALL.md)
@@ -55,7 +32,7 @@ CODESIGN_IDENTITY="-" CREATE_DMG=1 packaging/macos/build_dmg.sh
 
 正式发布需要 Developer ID 签名、notarization 和 staple。
 
-重新签名时必须带 entitlements，特别是 removable media、user-selected read/write 和网络 client 权限，否则 U 盘或在线激活会失败。
+重新签名时必须带 entitlements，特别是 removable media 和 user-selected read/write 权限，否则 U 盘访问会失败。
 
 ## Windows
 

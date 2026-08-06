@@ -9,7 +9,8 @@ use unicode_normalization::UnicodeNormalization;
 use uuid::Uuid;
 use zeroize::Zeroize;
 
-use crate::domain::PasswordDerivationAlgorithm;
+use crate::domain::{CredentialDescriptionRecord, PasswordDerivationAlgorithm};
+use serde::Serialize;
 
 const ARGON2ID_MEMORY_KIB: u32 = 19 * 1024;
 const ARGON2ID_ITERATIONS: u32 = 2;
@@ -37,6 +38,33 @@ pub fn hkdf_32(input_key_material: &[u8], salt: &[u8], info: &[u8]) -> Result<[u
     let mut out = [0_u8; 32];
     out.copy_from_slice(&bytes);
     Ok(out)
+}
+
+pub fn derive_vault_subkey(
+    root_key: &[u8],
+    vault_id: &Uuid,
+    root_generation: u64,
+    crypto_suite_version: u32,
+    purpose: &[u8],
+) -> Result<[u8; 32]> {
+    if root_key.len() != 32 {
+        return Err(KeylessPassError::Crypto(
+            "root key must contain 256 bits".to_string(),
+        ));
+    }
+    let mut salt_context = Vec::with_capacity(28);
+    salt_context.extend_from_slice(vault_id.as_bytes());
+    salt_context.extend_from_slice(&root_generation.to_be_bytes());
+    salt_context.extend_from_slice(&crypto_suite_version.to_be_bytes());
+    let salt = Sha256Digest::digest(
+        [
+            b"KeyLessPass/vault-subkey/salt/v1".as_slice(),
+            &salt_context,
+        ]
+        .concat(),
+    );
+    let info = [b"KeyLessPass/vault-subkey/v1/".as_slice(), purpose].concat();
+    hkdf_32(root_key, &salt, &info)
 }
 
 pub fn normalize_mnemonic(mnemonic: &str) -> String {
@@ -134,6 +162,86 @@ pub fn derive_password_root(f_m: &[u8], f_c: &[u8], f_u: &[u8]) -> Result<[u8; 3
 
 pub fn derive_password_root_from_master(master_key: &[u8]) -> Result<[u8; 32]> {
     hkdf_32(master_key, b"", b"KeyLessPass v2 derivation key")
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PasswordPolicyBinding<'a> {
+    policy_id: String,
+    policy_version: u32,
+    encoding_descriptor: &'a crate::domain::EncodingDescriptor,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PasswordDerivationInput {
+    domain: &'static str,
+    service_id: String,
+    account_id: String,
+    credential_generation: u64,
+    credential_salt: String,
+    derivation_version: u32,
+    encoder_version: u32,
+    policy_hash: String,
+}
+
+/// Returns the RFC 8785 input authenticated by the v3 password-derivation HMAC.
+/// Administrative `record_id` and `record_seq` fields are intentionally excluded.
+pub fn password_derivation_input_v3(record: &CredentialDescriptionRecord) -> Result<Vec<u8>> {
+    if record.schema_version != crate::domain::CDR_SCHEMA_VERSION
+        || record.derivation_version != crate::domain::CDR_DERIVATION_VERSION
+        || record.encoder_version != crate::domain::CDR_ENCODER_VERSION
+    {
+        return Err(KeylessPassError::Validation(
+            "unsupported CDR password-derivation version".to_string(),
+        ));
+    }
+    if record.service_id.is_nil() || record.account_id.is_nil() || record.policy_id.is_nil() {
+        return Err(KeylessPassError::Validation(
+            "v3 derivation requires non-nil service, account, and policy identifiers".to_string(),
+        ));
+    }
+    let credential_salt = crate::crypto::b64_decode(&record.salt)?;
+    if credential_salt.len() != 16 {
+        return Err(KeylessPassError::Validation(
+            "v3 credential salt must contain 128 bits".to_string(),
+        ));
+    }
+    let policy = PasswordPolicyBinding {
+        policy_id: record.policy_id.to_string(),
+        policy_version: record.policy_version,
+        encoding_descriptor: &record.encoding_descriptor,
+    };
+    let policy_jcs = serde_json_canonicalizer::to_vec(&policy)?;
+    let input = PasswordDerivationInput {
+        domain: "KeyLessPass/password-derivation-input/v1",
+        service_id: record.service_id.to_string(),
+        account_id: record.account_id.to_string(),
+        credential_generation: record.credential_generation,
+        credential_salt: crate::crypto::b64_encode(&credential_salt),
+        derivation_version: record.derivation_version,
+        encoder_version: record.encoder_version,
+        policy_hash: crate::crypto::b64_encode(&Sha256Digest::digest(policy_jcs)),
+    };
+    Ok(serde_json_canonicalizer::to_vec(&input)?)
+}
+
+/// Derives the 256-bit deterministic seed consumed by encoder v2 for CDR v3.
+pub fn derive_service_secret_v3(
+    root_key: &[u8; 32],
+    record: &CredentialDescriptionRecord,
+) -> Result<[u8; 32]> {
+    let password_key = derive_vault_subkey(
+        root_key,
+        &record.vault_id,
+        record.root_generation,
+        record.crypto_suite_version,
+        b"password-derivation",
+    )?;
+    let seed =
+        crate::crypto::mac::hmac_sha256(&password_key, &password_derivation_input_v3(record)?)?;
+    seed.try_into()
+        .map_err(|_| KeylessPassError::Crypto("password seed length is not 256 bits".to_string()))
 }
 
 pub fn derive_service_secret(
@@ -235,4 +343,83 @@ fn mnemonic_factor_kdf_salt(salt: &[u8]) -> [u8; 32] {
 
 pub fn derive_fallback_package_key(secret: &[u8], label: &[u8]) -> Result<[u8; 32]> {
     hkdf_32(secret, b"KeylessPass fallback local package salt", label)
+}
+
+#[cfg(test)]
+mod v3_vector_tests {
+    use super::*;
+    use crate::crypto::encoder;
+    use crate::domain::EncodingDescriptor;
+
+    fn vector_record() -> CredentialDescriptionRecord {
+        let mut record = CredentialDescriptionRecord::new(
+            Uuid::from_u128(0x00112233445566778899aabbccddeeff),
+            7,
+            42,
+            "ignored display name",
+            "ignored.example",
+            "ignored account",
+            "ignored note",
+            EncodingDescriptor::default(),
+        );
+        record.record_id = Uuid::from_u128(0x11111111222233334444555555555555);
+        record.service_id = Uuid::from_u128(0xaaaaaaaa111122223333444444444444);
+        record.account_id = Uuid::from_u128(0xbbbbbbbb111122223333444444444444);
+        record.credential_generation = 3;
+        record.policy_id = Uuid::from_u128(0xcccccccc111122223333444444444444);
+        record.policy_version = 2;
+        record.salt = "EREREREREREREREREREREQ==".to_string();
+        record
+    }
+
+    #[test]
+    fn fixed_password_derivation_vector_is_cross_platform_stable() {
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../test-vectors/password-derivation-v2.json"
+        ))
+        .unwrap();
+        let root_key: [u8; 32] = crate::crypto::b64_decode(vector["rootKey"].as_str().unwrap())
+            .unwrap()
+            .try_into()
+            .unwrap();
+        let record = vector_record();
+        let input = password_derivation_input_v3(&record).unwrap();
+        let password_key = derive_vault_subkey(
+            &root_key,
+            &record.vault_id,
+            record.root_generation,
+            record.crypto_suite_version,
+            b"password-derivation",
+        )
+        .unwrap();
+        let seed = derive_service_secret_v3(&root_key, &record).unwrap();
+        let password = encoder::encode_password(&seed, &record.encoding_descriptor).unwrap();
+        assert_eq!(
+            input,
+            serde_json_canonicalizer::to_vec(&vector["derivationInput"]).unwrap()
+        );
+        assert_eq!(
+            crate::crypto::b64_encode(&password_key),
+            vector["passwordKey"].as_str().unwrap()
+        );
+        assert_eq!(
+            crate::crypto::b64_encode(&seed),
+            vector["seed"].as_str().unwrap()
+        );
+        assert_eq!(password, vector["password"].as_str().unwrap());
+
+        let mut administrative_copy = record.clone();
+        administrative_copy.record_id = Uuid::new_v4();
+        administrative_copy.record_seq += 1;
+        assert_eq!(
+            derive_service_secret_v3(&root_key, &administrative_copy).unwrap(),
+            seed
+        );
+        let mut different_service = record;
+        different_service.service_id = Uuid::new_v4();
+        assert_ne!(
+            derive_service_secret_v3(&root_key, &different_service).unwrap(),
+            seed
+        );
+    }
 }

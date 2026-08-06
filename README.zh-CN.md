@@ -1,12 +1,6 @@
 # KeyLessPass
 
-> KeyLessPass is source-available, not open-source.
-> The code is provided for evaluation, security review, learning, and non-commercial testing only.
-> Commercial use, enterprise deployment, redistribution, OEM integration, white-label use, managed service use, or channel resale requires a separate written commercial license.
-
-> KeyLessPass 采用“源码可见但非开源”的授权模式。
-> 本仓库代码仅供评估、安全审查、学习和非商业测试使用。
-> 企业部署、商业使用、二次分发、OEM 集成、白标使用、托管服务或渠道销售，均需另行取得书面商业授权。
+> **v3 研究实现说明：** Rust Core 已提供经过认证和代际绑定的 Shamir 2-of-3 Root Key 恢复、CDR v3、无偏策略编码、pending-confirm-reconcile 轮换及新鲜度接口。本文后续部分若出现 `W_MC`、`W_MU`、`W_CU`，描述的是仍由当前 Flutter 初始化界面生成的 legacy v2 格式；它们不是 secret shares，仅用于兼容和迁移。v3 当前通过 Rust 迁移接口启用，完整桌面 UX 尚未交付。
 
 <p align="center">
   <img src="docs/readme-assets/logo.png" width="112" alt="KeyLessPass logo" />
@@ -20,8 +14,6 @@
   <a href="README.md">English</a>
   ·
   <a href="SECURITY.md">Security</a>
-  ·
-  <a href="COMMERCIAL.md">Commercial</a>
   ·
   <a href="PRIVACY.md">Privacy</a>
   ·
@@ -103,7 +95,6 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 | U 盘因子包：`userId`、`usbId`、`saltU`、U 盘因子材料、`W_MU`、`W_CU` 和 schema/version 元数据 | 加密服务密码库 |
 | CDR 元数据、盐值、版本、MAC 标签和可选 U 盘 CDR 备份 | 助记短语 |
 | 平台保护的本机设备 secret，例如 macOS `com.keylesspass.local-factor` | 本机或 U 盘 payload 中的明文 `Kmaster` |
-| 商业授权状态、签名 license bundle、商业设备 ID | 本机包中的 `usbSecret` 或 U 盘包中的 `deviceSecret` |
 
 ## 简要工作原理
 
@@ -174,7 +165,6 @@ flowchart LR
 
 ```text
 KeyLessPass
-├── admin_backend/        # 内网商业设备授权后台
 ├── flutter_app/          # Flutter Desktop UI
 ├── rust_core/            # Rust 密码学、存储、恢复和 FFI 核心
 ├── packaging/            # macOS、Windows、Linux 打包脚本
@@ -183,11 +173,6 @@ KeyLessPass
 ```
 
 Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过统一接口实现，macOS Keychain、Windows DPAPI、Linux 本地/回退存储，以及后续 TPM/Secure Enclave 能力都隔离在 provider 层。
-
-商业设备授权是外层产品授权能力，不属于密码派生安全边界。`admin_backend`
-可在企业内网部署，支持离线授权包和 HTTPS 在线激活，并提供角色权限、设备 CSV、
-审计导出和跨批次席位控制。桌面客户端对所有授权结果进行本地签名校验，MDM 可向
-平台托管路径下发授权包。该后台只保存商业授权元数据，不接收助记短语、`Kmaster`、因子 secret、CDR secret、服务密码或派生密码。商业客户端应在编译期启用授权强制检查，并且只嵌入厂商根公钥。客户现场公钥必须由厂商授权委托，设备密钥还必须出现在厂商签名白名单中。
 
 ## 快速开始
 
@@ -217,28 +202,6 @@ flutter analyze
 flutter test
 flutter run -d macos
 ```
-
-### 一键内网部署授权后台
-
-```bash
-cd admin_backend
-./scripts/intranet_deploy.sh
-```
-
-脚本首次运行会生成管理员 token 和客户现场 Ed25519 密钥，然后等待厂商返回
-`customer-entitlement.json` 和厂商根公钥。现场私钥只保存在内网后台；厂商根私钥永不交付客户。`/download` 无需登录，管理操作需要 Admin token；正式管理访问使用 HTTPS 和管理网段 ACL。客户端每 30 分钟续签默认 24 小时授权，下载页只列出厂商签名发布清单中哈希匹配的安装包。
-
-### 构建强制授权商业客户端
-
-```bash
-KEYLESSPASS_LICENSE_KEY_ID='keylesspass-vendor-root-2026' \
-KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<厂商根公钥>' \
-CODESIGN_IDENTITY='Developer ID Application: 你的公司 (TEAMID)' \
-tools/commercial/build_commercial_release.sh macos
-```
-
-商业构建会设置 `KEYLESSPASS_REQUIRE_LICENSE=1`。正式分发仍应使用平台签名：
-macOS Developer ID + notarization，Windows Authenticode，Linux 签名仓库或签名校验清单。
 
 ### macOS 发布构建
 
@@ -282,15 +245,9 @@ Rust 测试覆盖派生稳定性、元数据不可变边界、路径字段敏感
 | --- | --- |
 | 本地运行桌面客户端 | [DEVELOPMENT.zh-CN.md](DEVELOPMENT.zh-CN.md) |
 | 在 macOS / Windows / Linux 构建 | [macOS](docs/MACOS_INSTALL.md)、[Windows](docs/WINDOWS_INSTALL.md)、[Linux](docs/LINUX_INSTALL.md) |
-| 部署授权后台 | [admin_backend/README.zh-CN.md](admin_backend/README.zh-CN.md) |
-| 给设备授权 | [设备批量授权实现与使用指南](docs/commercial/device-batch-authorization-implementation.zh-CN.md) |
-| 准备商业发布 | [RELEASE.zh-CN.md](RELEASE.zh-CN.md) 和 [商业发布加固](docs/commercial/commercial-release-hardening.zh-CN.md) |
+| 准备发布 | [RELEASE.zh-CN.md](RELEASE.zh-CN.md) |
 | 看安全和隐私说明 | [SECURITY.zh-CN.md](SECURITY.zh-CN.md)、[PRIVACY.zh-CN.md](PRIVACY.zh-CN.md) |
 
 ## 授权许可
 
-KeyLessPass 采用源码可见但非开源的授权模式。详见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [COMMERCIAL.md](COMMERCIAL.md)。
-
-允许个人学习、评估、安全审查和非商业测试。企业生产部署、商业使用、二次分发、OEM 或白标集成、托管服务、安全服务打包、渠道销售，以及处理真实生产凭据，均需另行取得书面商业授权。
-
-商业设备和席位管理采用“组织授权 + 单设备授权书”的签名授权模型。具体部署、构建、在线激活、离线批量签发、续期和吊销操作见[设备批量授权实现与使用指南](docs/commercial/device-batch-authorization-implementation.zh-CN.md)；设计方案见 [docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md)。
+详见 [LICENSE](LICENSE) 和 [NOTICE](NOTICE)。

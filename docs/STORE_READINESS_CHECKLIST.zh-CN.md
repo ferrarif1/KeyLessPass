@@ -8,7 +8,7 @@ English: [STORE_READINESS_CHECKLIST.md](STORE_READINESS_CHECKLIST.md)
 
 - App 名称为 KeyLessPass。
 - Bundle identifier 为 `com.keylesspass.desktop`。
-- Release entitlements 包含可移动媒体、用户选择文件读写和网络 client 权限。
+- Release entitlements 包含可移动媒体和用户选择文件读写权限。
 - 打包脚本可构建 Rust Core、构建 Flutter macOS release、复制 Rust 动态库、签名并生成 DMG。
 - 已有隐私、安全、发布和支持占位文档。
 - 已实现 macOS 原生 U 盘目录选择，不依赖第三方插件。

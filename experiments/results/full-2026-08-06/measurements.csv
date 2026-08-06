@@ -1,0 +1,12 @@
+name,iterations,total_ms,mean_us,detail_json
+shamir_split_2_of_3,10000,1524.283699,152.428370,"{}"
+recover_recovery+computer,10000,2580.095870,258.009587,"{}"
+recover_recovery+usb,10000,2509.149566,250.914957,"{}"
+recover_computer+usb,10000,2485.494572,248.549457,"{}"
+factor_storage_bytes,1,0.000000,0.000000,"{""managedEnvelopeJcs"":474,""manifestJcs"":316,""recoveryPhraseUtf8"":747,""recoveryPhraseWords"":108,""usbEnvelopeJcs"":456}"
+password_derivation_and_encoding,10000,648548.213517,64854.821352,"{""characterCounts"":{""!"":3130,""#"":3012,""$"":3063,""%"":3142,""*"":3032,""+"":3071,""-"":3046,""2"":3424,""3"":3345,""4"":3265,""5"":3305,""6"":3283,""7"":3389,""8"":3445,""9"":3373,""="":3156,""@"":3004,""A"":2540,""B"":2498,""C"":2471,""D"":2471,""E"":2521,""F"":2584,""G"":2515,""H"":2521,""J"":2532,""K"":2531,""L"":2551,""M"":2481,""N"":2501,""P"":2447,""Q"":2472,""R"":2487,""S"":2512,""T"":2470,""U"":2448,""V"":2456,""W"":2549,""X"":2547,""Y"":2518,""Z"":2487,""_"":3071,""a"":2491,""b"":2446,""c"":2567,""d"":2453,""e"":2501,""f"":2457,""g"":2400,""h"":2539,""i"":2540,""j"":2584,""k"":2461,""m"":2468,""n"":2433,""o"":2448,""p"":2557,""q"":2503,""r"":2558,""s"":2537,""t"":2446,""u"":2410,""v"":2467,""w"":2537,""x"":2518,""y"":2502,""z"":2511},""passwordSpaceUpperBoundLog2"":109.1896054282399,""positionObservationCount"":[10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000]}"
+cdr_scale_100,100,11.661384,116.613840,"{""conflictDetection"":""concurrent_modification"",""databaseBytes"":233472,""loadMs"":2.919792,""loadedRecords"":100,""queryUs"":613.25,""writeMs"":8.741591999999999}"
+cdr_scale_1000,1000,72.563102,72.563102,"{""conflictDetection"":""concurrent_modification"",""databaseBytes"":2146304,""loadMs"":20.749605000000003,""loadedRecords"":1000,""queryUs"":727.288,""writeMs"":51.813497}"
+cdr_scale_10000,10000,656.519913,65.651991,"{""conflictDetection"":""concurrent_modification"",""databaseBytes"":21327872,""loadMs"":191.40310799999997,""loadedRecords"":10000,""queryUs"":617.018,""writeMs"":465.116805}"
+cdr_scale_100000,100000,7225.377201,72.253772,"{""conflictDetection"":""concurrent_modification"",""databaseBytes"":213426176,""loadMs"":1977.4739260000001,""loadedRecords"":100000,""queryUs"":2082.249,""writeMs"":5247.903275}"
+unknown_outcome_reconciliation,3000,720.655980,240.218660,"{""successfulStateExecutions"":3000}"

@@ -14,31 +14,6 @@ import '../platform/native_platform_api.dart';
 import '../widgets/desktop_widgets.dart';
 import 'app_theme.dart';
 
-bool isAllowedActivationServer(Uri uri) {
-  if (!uri.hasScheme || !uri.hasAuthority || uri.host.isEmpty) return false;
-  if (uri.scheme == 'https') return true;
-  final loopback =
-      uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host == '::1';
-  return uri.scheme == 'http' && loopback;
-}
-
-Uri? automaticServerUriFromConfig(String contents) {
-  try {
-    final value = jsonDecode(contents) as Map<String, Object?>;
-    if (value['schemaVersion'] != 1) return null;
-    final uri = Uri.parse(value['serverUrl'] as String);
-    if ((uri.scheme != 'http' && uri.scheme != 'https') ||
-        uri.host.isEmpty ||
-        uri.hasFragment ||
-        uri.userInfo.isNotEmpty) {
-      return null;
-    }
-    return uri;
-  } catch (_) {
-    return null;
-  }
-}
-
 enum _Section {
   dashboard,
   setup,
@@ -237,7 +212,6 @@ class _HomeWindowState extends State<_HomeWindow> {
   _Section _section = _initialSectionFromEnvironment();
   _RecordFilter _filter = _RecordFilter.all;
   AppStatus? _status;
-  LicenseStatus? _licenseStatus;
   List<CredentialRecord> _records = [];
   List<UsbCandidate> _usbCandidates = [];
   UsbCdrStatus? _usbCdrStatus;
@@ -250,8 +224,6 @@ class _HomeWindowState extends State<_HomeWindow> {
   int _defaultLength = 18;
   bool _advancedMode = false;
   String _passwordDerivationAlgorithm = 'hkdf-sha256';
-  DateTime? _lastAutomaticActivationAttempt;
-  bool _automaticActivationBusy = false;
 
   @override
   void initState() {
@@ -286,10 +258,6 @@ class _HomeWindowState extends State<_HomeWindow> {
     }
     try {
       final status = await api.getAppStatus();
-      var licenseStatus = await api.getLicenseStatus();
-      licenseStatus =
-          await _tryAutomaticActivation(api, licenseStatus.authorized) ??
-              licenseStatus;
       var records = <CredentialRecord>[];
       var candidates = <UsbCandidate>[];
       if (status.enrolled) {
@@ -321,7 +289,6 @@ class _HomeWindowState extends State<_HomeWindow> {
       }
       setState(() {
         _status = status;
-        _licenseStatus = licenseStatus;
         if (status.enrolled) {
           _passwordDerivationAlgorithm = status.passwordDerivationAlgorithm;
         }
@@ -334,181 +301,6 @@ class _HomeWindowState extends State<_HomeWindow> {
       setState(() => _message = context.t.operationFailed);
     } finally {
       if (mounted && !silent) setState(() => _busy = false);
-    }
-  }
-
-  Future<LicenseStatus?> _tryAutomaticActivation(
-    CoreApi api,
-    bool currentlyAuthorized,
-  ) async {
-    final now = DateTime.now();
-    final minimumInterval = currentlyAuthorized
-        ? const Duration(minutes: 30)
-        : const Duration(seconds: 15);
-    if (_automaticActivationBusy ||
-        (_lastAutomaticActivationAttempt != null &&
-            now.difference(_lastAutomaticActivationAttempt!) < minimumInterval)) {
-      return null;
-    }
-    _automaticActivationBusy = true;
-    _lastAutomaticActivationAttempt = now;
-    try {
-      final servers = await _automaticActivationServers();
-      if (servers.isEmpty) return null;
-      final deviceRequest = await api.exportDeviceAuthorizationRequest();
-      for (final server in servers) {
-        final status = await _activateAutomaticallyAt(
-          api,
-          server,
-          deviceRequest,
-        );
-        if (status != null) return status;
-      }
-    } catch (_) {
-      return null;
-    } finally {
-      _automaticActivationBusy = false;
-    }
-    return null;
-  }
-
-  Future<List<Uri>> _automaticActivationServers() async {
-    final configured = await _configuredAutomaticServer();
-    if (configured != null) return <Uri>[configured];
-    final values = <String>{};
-    for (final discovered in await _discoverAutomaticServers()) {
-      values.add(discovered.toString());
-    }
-    return values.map(Uri.parse).toList(growable: false);
-  }
-
-  Future<Uri?> _configuredAutomaticServer() async {
-    final home = Platform.environment['HOME'];
-    final appData = Platform.environment['APPDATA'];
-    final programData = Platform.environment['PROGRAMDATA'];
-    final userProfile = Platform.environment['USERPROFILE'];
-    final explicit = Platform.environment['KEYLESSPASS_CLIENT_CONFIG'];
-    final executableDirectory = File(Platform.resolvedExecutable).parent.path;
-    final paths = <String>[
-      if (explicit != null && explicit.trim().isNotEmpty) explicit.trim(),
-      '${Directory.current.path}/keylesspass-client-config.json',
-      '$executableDirectory/keylesspass-client-config.json',
-      '/Library/Application Support/KeyLessPass/keylesspass-client-config.json',
-      if (home != null)
-        '$home/Library/Application Support/KeyLessPass/keylesspass-client-config.json',
-      if (home != null) '$home/.config/keylesspass/client-config.json',
-      '/etc/keylesspass/client-config.json',
-      if (appData != null)
-        '$appData\\KeyLessPass\\keylesspass-client-config.json',
-      if (programData != null)
-        '$programData\\KeyLessPass\\keylesspass-client-config.json',
-    ];
-    for (final downloadsDirectory in <String>{
-      if (home != null) '$home/Downloads',
-      if (userProfile != null) '$userProfile\\Downloads',
-    }) {
-      try {
-        final downloaded = await Directory(downloadsDirectory)
-            .list(followLinks: false)
-            .where((entity) {
-              if (entity is! File) return false;
-              final name = entity.uri.pathSegments.last.toLowerCase();
-              return name.startsWith('keylesspass-client-config') &&
-                  name.endsWith('.json');
-            })
-            .cast<File>()
-            .toList();
-        downloaded.sort((left, right) =>
-            right.lastModifiedSync().compareTo(left.lastModifiedSync()));
-        paths.addAll(downloaded.map((file) => file.path));
-      } catch (_) {
-        // Downloads directory may not exist or may be protected.
-      }
-    }
-    for (final path in paths) {
-      try {
-        final file = File(path);
-        if (!await file.exists() || await file.length() > 64 * 1024) continue;
-        final uri = automaticServerUriFromConfig(await file.readAsString());
-        if (uri != null) return uri;
-      } catch (_) {
-        // Try the next managed configuration location.
-      }
-    }
-    return null;
-  }
-
-  Future<List<Uri>> _discoverAutomaticServers() async {
-    RawDatagramSocket? socket;
-    try {
-      socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-      socket.broadcastEnabled = true;
-      final results = <Uri>[];
-      socket.listen((event) {
-        if (event != RawSocketEvent.read) return;
-        Datagram? datagram;
-        while ((datagram = socket?.receive()) != null) {
-          final message = utf8.decode(datagram!.data, allowMalformed: true);
-          const prefix = 'KEYLESSPASS_SERVER_V2:';
-          if (!message.startsWith(prefix)) continue;
-          final port = int.tryParse(message.substring(prefix.length));
-          if (port == null || port < 1 || port > 65535) continue;
-          results.add(Uri(
-            scheme: 'http',
-            host: datagram.address.address,
-            port: port,
-          ));
-        }
-      });
-      const request = 'KEYLESSPASS_DISCOVER_V2';
-      final bytes = utf8.encode(request);
-      socket.send(bytes, InternetAddress('255.255.255.255'), 8788);
-      socket.send(bytes, InternetAddress.loopbackIPv4, 8788);
-      await Future<void>.delayed(const Duration(milliseconds: 900));
-      return results;
-    } catch (_) {
-      return const <Uri>[];
-    } finally {
-      socket?.close();
-    }
-  }
-
-  Future<LicenseStatus?> _activateAutomaticallyAt(
-    CoreApi api,
-    Uri server,
-    Map<String, Object?> deviceRequest,
-  ) async {
-    final client = HttpClient()..connectionTimeout = const Duration(seconds: 4);
-    try {
-      final request = await client.postUrl(
-        server.resolve('/api/automatic/activate'),
-      );
-      request.followRedirects = false;
-      request.headers.contentType = ContentType.json;
-      request.write(jsonEncode({'requestJson': jsonEncode(deviceRequest)}));
-      final response =
-          await request.close().timeout(const Duration(seconds: 6));
-      final bytes = <int>[];
-      await for (final chunk in response.timeout(const Duration(seconds: 6))) {
-        if (bytes.length + chunk.length > 1024 * 1024) {
-          throw const FormatException('Activation response too large');
-        }
-        bytes.addAll(chunk);
-      }
-      if (response.statusCode == HttpStatus.accepted) return null;
-      if (response.statusCode != HttpStatus.ok) {
-        throw const HttpException('Automatic activation failed');
-      }
-      final body = jsonDecode(utf8.decode(bytes)) as Map<String, Object?>;
-      final envelope = body['envelopeJson'] as String?;
-      if (body['status'] != 'authorized' ||
-          envelope == null ||
-          envelope.isEmpty) {
-        throw const FormatException('Missing automatic license envelope');
-      }
-      return api.importLicenseBundle(bundleJson: envelope);
-    } finally {
-      client.close(force: true);
     }
   }
 
@@ -1389,7 +1181,6 @@ class _HomeWindowState extends State<_HomeWindow> {
             ],
           ),
         ),
-        SectionPanel(child: _licensePanel()),
         SectionPanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1508,357 +1299,6 @@ class _HomeWindowState extends State<_HomeWindow> {
     );
   }
 
-  Widget _licensePanel() {
-    final t = context.t;
-    final license = _licenseStatus;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          t.commercialAuthorization,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 10),
-        InlineNotice(
-          text: t.authorizationSecurityNotice,
-          icon: Icons.business_center_rounded,
-        ),
-        const SizedBox(height: 12),
-        InfoRow(
-          label: t.authorizationStatus,
-          value: _licenseStatusLabel(license?.status ?? 'unlicensed'),
-        ),
-        InfoRow(
-          label: t.organization,
-          value: license?.organizationName ?? license?.organizationId ?? '-',
-        ),
-        InfoRow(label: t.plan, value: license?.plan ?? '-'),
-        InfoRow(label: t.seat, value: license?.seatLabel ?? '-'),
-        InfoRow(label: t.licenseId, value: license?.licenseId ?? '-'),
-        InfoRow(label: t.grantId, value: license?.grantId ?? '-'),
-        InfoRow(label: t.validUntil, value: license?.validUntil ?? '-'),
-        InfoRow(
-          label: t.commercialDeviceId,
-          value: license?.commercialDeviceId ?? '-',
-        ),
-        InfoRow(
-          label: t.deviceFingerprint,
-          value: license?.deviceFingerprint ?? '-',
-        ),
-        InfoRow(
-          label: t.features,
-          value: license == null || license.features.isEmpty
-              ? '-'
-              : license.features.join(', '),
-        ),
-        if (license?.message.isNotEmpty == true) ...[
-          const SizedBox(height: 8),
-          InlineNotice(text: license!.message),
-        ],
-        const SizedBox(height: 14),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            FilledButton.icon(
-              onPressed: _activateLicenseOnline,
-              icon: const Icon(Icons.cloud_done_rounded),
-              label: Text(t.activateOnline),
-            ),
-            OutlinedButton.icon(
-              onPressed: _copyDeviceAuthorizationRequest,
-              icon: const Icon(Icons.content_copy_rounded),
-              label: Text(t.copyDeviceRequest),
-            ),
-            OutlinedButton.icon(
-              onPressed: _importLicenseBundle,
-              icon: const Icon(Icons.assignment_turned_in_rounded),
-              label: Text(t.importLicenseBundle),
-            ),
-            OutlinedButton.icon(
-              onPressed: _clearLicense,
-              icon: const Icon(Icons.clear_rounded),
-              label: Text(t.clearLicense),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  String _licenseStatusLabel(String status) {
-    final t = context.t;
-    return switch (status) {
-      'authorized' => t.licenseAuthorized,
-      'grace' => t.licenseGrace,
-      'expired' => t.licenseExpired,
-      'invalid' => t.licenseInvalid,
-      'notForThisDevice' => t.licenseNotForThisDevice,
-      'revoked' => t.licenseRevoked,
-      'notYetValid' => t.licenseNotYetValid,
-      'versionNotAllowed' => t.licenseVersionNotAllowed,
-      'unlicensed' => t.licenseUnlicensed,
-      _ => status,
-    };
-  }
-
-  Future<void> _activateLicenseOnline() async {
-    final api = _api;
-    if (api == null) return;
-    final t = context.t;
-    final server = TextEditingController();
-    final activationCode = TextEditingController();
-    final seat = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.activateOnline),
-        content: SizedBox(
-          width: 560,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: server,
-                decoration: InputDecoration(labelText: t.activationServer),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: activationCode,
-                obscureText: true,
-                decoration: InputDecoration(labelText: t.activationCode),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: seat,
-                decoration: InputDecoration(labelText: t.seatLabel),
-              ),
-              const SizedBox(height: 12),
-              InlineNotice(text: t.onlineActivationHelp),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(t.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(t.activateOnline),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) {
-      server.dispose();
-      activationCode.dispose();
-      seat.dispose();
-      return;
-    }
-    try {
-      final base = Uri.parse(server.text.trim());
-      if (!isAllowedActivationServer(base)) {
-        throw const FormatException('HTTPS required');
-      }
-      final deviceRequest = await api.exportDeviceAuthorizationRequest(
-        seatLabel: seat.text.trim().isEmpty ? null : seat.text.trim(),
-      );
-      final client = HttpClient()
-        ..connectionTimeout = const Duration(seconds: 15);
-      try {
-        final request = await client.postUrl(
-          base.resolve('/api/activation/activate'),
-        );
-        request.headers.contentType = ContentType.json;
-        request.write(jsonEncode({
-          'activationCode': activationCode.text.trim(),
-          'requestJson': jsonEncode(deviceRequest),
-          if (seat.text.trim().isNotEmpty) 'seatLabel': seat.text.trim(),
-        }));
-        final response =
-            await request.close().timeout(const Duration(seconds: 20));
-        final bytes = <int>[];
-        await for (final chunk
-            in response.timeout(const Duration(seconds: 20))) {
-          if (bytes.length + chunk.length > 1024 * 1024) {
-            throw const FormatException('Activation response too large');
-          }
-          bytes.addAll(chunk);
-        }
-        if (response.statusCode != HttpStatus.ok) {
-          throw HttpException('Activation failed (${response.statusCode})');
-        }
-        final body = jsonDecode(utf8.decode(bytes)) as Map<String, Object?>;
-        final envelopeJson = body['envelopeJson'] as String?;
-        if (envelopeJson == null || envelopeJson.isEmpty) {
-          throw const FormatException('Missing license envelope');
-        }
-        final status = await api.importLicenseBundle(bundleJson: envelopeJson);
-        await _refresh();
-        if (mounted) {
-          setState(() {
-            _licenseStatus = status;
-            _message = status.authorized
-                ? t.onlineActivationSucceeded
-                : _licenseStatusLabel(status.status);
-          });
-        }
-      } finally {
-        client.close(force: true);
-      }
-    } catch (_) {
-      if (mounted) setState(() => _message = t.onlineActivationFailed);
-    } finally {
-      server.dispose();
-      activationCode.dispose();
-      seat.dispose();
-    }
-  }
-
-  Future<void> _copyDeviceAuthorizationRequest() async {
-    final api = _api;
-    if (api == null) return;
-    final t = context.t;
-    final organization = TextEditingController();
-    final seat = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.copyDeviceRequest),
-        content: SizedBox(
-          width: 520,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: organization,
-                decoration: InputDecoration(labelText: t.organizationId),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: seat,
-                decoration: InputDecoration(labelText: t.seatLabel),
-              ),
-              const SizedBox(height: 12),
-              InlineNotice(text: t.deviceRequestHelp),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(t.cancel),
-          ),
-          FilledButton.icon(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            icon: const Icon(Icons.content_copy_rounded),
-            label: Text(t.copy),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) {
-      organization.dispose();
-      seat.dispose();
-      return;
-    }
-    try {
-      final request = await api.exportDeviceAuthorizationRequest(
-        organizationId:
-            organization.text.trim().isEmpty ? null : organization.text.trim(),
-        seatLabel: seat.text.trim().isEmpty ? null : seat.text.trim(),
-      );
-      final text = const JsonEncoder.withIndent('  ').convert(request);
-      await Clipboard.setData(ClipboardData(text: text));
-      await _refresh();
-      if (mounted) setState(() => _message = t.deviceRequestCopied);
-    } catch (_) {
-      if (mounted) setState(() => _message = t.operationFailed);
-    } finally {
-      organization.dispose();
-      seat.dispose();
-    }
-  }
-
-  Future<void> _importLicenseBundle() async {
-    final api = _api;
-    if (api == null) return;
-    final t = context.t;
-    final controller = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.importLicenseBundle),
-        content: SizedBox(
-          width: 640,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: controller,
-                minLines: 8,
-                maxLines: 14,
-                decoration: InputDecoration(labelText: t.licenseBundleJson),
-              ),
-              const SizedBox(height: 12),
-              InlineNotice(text: t.licenseBundleHelp),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(t.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(t.importLicenseBundle),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) {
-      controller.dispose();
-      return;
-    }
-    try {
-      final status = await api.importLicenseBundle(
-        bundleJson: controller.text.trim(),
-      );
-      await _refresh();
-      if (mounted) {
-        setState(() {
-          _licenseStatus = status;
-          _message = status.authorized
-              ? t.licenseImported
-              : _licenseStatusLabel(status.status);
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _message = t.licenseImportFailed);
-    } finally {
-      controller.dispose();
-    }
-  }
-
-  Future<void> _clearLicense() async {
-    final api = _api;
-    if (api == null) return;
-    try {
-      final status = await api.clearLicense();
-      await _refresh();
-      if (mounted) {
-        setState(() {
-          _licenseStatus = status;
-          _message = context.t.licenseCleared;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _message = context.t.operationFailed);
-    }
-  }
-
   Widget _languageSelector() {
     final t = context.t;
     final value = widget.locale?.languageCode ?? 'system';
@@ -1894,10 +1334,6 @@ class _HomeWindowState extends State<_HomeWindow> {
           _usbCandidates.where((item) => item.readable).length,
       'clipboardTimeoutSeconds': _clipboardTimeout,
       'passwordDerivationAlgorithm': _effectivePasswordDerivationAlgorithm(),
-      'licenseStatus': _licenseStatus?.status ?? 'unlicensed',
-      'licenseId': _licenseStatus?.licenseId,
-      'grantId': _licenseStatus?.grantId,
-      'organizationId': _licenseStatus?.organizationId,
       'analytics': false,
     });
     final copied = await showDialog<bool>(

@@ -47,7 +47,6 @@ pub struct RecoveryResponse {
 }
 
 pub fn recover_usb(request: RecoverUsbRequest) -> std::result::Result<RecoveryResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     recover_usb_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -56,7 +55,6 @@ pub fn recover_usb(request: RecoverUsbRequest) -> std::result::Result<RecoveryRe
 pub fn recover_local(
     request: RecoverLocalRequest,
 ) -> std::result::Result<RecoveryResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     recover_local_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -65,7 +63,6 @@ pub fn recover_local(
 pub fn reset_mnemonic(
     request: ResetMnemonicRequest,
 ) -> std::result::Result<RecoveryResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     reset_mnemonic_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -76,12 +73,6 @@ pub fn recover_usb_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: RecoverUsbRequest,
 ) -> Result<RecoveryResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     let config = read_config(paths)?;
     let local = load_local_context(provider, &config.local_factor_path)?;
     ensure_local_matches_config(&config, &local.package)?;
@@ -167,12 +158,6 @@ pub fn recover_local_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: RecoverLocalRequest,
 ) -> Result<RecoveryResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     paths.ensure()?;
     let usb = load_usb_context(&request.usb_path)?;
     let master_key = master_key_from_mnemonic_usb(&request.mnemonic, &usb)?;
@@ -306,12 +291,6 @@ pub fn reset_mnemonic_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: ResetMnemonicRequest,
 ) -> Result<RecoveryResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     if request.new_mnemonic.trim().is_empty() {
         return Err(KeylessPassError::MissingFactor(
             "new mnemonic phrase is required".to_string(),

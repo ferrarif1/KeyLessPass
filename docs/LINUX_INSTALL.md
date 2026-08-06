@@ -97,8 +97,6 @@ git clone <repository-url> KeyLessPass
 cd KeyLessPass
 ```
 
-仓库采用 source-available license。企业生产部署、商业使用、二次分发、OEM、渠道销售或托管服务需要单独书面授权。
-
 ## 7. 安装 Flutter 依赖
 
 ```bash

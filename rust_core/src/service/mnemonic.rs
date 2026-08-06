@@ -178,7 +178,6 @@ pub struct GenerateMnemonicResponse {
 pub fn generate_mnemonic(
     request: GenerateMnemonicRequest,
 ) -> std::result::Result<GenerateMnemonicResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let language = normalize_language(request.language.as_deref())?;
     let word_count = request.word_count.unwrap_or(DEFAULT_WORD_COUNT);
     if !(MIN_WORD_COUNT..=MAX_WORD_COUNT).contains(&word_count) {

@@ -1,16 +1,6 @@
 $ErrorActionPreference = "Stop"
 $FlutterBin = if ($env:FLUTTER_BIN) { $env:FLUTTER_BIN } else { "flutter" }
 
-if ($env:KEYLESSPASS_REQUIRE_LICENSE -ne "1" -and $env:KEYLESSPASS_ALLOW_EVALUATION_PACKAGE -ne "1") {
-    throw "Refusing to package an unlicensed build. Set the commercial build variables, or KEYLESSPASS_ALLOW_EVALUATION_PACKAGE=1 for an explicitly marked evaluation artifact."
-}
-if ($env:KEYLESSPASS_REQUIRE_LICENSE -eq "1" -and !$env:KEYLESSPASS_LICENSE_PUBLIC_KEY_B64) {
-    throw "KEYLESSPASS_LICENSE_PUBLIC_KEY_B64 is required for a commercial package."
-}
-if ($env:KEYLESSPASS_REQUIRE_LICENSE -eq "1" -and !$env:KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1 -and $env:KEYLESSPASS_ALLOW_UNSIGNED -ne "1") {
-    throw "Commercial Windows packages require KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1. Use KEYLESSPASS_ALLOW_UNSIGNED=1 only for local testing."
-}
-
 function Sign-KeyLessPassArtifact([string]$Path) {
     if (!$env:KEYLESSPASS_WINDOWS_SIGN_CERT_SHA1) { return }
     $SignTool = Get-Command signtool.exe -ErrorAction SilentlyContinue

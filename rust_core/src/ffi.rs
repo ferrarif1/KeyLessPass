@@ -1,11 +1,9 @@
 use crate::service::{
-    add_credential, cancel_rotation, clear_license, confirm_rotation, derive_password, enroll,
-    export_device_authorization_request, get_app_status, get_license_status, get_security_status,
-    import_license_bundle, list_credentials, recover_local, recover_usb, require_license_feature,
-    reset_application_data, reset_mnemonic, rotate_credential, update_credential_display,
-    AddCredentialRequest, CancelRotationRequest, ConfirmRotationRequest, DerivePasswordRequest,
-    EnrollmentRequest, ExportDeviceAuthorizationRequest, GenerateMnemonicRequest,
-    ImportLicenseBundleRequest, RecoverLocalRequest, RecoverUsbRequest,
+    add_credential, cancel_rotation, confirm_rotation, derive_password, enroll, get_app_status,
+    get_security_status, list_credentials, recover_local, recover_usb, reset_application_data,
+    reset_mnemonic, rotate_credential, update_credential_display, AddCredentialRequest,
+    CancelRotationRequest, ConfirmRotationRequest, DerivePasswordRequest, EnrollmentRequest,
+    GenerateMnemonicRequest, PairwiseMigrationRequest, RecoverLocalRequest, RecoverUsbRequest,
     ResetApplicationDataRequest, ResetMnemonicRequest, RotateCredentialRequest,
     UpdateCredentialDisplayRequest, UsbCdrRequest, VerifyUsbPackageRequest,
 };
@@ -60,19 +58,9 @@ fn ffi_json_inner(input: *const c_char) -> String {
 
 fn dispatch(request: FfiRequest) -> String {
     let op = request.op.as_str();
-    let result = ensure_commercial_authorization(op).and_then(|_| match op {
+    let result = match op {
         "getAppStatus" => get_app_status().map(to_value),
         "getSecurityStatus" => get_security_status().map(to_value),
-        "getLicenseStatus" => get_license_status().map(to_value),
-        "exportDeviceAuthorizationRequest" => {
-            parse::<ExportDeviceAuthorizationRequest>(request.payload)
-                .and_then(export_device_authorization_request)
-                .map(to_value)
-        }
-        "importLicenseBundle" => parse::<ImportLicenseBundleRequest>(request.payload)
-            .and_then(import_license_bundle)
-            .map(to_value),
-        "clearLicense" => clear_license().map(to_value),
         "listCredentials" => list_credentials().map(to_value),
         "listUsbCandidates" => crate::service::list_usb_candidates().map(to_value),
         "verifyUsbPackage" => parse::<VerifyUsbPackageRequest>(request.payload)
@@ -120,11 +108,14 @@ fn dispatch(request: FfiRequest) -> String {
         "resetMnemonic" => parse::<ResetMnemonicRequest>(request.payload)
             .and_then(reset_mnemonic)
             .map(to_value),
+        "migratePairwiseRecovery" => parse::<PairwiseMigrationRequest>(request.payload)
+            .and_then(crate::service::migrate_pairwise_recovery_default)
+            .map(to_value),
         "resetApplicationData" => parse::<ResetApplicationDataRequest>(request.payload)
             .and_then(reset_application_data)
             .map(|_| Value::Null),
         _ => Err("unsupported operation".to_string()),
-    });
+    };
 
     match result {
         Ok(value) => serde_json::to_string(&json!({ "ok": true, "data": value }))
@@ -134,29 +125,6 @@ fn dispatch(request: FfiRequest) -> String {
             serde_json::to_string(&json!({ "ok": false, "error": safe }))
                 .unwrap_or_else(|_| error_response("operation failed"))
         }
-    }
-}
-
-fn ensure_commercial_authorization(op: &str) -> Result<(), String> {
-    match op {
-        "enroll"
-        | "generateMnemonic"
-        | "listCredentials"
-        | "listUsbCandidates"
-        | "verifyUsbPackage"
-        | "addCredential"
-        | "updateCredentialDisplay"
-        | "derivePassword"
-        | "rotateCredential"
-        | "confirmRotation"
-        | "cancelRotation"
-        | "recoverUsb"
-        | "recoverLocal"
-        | "resetMnemonic"
-        | "getUsbCdrStatus"
-        | "syncCdrToUsb"
-        | "restoreCdrFromUsb" => require_license_feature("desktop-client"),
-        _ => Ok(()),
     }
 }
 

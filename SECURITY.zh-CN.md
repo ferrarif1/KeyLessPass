@@ -1,71 +1,9 @@
-# 安全政策
+# 安全策略与 v3 声明边界
 
-English: [SECURITY.md](SECURITY.md)
+安全问题请私下发送至 `revanton@icloud.com`，并提供受影响提交、复现步骤、影响和建议修复。不要提交真实生产凭据。
 
-KeyLessPass 是本地密码派生工具。它不保存服务密码，但用户仍需要保护助记短语、本机设备、U 盘因子、恢复材料和操作系统环境。
+v3 使用成熟 Shamir 2-of-3 拆分随机 Root Key；一个份额不足以通过恢复接口。份额封装绑定 Vault、Root Key/share set/因素代际、因素角色和套件，并通过重建后的 HMAC 与 KCV 验证。CDR MAC、父哈希和持久化轮换状态用于检测篡改、部分副本不一致和远端结果未知。
 
-## 报告漏洞
+以下不属于安全承诺：普通 U 盘不可复制；受感染终端上的份额独立性；进程内存中的 Root Key/服务密码保密；标准 Shamir 不重建完整密钥；仅靠本地 HMAC/哈希检测全部副本整体回滚；仅刷新 share set 即撤销已泄露的两份旧份额。
 
-如果发现安全漏洞，请先不要公开披露。请发送邮件到 revanton@icloud.com，并包含：
-
-- 问题描述；
-- 受影响版本或 commit；
-- 复现步骤；
-- 潜在影响；
-- 可选的修复建议。
-
-不要在漏洞报告中包含真实生产密码、企业秘密、客户凭据、私钥或敏感业务数据。
-
-## 评估和 PoC 安全
-
-- 只使用测试账号和测试数据。
-- 未经明确授权，不要使用真实企业生产凭据。
-- 未取得商业授权和正式批准前，不要部署为生产凭据管理系统。
-- 在敏感环境使用前，先验证安全模型。
-
-## 安全边界
-
-KeyLessPass 通过不保存服务密码来降低 vault 风险，但安全仍依赖：
-
-- 助记短语强度和保密性；
-- U 盘因子的保护；
-- 本机设备安全；
-- 应用二进制完整性；
-- 备份和恢复流程；
-- 用户操作纪律；
-- 企业终端和访问控制策略。
-
-## 2-of-3 本地恢复模型
-
-Rust Core 使用三组因子：
-
-```text
-F_M = KDF(Normalize(mnemonic), saltM)
-F_C = KDF(deviceSecret || deviceID || userID, saltC)
-F_U = KDF(usbSecret || usbID || userID, saltU)
-```
-
-同一个随机生成的 `Kmaster` 只以 `W_MC`、`W_MU`、`W_CU` 三个包装密文形式落盘：
-
-```text
-W_MC = AES-256-GCM(HKDF(F_M || F_C, "KeyLessPass/wrap/MC"), Kmaster)
-W_MU = AES-256-GCM(HKDF(F_M || F_U, "KeyLessPass/wrap/MU"), Kmaster)
-W_CU = AES-256-GCM(HKDF(F_C || F_U, "KeyLessPass/wrap/CU"), Kmaster)
-```
-
-恢复路径：
-
-- 助记短语 + 本机：通过 `W_MC` 恢复，并可重建 U 盘包。
-- 助记短语 + U 盘：通过 `W_MU` 恢复，并可重建本机因子。
-- 本机 + U 盘：通过 `W_CU` 重置助记短语，不需要旧助记短语。
-
-单个因子不能恢复 `Kmaster`。U 盘是普通可复制存储，不是不可复制硬件密钥。
-
-## 存储边界
-
-- 本机因子包不保存明文 `Kmaster` 或 `usbSecret`。
-- U 盘因子包不保存明文 `Kmaster` 或 `deviceSecret`。
-- CDR 备份只保存元数据和 MAC，不保存服务密码。
-- macOS `com.keylesspass.local-factor` 是平台保护的 `deviceSecret` 来源，不是 `Kmaster`，也不是助记短语。
-
-V2 schema 中的 `encryptedPayload` 是历史字段名，现在承载 base64 编码的因子 payload，不是助记短语加密 vault，也不包含明文 `Kmaster`。
+当前 Rust Core 已实现 v3 创建与恢复、份额刷新、因素替换、空 Vault Root Key 轮换、v2 迁移、CDR v3、无偏编码、轮换 reconciliation、冲突分类和 freshness 接口。Flutter 新建流程仍为 v2；非空 Vault Root Key 全量迁移、目标系统适配器、生产 freshness 服务和完整 v3 UI 尚未交付，不能作为当前安全声明。

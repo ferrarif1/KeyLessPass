@@ -67,7 +67,6 @@ pub struct UsbCdrSyncResponse {
 pub fn verify_usb_package(
     request: VerifyUsbPackageRequest,
 ) -> std::result::Result<VerifyUsbPackageResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let usb = load_usb_context(&request.usb_path).map_err(String::from)?;
     validate_wrapper_metadata(&usb.payload.w_mu, "MU").map_err(String::from)?;
     validate_wrapper_metadata(&usb.payload.w_cu, "CU").map_err(String::from)?;
@@ -112,14 +111,12 @@ fn validate_wrapper_metadata(wrapper: &WrappedMasterKey, expected_type: &str) ->
 pub fn get_usb_cdr_status(
     request: UsbCdrRequest,
 ) -> std::result::Result<UsbCdrStatusResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     get_usb_cdr_status_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn sync_cdr_to_usb(request: UsbCdrRequest) -> std::result::Result<UsbCdrSyncResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     sync_cdr_to_usb_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -128,7 +125,6 @@ pub fn sync_cdr_to_usb(request: UsbCdrRequest) -> std::result::Result<UsbCdrSync
 pub fn restore_cdr_from_usb(
     request: UsbCdrRequest,
 ) -> std::result::Result<UsbCdrSyncResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     restore_cdr_from_usb_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -139,12 +135,6 @@ pub fn get_usb_cdr_status_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: UsbCdrRequest,
 ) -> Result<UsbCdrStatusResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     let (user_id, master_key, local_records) = local_cdr_context(paths, provider)?;
     let backup_path = usb_cdr_backup_file(&request.usb_path);
 
@@ -219,12 +209,6 @@ pub fn sync_cdr_to_usb_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: UsbCdrRequest,
 ) -> Result<UsbCdrSyncResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     let (user_id, master_key, local_records) = local_cdr_context(paths, provider)?;
     let package = read_usb_factor_package(&request.usb_path)?;
     if package.user_id != user_id {
@@ -245,12 +229,6 @@ pub fn restore_cdr_from_usb_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: UsbCdrRequest,
 ) -> Result<UsbCdrSyncResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     let (user_id, master_key, _) = local_cdr_context(paths, provider)?;
     let backup = verify_usb_cdr_backup(&request.usb_path, user_id, &master_key)?;
     let store = CdrStore::new(&paths.db_path);
@@ -262,7 +240,6 @@ pub fn restore_cdr_from_usb_with_provider(
 }
 
 pub fn list_usb_candidates() -> std::result::Result<Vec<UsbFactorCandidate>, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let mut roots = candidate_roots();
     roots.sort();
     roots.dedup();

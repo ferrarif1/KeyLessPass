@@ -1,27 +1,17 @@
 # KeyLessPass
 
-> KeyLessPass is source-available, not open-source.
-> The code is provided for evaluation, security review, learning, and non-commercial testing only.
-> Commercial use, enterprise deployment, redistribution, OEM integration, white-label use, managed service use, or channel resale requires a separate written commercial license.
-
-> KeyLessPass 采用“源码可见但非开源”的授权模式。
-> 本仓库代码仅供评估、安全审查、学习和非商业测试使用。
-> 企业部署、商业使用、二次分发、OEM 集成、白标使用、托管服务或渠道销售，均需另行取得书面商业授权。
-
 <p align="center">
   <img src="docs/readme-assets/logo.png" width="112" alt="KeyLessPass logo" />
 </p>
 
 <p align="center">
-  <strong>Storage-free local password derivation for desktop enterprise workflows.</strong>
+  <strong>Service-password derivation and lifecycle management for legacy enterprise systems.</strong>
 </p>
 
 <p align="center">
   <a href="README.zh-CN.md">简体中文</a>
   ·
   <a href="SECURITY.md">Security</a>
-  ·
-  <a href="COMMERCIAL.md">Commercial</a>
   ·
   <a href="PRIVACY.md">Privacy</a>
   ·
@@ -52,7 +42,7 @@
 
 KeyLessPass is a native desktop client for deriving text passwords on demand for internal systems that still depend on legacy password login. It is intended for operations consoles, vendor portals, database gateways, network appliances, and small enterprise environments where a local-only security posture is required.
 
-It is not a web app, not a browser extension, not a cloud password manager, and not a password vault. KeyLessPass does not store target-system plaintext passwords, does not maintain an encrypted service-password database, and does not store the mnemonic phrase.
+It is not a web app, browser extension, cloud password manager, or password vault. KeyLessPass does not store target-system plaintext passwords or maintain an encrypted service-password database. Its v3 paper recovery share is an offline encoding of a random high-entropy Shamir share; it is not a phrase users are expected to memorize and is not persisted by the application.
 
 ## Product Screenshots
 
@@ -81,13 +71,14 @@ This makes it useful when an organization must keep using legacy password-based 
 - Ordinary removable USB drive support for USB factor packages.
 - CDR metadata backup on the USB drive, with local/USB consistency checks and explicit sync/restore choices.
 - Random per-user master key generated during enrollment.
-- English and Simplified Chinese mnemonic generation on the local device.
-- Paper-aligned 2-of-3 local recovery with pairwise wrappers `W_MC`, `W_MU`, and `W_CU`.
-- Mnemonic reset using this computer plus the paired USB package, without the old mnemonic and without changing existing derived passwords.
+- Mature Shamir 2-of-3 Root-Key sharing through `vsss-rs`, with authenticated, vault/version-bound share envelopes.
+- A checksum-protected paper recovery share (currently rendered as 108 words), a platform-protected managed-computer share, and an ordinary copyable USB share.
+- Share-set refresh and recovery/computer/USB factor replacement with generation-based stale-share rejection.
+- Verified migration from legacy v2 pairwise complete-key wrappers to v3 shares without changing the Root Key or derived service passwords.
 - Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
 - Selectable service derivation algorithm for new profiles: HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256.
 - Editable display metadata that does not change derived passwords.
-- Simplified password rotation that creates a new current version while keeping the previous version derivable.
+- Persistent staged password rotation with prepared, request-sent, unknown-outcome, reconciliation, committed, rollback-required, aborted, and superseded states.
 - Local recovery workflows for rebuilding missing USB or local factor packages.
 - USB management for path selection, package verification, and package rebuild.
 - Redacted diagnostics export.
@@ -98,35 +89,24 @@ This makes it useful when an organization must keep using legacy password-based 
 
 | Stored | Not stored |
 | --- | --- |
-| Local factor package: `userId`, `deviceId`, `saltC`, `mnemonicSalt`, mnemonic verifier, `W_MC`, optional `W_CU`, schema/version metadata | Target-system plaintext passwords |
-| USB factor package: `userId`, `usbId`, `saltU`, USB factor material, `W_MU`, `W_CU`, schema/version metadata | Encrypted service-password vault |
-| CDR metadata, salts, versions, MAC tags, and optional USB CDR backup | Mnemonic phrase |
-| Platform protected device secret outside the JSON payload, for example macOS `com.keylesspass.local-factor` | Plaintext `Kmaster` in local or USB payloads |
-| Recovery metadata and integrity tags | `usbSecret` in the local package or `deviceSecret` in the USB package |
+| Platform-protected managed-computer share envelope and committed recovery manifest | Target-system plaintext passwords |
+| USB share envelope, committed recovery manifest, and optional CDR replica | Encrypted service-password vault |
+| Canonical versioned CDR metadata, salts, state, replica metadata, and MAC tags | Plaintext Root Key in any persisted v3 object |
+| Legacy v2 pairwise wrappers only until an explicit verified migration archives them | Recovery-share phrase (the application displays but does not persist it) |
 
 ## How It Works
 
-During enrollment, KeyLessPass generates a random 256-bit per-user master key. The mnemonic phrase is not the root seed for service passwords and is not stored. It is transformed into an independent mnemonic factor `F_M`; the platform protected computer material derives `F_C`; the USB package derives `F_U`.
-
-The Rust core protects the same `Kmaster` with three pairwise wrappers:
+In the selectable v3 recovery schema, enrollment or migration starts with a random 256-bit Root Key and uses the audited `vsss-rs` finite-field implementation to split it into three shares at threshold two:
 
 ```text
-F_M = KDF(Normalize(mnemonic), saltM)
-F_C = KDF(deviceSecret || deviceID || userID, saltC)
-F_U = KDF(usbSecret || usbID || userID, saltU)
-
-K_MC = HKDF(F_M || F_C, "KeyLessPass/wrap/MC")
-K_MU = HKDF(F_M || F_U, "KeyLessPass/wrap/MU")
-K_CU = HKDF(F_C || F_U, "KeyLessPass/wrap/CU")
-
-W_MC = AES-256-GCM(K_MC, Kmaster)
-W_MU = AES-256-GCM(K_MU, Kmaster)
-W_CU = AES-256-GCM(K_CU, Kmaster)
+K_root <- Random(256 bits)
+(S_recovery, S_computer, S_usb) <- ShamirSplit(2, 3, K_root)
+K_purpose <- HKDF(K_root, vaultID || rootGeneration || suite || purposeLabel)
 ```
 
-Any two factors can recover `Kmaster`: mnemonic + this computer uses `W_MC`, mnemonic + USB uses `W_MU`, and this computer + USB uses `W_CU`. A single factor alone cannot recover `Kmaster`. Normal password derivation uses mnemonic + this computer through `W_MC`; the USB package is kept offline during daily use and is needed for enrollment, rebuilding USB, replacing this computer, and resetting the mnemonic.
+Every share envelope binds the vault, Root-Key generation, share-set ID, factor type/ID/generation, threshold, suite, encoding version, and creation time. A Root-Key-derived HMAC authenticates that metadata after reconstruction, and a key-confirmation value rejects the wrong recovered key. Shamir itself is not claimed to authenticate shares, revoke factors, or prevent rollback; those properties come from envelopes, committed manifests, generation changes, and an optional freshness anchor.
 
-The V2 JSON field `encryptedPayload` is a historical schema name. In V2 it carries a base64 encoded factor payload, not a mnemonic-encrypted or platform-encrypted vault. That payload does not contain plaintext `Kmaster`; `Kmaster` exists only in wrapper ciphertext and transient runtime memory.
+Legacy v2 profiles retain a read-only pairwise-wrapper path solely for compatibility and verified migration. New v3 recovery takes precedence once its manifest is committed. The current Flutter enrollment screens still create v2 data, so selecting v3 currently requires the Rust migration API; this is an explicit prototype limitation.
 
 For compatibility, existing profiles without an algorithm field are treated as legacy HKDF-SHA256. New profiles can choose HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256 before enrollment; the choice is locked for that local profile and can be changed only after resetting local application data and initializing again.
 
@@ -136,12 +116,10 @@ When a paired USB drive is present, KeyLessPass can write a signed CDR metadata 
 
 ```mermaid
 flowchart LR
-    M["Mnemonic phrase<br/>not stored"] --> KDF["KDF"]
-    KDF --> FM["Mnemonic factor F_M"]
-    FC["Computer factor F_C<br/>platform protected"] --> R["2-of-3 pairwise wrappers<br/>W_MC / W_MU / W_CU"]
-    FM --> R
-    FU["USB factor F_U<br/>copyable USB package"] --> R
-    R --> KM["Recovered Kmaster"]
+    M["Recovery-share phrase<br/>offline, high entropy"] --> R["Shamir 2-of-3<br/>same-set shares"]
+    FC["Computer share<br/>platform protected"] --> R
+    FU["USB share<br/>ordinary copyable file"] --> R
+    R --> KM["Recovered Root Key<br/>transient memory"]
     KM --> D["Selected KDF + deterministic encoding"]
     C["CDR stable fields<br/>recordSeq + recordId + version + salt + Rule"] --> D
     D --> P["Service password<br/>shown briefly / clipboard timeout"]
@@ -153,11 +131,10 @@ flowchart LR
 
 - No target-system plaintext password is written to disk.
 - No encrypted service-password vault is maintained.
-- No mnemonic phrase is stored.
-- `Kmaster` is not persisted as a local or USB payload field.
-- The local package does not store `usbSecret`; the USB package does not store `deviceSecret`.
+- The v3 recovery-share phrase is not stored by the application.
+- The Root Key is not persisted in any v3 local or USB payload.
 - The USB package is an ordinary copyable factor container, not an uncopyable hardware key.
-- Any two factors can recover `Kmaster`; any single factor cannot.
+- Any two valid shares from the committed vault/share set/generation can recover the Root Key; the recovery API rejects a single share.
 - No cloud sync, remote backend, browser autofill, or account login is included.
 - All random values come from the operating system CSPRNG.
 - CDR and factor packages are integrity checked before use.
@@ -165,7 +142,7 @@ flowchart LR
 - Derived passwords are masked by default and cleared from the clipboard after a configurable timeout.
 - Sensitive values such as mnemonic text, master key, factor secrets, raw HKDF output, AEAD keys, HMAC keys, and derived passwords must not be logged.
 
-Client-only rollback detection is limited to local and USB metadata checks. Stronger rollback protection can be added through an external version digest, append-only audit log, or trusted monotonic state integration.
+Client-only rollback detection is limited to partial-copy inconsistency. Enterprise-anchored mode exposes a minimal compare-and-set freshness service for the latest generation/epoch/digest; no production remote service is shipped.
 
 ## Desktop Navigation
 
@@ -185,7 +162,6 @@ Record-centric actions such as add, derive, and rotation are launched from Recor
 
 ```text
 KeyLessPass
-├── admin_backend/        # Intranet commercial device authorization backend
 ├── flutter_app/          # Flutter Desktop UI
 ├── rust_core/            # Rust cryptography, storage, recovery, and FFI core
 ├── packaging/            # macOS, Windows, and Linux packaging scripts
@@ -194,40 +170,6 @@ KeyLessPass
 ```
 
 The Rust core is intentionally independent from platform-specific secure storage details. Platform factor providers implement a common interface, with macOS Keychain, Windows DPAPI, Linux local/fallback storage, and future TPM/Secure Enclave hooks isolated behind the provider layer.
-
-Commercial device authorization is implemented as an outer product layer. The
-`admin_backend` service supports offline bundles and HTTPS online activation;
-the desktop client verifies every result locally with an embedded vendor-root public key.
-Commercial builds should set `KEYLESSPASS_REQUIRE_LICENSE=1` and inject only the
-vendor root at compile time. A customer-site key is vendor-delegated and may grant only vendor-approved device keys. Managed deployments can push a bundle to the
-platform managed path. This layer never receives mnemonic phrases,
-`Kmaster`, factor secrets, CDR secrets, service passwords, or derived passwords.
-
-### Run the Intranet Admin Backend
-
-```bash
-cd admin_backend
-./scripts/intranet_deploy.sh
-```
-
-The script generates an Admin token and customer-site Ed25519 key on first run,
-then waits for a vendor-signed `customer-entitlement.json`. Embed the vendor root
-public key, never the displayed site key, into commercial client builds. Public
-downloads require no login; administrative operations require the token and should use HTTPS plus a management-subnet ACL. Authorized clients renew a 24-hour lease every 30 minutes, and the download page lists only artifacts matching the offline vendor-signed release manifest.
-The administration UI also supports roles, device CSV, and audit export.
-
-### Build a Commercial Client
-
-```bash
-KEYLESSPASS_LICENSE_KEY_ID='keylesspass-vendor-root-2026' \
-KEYLESSPASS_LICENSE_PUBLIC_KEY_B64='<vendor root public key>' \
-CODESIGN_IDENTITY='Developer ID Application: Your Company (TEAMID)' \
-tools/commercial/build_commercial_release.sh macos
-```
-
-This enables compile-time license enforcement for the packaged client. Official
-distribution should still use platform signing and notarization/installer
-signing so tampered builds are distinguishable from official releases.
 
 ## Quick Start
 
@@ -306,17 +248,9 @@ See the full bilingual documentation map: [DOCS.md](DOCS.md) / [中文](DOCS.zh-
 | --- | --- |
 | Run the desktop client | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | Build on macOS / Windows / Linux | [macOS](docs/MACOS_INSTALL.en.md), [Windows](docs/WINDOWS_INSTALL.en.md), [Linux](docs/LINUX_INSTALL.en.md) |
-| Deploy the authorization backend | [admin_backend/README.md](admin_backend/README.md) |
-| Authorize devices | [device authorization guide](docs/commercial/device-batch-authorization-implementation.md) |
-| Prepare a commercial release | [RELEASE.md](RELEASE.md) and [commercial hardening](docs/commercial/commercial-release-hardening.md) |
+| Prepare a release | [RELEASE.md](RELEASE.md) |
 | Review security and privacy | [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md) |
 
 ## License
 
-KeyLessPass is source-available, not open-source. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [COMMERCIAL.md](COMMERCIAL.md).
-
-Personal learning, evaluation, security review, and non-commercial testing are permitted under the license terms. Commercial use, enterprise production deployment, redistribution, OEM or white-label integration, managed service use, security service bundling, channel resale, and processing real production credentials require a separate written commercial license.
-
-Commercial device and seat management should use signed organization licenses
-and per-device grants. The proposed batch authorization design is documented in
-[docs/commercial/device-batch-authorization.md](docs/commercial/device-batch-authorization.md).
+See [LICENSE](LICENSE) and [NOTICE](NOTICE).

@@ -1,95 +1,47 @@
-# KeyLessPass Desktop Design
+# KeyLessPass v3 Design
 
-## Architecture
+## Research position
 
-KeyLessPass is a desktop-only client:
+KeyLessPass is a lifecycle architecture for enterprise systems that still accept only textual passwords. It does not propose a new KDF, AEAD, secret-sharing primitive, or password-policy language. Its research object is the cross-layer protocol that keeps recovery generations, credential generations, remote rotation outcomes, replicas, and optional freshness state consistent under loss, crashes, and concurrency.
 
-- Flutter Desktop renders the native desktop UI.
-- Rust Core implements cryptography, CDR storage, USB factor packages, recovery,
-  and platform factor providers.
-- SQLite stores only CDR metadata, never derived passwords.
-- Flutter calls Rust through a small C ABI JSON FFI layer.
+AutoPass already supports deterministic generation, forced changes, and site rules; PALPAS already combines a high-entropy seed, per-service salts, synchronization, and policy-aware generation. MFDPG adds multi-factor deterministic generation and password rotation without stored credential secrets. MFKDF supplies threshold multi-factor key derivation and client-side recovery. KeyLessPass therefore claims neither deterministic generation, threshold recovery, nor component integration alone as novelty. The narrower contribution is an implemented state model joining random-Root-Key share lifecycle, canonical Credential Description Records (CDRs), pending-confirm-reconcile rotation, replica conflict classification, and freshness anchoring for password-only legacy targets.
 
-There is no web server, cloud sync, browser autofill, browser plugin, or WebView
-main UI.
+## Security core
 
-## Derivation Boundary
+The v3 Root Key is 256 random bits. Purpose-specific keys are derived with HKDF-SHA256 using fixed labels and context binding to `vaultID`, `rootGeneration`, and `cryptoSuiteVersion`. The Root Key is split by `vsss-rs` into three GF(256) Shamir shares at threshold two:
 
-Mutable display fields do not affect derivation:
+- paper recovery share: a printable offline package currently encoded as 108 checksum-protected words and not intended for memorization;
+- managed-computer share: protected by the platform provider;
+- USB share: stored on ordinary copyable removable media.
 
-- `displayName`
-- `serviceHint`
-- `accountHint`
+Each share envelope binds the vault, Root-Key generation, share-set ID, share index, threshold/count, factor type/ID/generation, suite, timestamp, and encoding version. A Root-Key-derived HMAC authenticates the envelope after reconstruction; a KCV confirms the reconstructed Root Key. A committed manifest is written last and selects the only active set. Shamir itself does not provide authenticity, malicious-member identification, revocation, or freshness.
 
-Stable derivation fields are:
+Legacy v2 pairwise complete-key wrappers remain readable only for migration. Migration validates all three legacy paths, preserves the Root Key, writes and validates v3 artifacts, commits the v3 manifest, and can archive the old packages. The current Flutter enrollment workflow still creates v2 packages; v3 selection currently uses the Rust migration operation.
 
-- `recordSeq`
-- `recordId`
-- `version`
-- `salt`
-- `encodingDescriptor`
+## CDR and derivation boundary
 
-Changing `encodingDescriptor` requires a new version and is treated as password
-rotation.
+CDR v3 uses RFC 8785 JSON canonicalization. `recordID` is a stable logical credential identity; `recordSeq` is a stable vault-local ordinal retained for deterministic compatibility and human/audit ordering. `credentialGeneration` advances one service password, while `rootGeneration` advances the vault Root Key.
 
-Normal derivation requires mnemonic + this computer. The Rust core recovers
-`Kmaster` through `W_MC`; the USB package is intended to stay offline during
-daily use and is only needed for enrollment, recovery, and factor replacement.
+Password-changing inputs are the Root-Key generation, stable service/account identifiers, credential generation, 128-bit salt, derivation/encoder versions, and the hash of policy identity, version, and encoding descriptor. `recordID`, `recordSeq`, storage `version`, display fields, notes, replica clocks, and rotation evidence do not alter derivation-v2 output. Any encoding-policy change requires a new credential generation.
 
-Recovery paths are 2-of-3:
+Encoder v2 uses a domain-separated HMAC stream, rejection sampling for modulo-bias-free bounded indices, Fisher--Yates shuffling with the same index sampler, randomized mandatory-character placement, explicit min/max class counts and edge/repetition/sequence rules, contradiction detection, and a bounded attempt count. It never silently relaxes a policy. This does not imply uniform sampling over the complete set of policy-valid strings; reported entropy is an upper bound when policy constraints overlap.
 
-- mnemonic + this computer decrypts `W_MC` and rebuilds a USB package.
-- mnemonic + USB decrypts `W_MU` and rebuilds this computer's local factor.
-- this computer + USB decrypts `W_CU` and resets the mnemonic without the old
-  mnemonic.
+## Lifecycle protocol
 
-Local and USB factor payloads do not persist plaintext `Kmaster`. The USB
-package is ordinary copyable storage and is treated as a copyable factor
-container.
+Rotation is not two-phase commit. A legacy target is not a transactional participant. The persistent states include `STABLE`, `PREPARED`, `UPDATE_SENT`, `REMOTE_CONFIRMED`, `LOCAL_COMMITTED`, `UNKNOWN_OUTCOME`, `RECONCILIATION_REQUIRED`, `AMBIGUOUS_REMOTE_STATE`, `ROLLBACK_REQUIRED`, `ABORTED`, and `SUPERSEDED`.
 
-## Platform Provider Trait
+After a timeout or crash with an unknown remote result, reconciliation tests the candidate password and old password within a lockout budget. New-only success permits local commit; old-only success aborts; both succeeding enters `AMBIGUOUS_REMOTE_STATE`; neither succeeding requires manual recovery. The external adapter and lockout-budget UI are interfaces, not production implementations in this repository.
 
-```rust
-pub trait PlatformFactorProvider {
-    fn platform_name(&self) -> String;
-    fn get_or_create_device_id(&self) -> Result<String>;
-    fn get_or_create_device_secret(&self) -> Result<SecretBytes>;
-    fn protect_local_package(&self, plaintext: &[u8]) -> Result<Vec<u8>>;
-    fn unprotect_local_package(&self, protected: &[u8]) -> Result<Vec<u8>>;
-}
-```
+Replica comparison distinguishes descendant, stale, concurrent, forked, replayed, and cross-vault state using parent hashes, credential generations, operation IDs, and replica metadata. Local-only mode detects tampering and partial-copy inconsistency but cannot detect rollback of every valid local copy. Enterprise-anchored mode exposes a compare-and-set freshness interface over Root-Key generation, CDR epoch, and digest; the included SQLite implementation proves persistence and atomic CAS semantics locally, but is not a deployed network service.
 
-Windows uses a DPAPI extension point. macOS uses Keychain where available.
-Linux/UOS/Kylin use local AEAD package protection plus file permissions in the
-first release path. Fallback protection is surfaced to the UI as a reduced-security
-state.
+## Implementation map
 
-## FFI
+- Recovery: `rust_core/src/crypto/recovery.rs`, `storage/recovery_store.rs`
+- Factor lifecycle and migration: `service/recovery_lifecycle.rs`, `service/migration.rs`
+- CDR and encoder: `domain/cdr.rs`, `crypto/encoder.rs`
+- Rotation: `domain/rotation.rs`, `service/rotation.rs`
+- Sync and freshness: `domain/sync.rs`, `service/freshness.rs`
+- Fixed vectors: `rust_core/test-vectors/`
+- Reproducible experiment: `rust_core/examples/research_evaluation.rs`
 
-Rust exports:
-
-```c
-char *keylesspass_ffi_json(const char *request_json);
-void keylesspass_ffi_free(char *response_json);
-```
-
-Requests use:
-
-```json
-{"op":"derivePassword","payload":{...}}
-```
-
-Responses use:
-
-```json
-{"ok":true,"data":{...}}
-```
-
-or:
-
-```json
-{"ok":false,"error":"safe user-facing error"}
-```
-
-Sensitive derivation/recovery failures are intentionally generalized at the FFI
-boundary.
+The complete claim boundary is maintained in `LIMITATIONS.md` and the reproducibility commands in `REPRODUCIBILITY.md`.

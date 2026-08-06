@@ -48,7 +48,7 @@ KeyLessPass 已从早期桌面原型升级为 Flutter Desktop + Rust Core 的产
 
 ## 发布准备状态
 
-- macOS entitlements 已包含可移动媒体、用户选择文件读写和网络 client 权限。
+- macOS entitlements 已包含可移动媒体和用户选择文件读写权限。
 - macOS 打包脚本支持 ad-hoc 或 Developer ID 签名，并可生成 DMG。
 - Windows/Linux 打包入口保留，待真实平台硬化。
 

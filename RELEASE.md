@@ -1,19 +1,5 @@
 # Release Guide
 
-## Commercial authorization
-
-Commercial packages must be built through
-`tools/commercial/build_commercial_release.sh`, which enables compile-time
-authorization enforcement, assigns a non-evaluation build channel and managed
-license path, and embeds the active verification key. During key rotation,
-provide the overlapping public-key map described in
-`docs/commercial/commercial-release-hardening.md`.
-
-Before distribution, verify online activation through the production HTTPS
-endpoint, offline bundle import, managed bundle refresh, expiry/grace behavior,
-revocation refresh, seat exhaustion, and an unauthorized clean installation.
-Do not distribute locally ad-hoc-signed authorization test builds.
-
 ## macOS
 
 Start with the full macOS setup guide:

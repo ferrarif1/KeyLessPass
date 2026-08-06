@@ -5,7 +5,8 @@ use crate::platform::{current_platform_provider, PlatformFactorProvider};
 use crate::service::factor_keys::{
     load_local_context, master_key_from_mnemonic_local, remember_master_key,
 };
-use crate::storage::{read_config, CdrStore, StoragePaths};
+use crate::service::migration::unlock_v3_with_recovery_phrase;
+use crate::storage::{read_config, recovery_manifest_v3_file, CdrStore, StoragePaths};
 use chrono::{DateTime, Duration, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -31,7 +32,6 @@ pub struct DerivedPasswordResponse {
 pub fn derive_password(
     request: DerivePasswordRequest,
 ) -> std::result::Result<DerivedPasswordResponse, String> {
-    crate::service::license::require_license_feature("desktop-client")?;
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     derive_password_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
@@ -42,48 +42,61 @@ pub fn derive_password_with_provider(
     provider: &dyn PlatformFactorProvider,
     request: DerivePasswordRequest,
 ) -> Result<DerivedPasswordResponse> {
-    crate::service::license::require_license_feature_at(
-        paths,
-        provider,
-        &crate::service::license::default_license_verifier(),
-        "desktop-client",
-    )?;
     if request.mnemonic.trim().is_empty() {
         return Err(KeylessPassError::MissingFactor(
-            "mnemonic phrase is required".to_string(),
+            "recovery share phrase is required".to_string(),
         ));
     }
 
     let config = read_config(paths)?;
-    let local = load_local_context(provider, &config.local_factor_path)?;
-    if local.package.user_id != config.user_id || local.package.device_id != config.device_id {
-        return Err(KeylessPassError::Integrity(
-            "local factor package does not match this device".to_string(),
-        ));
-    }
-
-    let master_key = master_key_from_mnemonic_local(&request.mnemonic, &local)?;
+    let (master_key, legacy_algorithm) = if recovery_manifest_v3_file(paths).exists() {
+        (
+            unlock_v3_with_recovery_phrase(paths, provider, &request.mnemonic)?,
+            None,
+        )
+    } else {
+        let local = load_local_context(provider, &config.local_factor_path)?;
+        if local.package.user_id != config.user_id || local.package.device_id != config.device_id {
+            return Err(KeylessPassError::Integrity(
+                "local factor package does not match this device".to_string(),
+            ));
+        }
+        let algorithm = local.payload.password_derivation_algorithm;
+        (
+            master_key_from_mnemonic_local(&request.mnemonic, &local)?,
+            Some(algorithm),
+        )
+    };
     remember_master_key(&config, &master_key)?;
     let store = CdrStore::new(&config.cdr_store_path);
     let record = store.get(request.record_id, request.version)?;
     record.verify_mac(&master_key)?;
 
     let algorithm = config.password_derivation_algorithm;
-    if algorithm != local.payload.password_derivation_algorithm {
+    if legacy_algorithm.is_some_and(|legacy| algorithm != legacy) {
         return Err(KeylessPassError::Integrity(
             "derivation algorithm metadata mismatch".to_string(),
         ));
     }
-    let derivation_key = kdf::derive_password_root_from_master(&master_key)?;
-    let service_secret = kdf::derive_service_secret_with_algorithm(
-        algorithm,
-        &derivation_key,
-        &config.user_id,
-        record.record_seq,
-        &record.record_id,
-        record.version,
-        &crate::crypto::b64_decode(&record.salt)?,
-    )?;
+    let service_secret = if record.schema_version >= crate::domain::CDR_SCHEMA_VERSION
+        && record.derivation_version >= crate::domain::CDR_DERIVATION_VERSION
+    {
+        let root_key: [u8; 32] = master_key.as_slice().try_into().map_err(|_| {
+            KeylessPassError::Crypto("v3 Root Key must contain 256 bits".to_string())
+        })?;
+        kdf::derive_service_secret_v3(&root_key, &record)?
+    } else {
+        let derivation_key = kdf::derive_password_root_from_master(&master_key)?;
+        kdf::derive_service_secret_with_algorithm(
+            algorithm,
+            &derivation_key,
+            &config.user_id,
+            record.record_seq,
+            &record.record_id,
+            record.version,
+            &crate::crypto::b64_decode(&record.salt)?,
+        )?
+    };
     let password = encoder::encode_password(&service_secret, &record.encoding_descriptor)?;
 
     Ok(DerivedPasswordResponse {

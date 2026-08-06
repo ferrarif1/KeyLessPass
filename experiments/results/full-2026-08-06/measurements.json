@@ -1,0 +1,216 @@
+{
+  "environment": {
+    "arch": "x86_64",
+    "command": "KEYLESSPASS_FULL=1 cargo run --release --example research_evaluation -- <output>",
+    "fullRun": true,
+    "os": "macos",
+    "randomness": "OS CSPRNG for Shamir; SHA-256(iteration) deterministic encoder inputs",
+    "rustPackageVersion": "0.1.0"
+  },
+  "measurements": [
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 152.4283699,
+      "name": "shamir_split_2_of_3",
+      "totalMs": 1524.283699
+    },
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 258.009587,
+      "name": "recover_recovery+computer",
+      "totalMs": 2580.09587
+    },
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 250.9149566,
+      "name": "recover_recovery+usb",
+      "totalMs": 2509.149566
+    },
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 248.5494572,
+      "name": "recover_computer+usb",
+      "totalMs": 2485.494572
+    },
+    {
+      "detail": {
+        "managedEnvelopeJcs": 474,
+        "manifestJcs": 316,
+        "recoveryPhraseUtf8": 747,
+        "recoveryPhraseWords": 108,
+        "usbEnvelopeJcs": 456
+      },
+      "iterations": 1,
+      "meanUs": 0.0,
+      "name": "factor_storage_bytes",
+      "totalMs": 0.0
+    },
+    {
+      "detail": {
+        "characterCounts": {
+          "!": 3130,
+          "#": 3012,
+          "$": 3063,
+          "%": 3142,
+          "*": 3032,
+          "+": 3071,
+          "-": 3046,
+          "2": 3424,
+          "3": 3345,
+          "4": 3265,
+          "5": 3305,
+          "6": 3283,
+          "7": 3389,
+          "8": 3445,
+          "9": 3373,
+          "=": 3156,
+          "@": 3004,
+          "A": 2540,
+          "B": 2498,
+          "C": 2471,
+          "D": 2471,
+          "E": 2521,
+          "F": 2584,
+          "G": 2515,
+          "H": 2521,
+          "J": 2532,
+          "K": 2531,
+          "L": 2551,
+          "M": 2481,
+          "N": 2501,
+          "P": 2447,
+          "Q": 2472,
+          "R": 2487,
+          "S": 2512,
+          "T": 2470,
+          "U": 2448,
+          "V": 2456,
+          "W": 2549,
+          "X": 2547,
+          "Y": 2518,
+          "Z": 2487,
+          "_": 3071,
+          "a": 2491,
+          "b": 2446,
+          "c": 2567,
+          "d": 2453,
+          "e": 2501,
+          "f": 2457,
+          "g": 2400,
+          "h": 2539,
+          "i": 2540,
+          "j": 2584,
+          "k": 2461,
+          "m": 2468,
+          "n": 2433,
+          "o": 2448,
+          "p": 2557,
+          "q": 2503,
+          "r": 2558,
+          "s": 2537,
+          "t": 2446,
+          "u": 2410,
+          "v": 2467,
+          "w": 2537,
+          "x": 2518,
+          "y": 2502,
+          "z": 2511
+        },
+        "passwordSpaceUpperBoundLog2": 109.1896054282399,
+        "positionObservationCount": [
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000
+        ]
+      },
+      "iterations": 10000,
+      "meanUs": 64854.8213517,
+      "name": "password_derivation_and_encoding",
+      "totalMs": 648548.213517
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 233472,
+        "loadMs": 2.919792,
+        "loadedRecords": 100,
+        "queryUs": 613.25,
+        "writeMs": 8.741591999999999
+      },
+      "iterations": 100,
+      "meanUs": 116.61383999999998,
+      "name": "cdr_scale_100",
+      "totalMs": 11.661383999999998
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 2146304,
+        "loadMs": 20.749605000000003,
+        "loadedRecords": 1000,
+        "queryUs": 727.288,
+        "writeMs": 51.813497
+      },
+      "iterations": 1000,
+      "meanUs": 72.563102,
+      "name": "cdr_scale_1000",
+      "totalMs": 72.563102
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 21327872,
+        "loadMs": 191.40310799999997,
+        "loadedRecords": 10000,
+        "queryUs": 617.018,
+        "writeMs": 465.116805
+      },
+      "iterations": 10000,
+      "meanUs": 65.65199129999999,
+      "name": "cdr_scale_10000",
+      "totalMs": 656.519913
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 213426176,
+        "loadMs": 1977.4739260000001,
+        "loadedRecords": 100000,
+        "queryUs": 2082.249,
+        "writeMs": 5247.903275
+      },
+      "iterations": 100000,
+      "meanUs": 72.25377200999999,
+      "name": "cdr_scale_100000",
+      "totalMs": 7225.377200999999
+    },
+    {
+      "detail": {
+        "successfulStateExecutions": 3000
+      },
+      "iterations": 3000,
+      "meanUs": 240.21866,
+      "name": "unknown_outcome_reconciliation",
+      "totalMs": 720.65598
+    }
+  ]
+}

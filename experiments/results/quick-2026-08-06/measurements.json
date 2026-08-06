@@ -1,0 +1,188 @@
+{
+  "environment": {
+    "arch": "x86_64",
+    "command": "cargo run --release --example research_evaluation -- <output>",
+    "fullRun": false,
+    "os": "macos",
+    "randomness": "OS CSPRNG for Shamir; SHA-256(iteration) deterministic encoder inputs",
+    "rustPackageVersion": "0.1.0"
+  },
+  "measurements": [
+    {
+      "detail": {},
+      "iterations": 1000,
+      "meanUs": 151.343921,
+      "name": "shamir_split_2_of_3",
+      "totalMs": 151.343921
+    },
+    {
+      "detail": {},
+      "iterations": 1000,
+      "meanUs": 257.690454,
+      "name": "recover_recovery+computer",
+      "totalMs": 257.690454
+    },
+    {
+      "detail": {},
+      "iterations": 1000,
+      "meanUs": 254.171734,
+      "name": "recover_recovery+usb",
+      "totalMs": 254.171734
+    },
+    {
+      "detail": {},
+      "iterations": 1000,
+      "meanUs": 251.46233099999998,
+      "name": "recover_computer+usb",
+      "totalMs": 251.46233099999998
+    },
+    {
+      "detail": {
+        "managedEnvelopeJcs": 474,
+        "manifestJcs": 316,
+        "recoveryPhraseUtf8": 736,
+        "recoveryPhraseWords": 108,
+        "usbEnvelopeJcs": 456
+      },
+      "iterations": 1,
+      "meanUs": 0.0,
+      "name": "factor_storage_bytes",
+      "totalMs": 0.0
+    },
+    {
+      "detail": {
+        "characterCounts": {
+          "!": 345,
+          "#": 308,
+          "$": 318,
+          "%": 301,
+          "*": 303,
+          "+": 311,
+          "-": 311,
+          "2": 331,
+          "3": 365,
+          "4": 353,
+          "5": 297,
+          "6": 335,
+          "7": 358,
+          "8": 330,
+          "9": 335,
+          "=": 307,
+          "@": 299,
+          "A": 274,
+          "B": 296,
+          "C": 233,
+          "D": 258,
+          "E": 285,
+          "F": 241,
+          "G": 251,
+          "H": 244,
+          "J": 248,
+          "K": 239,
+          "L": 249,
+          "M": 254,
+          "N": 236,
+          "P": 236,
+          "Q": 237,
+          "R": 257,
+          "S": 241,
+          "T": 244,
+          "U": 222,
+          "V": 271,
+          "W": 267,
+          "X": 255,
+          "Y": 258,
+          "Z": 254,
+          "_": 286,
+          "a": 224,
+          "b": 253,
+          "c": 248,
+          "d": 255,
+          "e": 262,
+          "f": 258,
+          "g": 243,
+          "h": 264,
+          "i": 267,
+          "j": 242,
+          "k": 245,
+          "m": 240,
+          "n": 233,
+          "o": 251,
+          "p": 242,
+          "q": 247,
+          "r": 254,
+          "s": 241,
+          "t": 231,
+          "u": 246,
+          "v": 213,
+          "w": 250,
+          "x": 238,
+          "y": 235,
+          "z": 275
+        },
+        "passwordSpaceUpperBoundLog2": 109.1896054282399,
+        "positionObservationCount": [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        ]
+      },
+      "iterations": 1000,
+      "meanUs": 75651.09814900001,
+      "name": "password_derivation_and_encoding",
+      "totalMs": 75651.09814900001
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 233472,
+        "loadMs": 4.546011,
+        "loadedRecords": 100,
+        "queryUs": 880.0089999999999,
+        "writeMs": 10.260325
+      },
+      "iterations": 100,
+      "meanUs": 148.06336,
+      "name": "cdr_scale_100",
+      "totalMs": 14.806336
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 2150400,
+        "loadMs": 30.349152,
+        "loadedRecords": 1000,
+        "queryUs": 846.579,
+        "writeMs": 71.43735
+      },
+      "iterations": 1000,
+      "meanUs": 101.786502,
+      "name": "cdr_scale_1000",
+      "totalMs": 101.786502
+    },
+    {
+      "detail": {
+        "successfulStateExecutions": 3000
+      },
+      "iterations": 3000,
+      "meanUs": 407.4097526666667,
+      "name": "unknown_outcome_reconciliation",
+      "totalMs": 1222.229258
+    }
+  ]
+}

@@ -10,37 +10,6 @@ class CoreApi {
     return _core.invoke('getAppStatus', const {}, AppStatus.fromJson);
   }
 
-  Future<LicenseStatus> getLicenseStatus() {
-    return _core.invoke('getLicenseStatus', const {}, LicenseStatus.fromJson);
-  }
-
-  Future<Map<String, Object?>> exportDeviceAuthorizationRequest({
-    String? organizationId,
-    String? seatLabel,
-  }) {
-    return _core.invoke(
-      'exportDeviceAuthorizationRequest',
-      {
-        if (organizationId != null) 'organizationId': organizationId,
-        if (seatLabel != null) 'seatLabel': seatLabel,
-      },
-      (value) => (value as Map).cast<String, Object?>(),
-    );
-  }
-
-  Future<LicenseStatus> importLicenseBundle({required String bundleJson}) {
-    return _core.invoke(
-        'importLicenseBundle',
-        {
-          'bundleJson': bundleJson,
-        },
-        LicenseStatus.fromJson);
-  }
-
-  Future<LicenseStatus> clearLicense() {
-    return _core.invoke('clearLicense', const {}, LicenseStatus.fromJson);
-  }
-
   Future<List<CredentialRecord>> listCredentials() {
     return _core.invoke('listCredentials', const {}, (value) {
       return (value as List).map(CredentialRecord.fromJson).toList();
