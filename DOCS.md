@@ -35,13 +35,28 @@ Use this page to find the shortest path for the job you want to finish.
 | Store readiness | [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md) | [docs/STORE_READINESS_CHECKLIST.zh-CN.md](docs/STORE_READINESS_CHECKLIST.zh-CN.md) |
 | Recovery implementation notes | [docs/security/2-of-3-recovery-implementation-notes.md](docs/security/2-of-3-recovery-implementation-notes.md) | [docs/security/2-of-3-recovery-implementation-notes.zh-CN.md](docs/security/2-of-3-recovery-implementation-notes.zh-CN.md) |
 
+## Research And Reproducibility
+
+| Topic | Document |
+| --- | --- |
+| Reproduction commands and evidence boundary | [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) |
+| ASTER implementation and experiment artifact | [research/aster/README.md](research/aster/README.md) |
+| Factor-preserving peer recovery prototype | [docs/research/FACTOR_PRESERVING_PEER_RECOVERY.zh-CN.md](docs/research/FACTOR_PRESERVING_PEER_RECOVERY.zh-CN.md) |
+| TLA+ rotation and recovery models | [models/README.md](models/README.md) |
+
+Paper manuscripts, rendered artwork, and submission bundles are deliberately
+git-ignored; the versioned boundary contains code, experiment inputs/results,
+formal models, and their documentation.
+
 ## Local Quick Commands
 
 Run the Rust core checks:
 
 ```bash
 cd rust_core
-cargo test
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all-targets --all-features
 ```
 
 Run the Flutter checks:

@@ -1,0 +1,2557 @@
+{
+  "method": "dual-collapse-credential-exposure-analysis",
+  "context_count": 32,
+  "results": [
+    {
+      "access_case": "case_2_independent_approval",
+      "context_case": "ticket_binds_full_canonical_context",
+      "configured_domain_threshold": 2,
+      "protected_max_compromised_domains": 1,
+      "ticket_budget": 1,
+      "master_domain_threshold": 2,
+      "master_weighted_cost": 5.0,
+      "factor_collapse": false,
+      "authorization_amplification": false,
+      "dual_signature": [
+        false,
+        false
+      ],
+      "maximum_unauthorized_spill": 0,
+      "minimal_factor_witnesses": [
+        [
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "N",
+          "U"
+        ]
+      ],
+      "scope_witnesses": [],
+      "credential_exposure_threshold_spectrum": [
+        {
+          "unauthorized_contexts": 1,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 2,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 3,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 4,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 5,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 6,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 7,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 8,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 9,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 10,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 11,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 12,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 13,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 14,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 15,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 16,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 17,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 18,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 19,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 20,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 21,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 22,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 23,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 24,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 25,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 26,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 27,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 28,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 29,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 30,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 31,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 32,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        }
+      ],
+      "binding_fields": [
+        "serviceID",
+        "accountID",
+        "credentialLineage",
+        "rootGeneration",
+        "policyID"
+      ],
+      "case": "safe_threshold_and_exact_scope"
+    },
+    {
+      "access_case": "case_2_independent_approval",
+      "context_case": "dprf_token_accepts_any_context",
+      "configured_domain_threshold": 2,
+      "protected_max_compromised_domains": 1,
+      "ticket_budget": 1,
+      "master_domain_threshold": 2,
+      "master_weighted_cost": 5.0,
+      "factor_collapse": false,
+      "authorization_amplification": true,
+      "dual_signature": [
+        false,
+        true
+      ],
+      "maximum_unauthorized_spill": 31,
+      "minimal_factor_witnesses": [
+        [
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "N",
+          "U"
+        ]
+      ],
+      "scope_witnesses": [
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "authorized_context_indexes": [
+            0
+          ],
+          "exposed_context_indexes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "unauthorized_spill_count": 31,
+          "cause": "callable_derivation_interface",
+          "root_reachable": false
+        },
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "authorized_context_indexes": [
+            1
+          ],
+          "exposed_context_indexes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "unauthorized_spill_count": 31,
+          "cause": "callable_derivation_interface",
+          "root_reachable": false
+        },
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "authorized_context_indexes": [
+            2
+          ],
+          "exposed_context_indexes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "unauthorized_spill_count": 31,
+          "cause": "callable_derivation_interface",
+          "root_reachable": false
+        },
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "authorized_context_indexes": [
+            3
+          ],
+          "exposed_context_indexes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "unauthorized_spill_count": 31,
+          "cause": "callable_derivation_interface",
+          "root_reachable": false
+        }
+      ],
+      "credential_exposure_threshold_spectrum": [
+        {
+          "unauthorized_contexts": 1,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 2,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 3,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 4,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 5,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 6,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 7,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 8,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 9,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 10,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 11,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 12,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 13,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 14,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 15,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 16,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 17,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 18,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 19,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 20,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 21,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 22,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 23,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 24,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 25,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 26,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 27,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 28,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 29,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 30,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 31,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [
+              0
+            ],
+            "cause": "callable_derivation_interface",
+            "root_reachable": false
+          }
+        },
+        {
+          "unauthorized_contexts": 32,
+          "minimum_compromised_domains": 2,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 5.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D",
+              "U"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        }
+      ],
+      "binding_fields": [],
+      "case": "scope_amplification_without_root"
+    },
+    {
+      "access_case": "case_1_naive_automatically_callable_network",
+      "context_case": "ticket_binds_full_canonical_context",
+      "configured_domain_threshold": 2,
+      "protected_max_compromised_domains": 1,
+      "ticket_budget": 1,
+      "master_domain_threshold": 1,
+      "master_weighted_cost": 3.0,
+      "factor_collapse": true,
+      "authorization_amplification": true,
+      "dual_signature": [
+        true,
+        true
+      ],
+      "maximum_unauthorized_spill": 32,
+      "minimal_factor_witnesses": [
+        [
+          "D"
+        ],
+        [
+          "N",
+          "U"
+        ]
+      ],
+      "scope_witnesses": [
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "authorized_context_indexes": [],
+          "exposed_context_indexes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "unauthorized_spill_count": 32,
+          "cause": "root_capability",
+          "root_reachable": true
+        }
+      ],
+      "credential_exposure_threshold_spectrum": [
+        {
+          "unauthorized_contexts": 1,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 2,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 3,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 4,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 5,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 6,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 7,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 8,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 9,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 10,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 11,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 12,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 13,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 14,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 15,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 16,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 17,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 18,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 19,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 20,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 21,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 22,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 23,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 24,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 25,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 26,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 27,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 28,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 29,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 30,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 31,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        },
+        {
+          "unauthorized_contexts": 32,
+          "minimum_compromised_domains": 1,
+          "minimum_domain_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          },
+          "minimum_cost": 3.0,
+          "minimum_cost_witness": {
+            "compromised_domains": [
+              "D"
+            ],
+            "authorized_context_indexes": [],
+            "cause": "root_capability",
+            "root_reachable": true
+          }
+        }
+      ],
+      "binding_fields": [
+        "serviceID",
+        "accountID",
+        "credentialLineage",
+        "rootGeneration",
+        "policyID"
+      ],
+      "case": "root_collapse_dominates_exact_scope"
+    }
+  ]
+}

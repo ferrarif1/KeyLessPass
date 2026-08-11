@@ -1,6 +1,10 @@
 .DS_Store
 docs/assets/.DS_Store
 packaging/.DS_Store
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+**/node_modules/
 
 # Rust
 /rust_core/target/
@@ -21,3 +25,36 @@ KeylessPass_core_evidence_package/
 KeylessPass_core_evidence_package.zip
 *.log
 /docs/user-guide-render
+/tmp
+
+# Manuscripts, submission bundles, and rendered paper output
+/paper/
+/paper_dccea/
+/output/
+/research/aster/paper/
+/research/aster/output/
+/research/aster/submission/
+/research/aster/PAPER_BLUEPRINT_V0_1.md
+/research/aster/SPEC_EXECUTION_PROMPT.md
+/research/aster/scripts/create_release_manifest.py
+/research/aster/scripts/format_manuscript_docx.py
+/docs/REVIEW_REVISION_CHECKLIST.md
+/docs/mock_reviews/
+/docs/*prior_art*.md
+/docs/*novelty*.md
+/docs/*editorial*.md
+/docs/*submission*.md
+/docs/*manuscript*.md
+/docs/*revision_report*.md
+/docs/*REVISION_REPORT*.md
+/docs/claim_inventory.md
+/docs/research_go_no_go*.md
+/docs/research_restructure_audit.md
+/docs/final_research_restructure_report.md
+/docs/final_self_check_latest.md
+/docs/dccea_novelty_correctness_audit.md
+/docs/published_system_dual_collapse_corpus.md
+
+# Nested research build artifacts
+/research_upgrade/**/target/
+/experiments/mfdpg_official/upstream/

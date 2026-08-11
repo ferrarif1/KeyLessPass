@@ -11,21 +11,23 @@ crate-type = ["rlib", "cdylib", "staticlib"]
 
 [features]
 default = []
-research = ["dep:aes", "dep:fpe", "dep:num-bigint", "dep:num-traits"]
+research = ["dep:ed25519-dalek"]
+peer-recovery = ["dep:ed25519-dalek", "dep:x25519-dalek"]
 
 [dependencies]
-aes = { version = "0.8", optional = true }
+aes = "0.8"
 aes-gcm = "0.10"
 argon2 = "0.5"
 base64 = "0.22"
 bip39 = "2.2.2"
 chrono = { version = "0.4", features = ["serde"] }
+ed25519-dalek = { version = "2", optional = true }
 getrandom = "0.2"
 hkdf = "0.12"
 hmac = "0.12"
-fpe = { version = "0.6.1", optional = true }
-num-bigint = { version = "0.4", optional = true }
-num-traits = { version = "0.2", optional = true }
+fpe = "0.6.1"
+num-bigint = "0.4"
+num-traits = "0.2"
 pbkdf2 = "0.12"
 rand = "0.8"
 rusqlite = { version = "0.32", features = ["bundled"] }
@@ -39,6 +41,7 @@ unicode-normalization = "0.1"
 uuid = { version = "1", features = ["serde", "v4"] }
 zeroize = { version = "1", features = ["derive"] }
 vsss-rs = { version = "5.4.0", default-features = false, features = ["std", "zeroize"] }
+x25519-dalek = { version = "2", features = ["static_secrets"], optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.59", features = [
@@ -51,9 +54,30 @@ windows-sys = { version = "0.59", features = [
 libc = "0.2"
 
 [dev-dependencies]
+proptest = "1"
 tempfile = "3"
 
 [[example]]
 name = "psppd_experiment"
 path = "examples/psppd_experiment.rs"
+required-features = ["research"]
+
+[[example]]
+name = "peer_recovery_experiment"
+path = "examples/peer_recovery_experiment.rs"
+required-features = ["peer-recovery"]
+
+[[example]]
+name = "known_credential_exposure"
+path = "examples/known_credential_exposure.rs"
+required-features = ["research"]
+
+[[example]]
+name = "aster_experiments"
+path = "examples/aster_experiments.rs"
+required-features = ["research"]
+
+[[example]]
+name = "aster_rq1"
+path = "examples/aster_rq1.rs"
 required-features = ["research"]

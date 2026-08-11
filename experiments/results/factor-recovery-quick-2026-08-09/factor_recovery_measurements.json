@@ -1,0 +1,15 @@
+{
+  "fullRun": false,
+  "releaseIterations": 100,
+  "approvalSigningMeanUs": 369.42373,
+  "threeNodeCryptoReleaseMeanUs": 6035.51083,
+  "responseBytesMean": 6937.8,
+  "threeOfFiveCombinationsChecked": 10,
+  "unavailableNodesChecked": [
+    0,
+    1,
+    2
+  ],
+  "networkLatency": "not measured; no network transport in this prototype",
+  "humanApprovalLatency": "not measured; cryptographic signature cost is reported separately"
+}

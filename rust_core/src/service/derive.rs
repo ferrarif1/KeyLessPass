@@ -1,4 +1,5 @@
 use crate::crypto::{encoder, kdf};
+use crate::derivation::{derive_password_v3, Ff1CycleWalking};
 use crate::domain::CredentialDescriptionRecord;
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
@@ -78,26 +79,41 @@ pub fn derive_password_with_provider(
             "derivation algorithm metadata mismatch".to_string(),
         ));
     }
-    let service_secret = if record.schema_version >= crate::domain::CDR_SCHEMA_VERSION
-        && record.derivation_version >= crate::domain::CDR_DERIVATION_VERSION
-    {
-        let root_key: [u8; 32] = master_key.as_slice().try_into().map_err(|_| {
-            KeylessPassError::Crypto("v3 Root Key must contain 256 bits".to_string())
-        })?;
-        kdf::derive_service_secret_v3(&root_key, &record)?
-    } else {
-        let derivation_key = kdf::derive_password_root_from_master(&master_key)?;
-        kdf::derive_service_secret_with_algorithm(
-            algorithm,
-            &derivation_key,
-            &config.user_id,
-            record.record_seq,
-            &record.record_id,
-            record.version,
-            &crate::crypto::b64_decode(&record.salt)?,
-        )?
+    let root_key = || -> Result<[u8; 32]> {
+        master_key
+            .as_slice()
+            .try_into()
+            .map_err(|_| KeylessPassError::Crypto("Root Key must contain 256 bits".to_string()))
     };
-    let password = encoder::encode_password(&service_secret, &record.encoding_descriptor)?;
+    let password = match (record.derivation_version, record.encoder_version) {
+        (crate::domain::CDR_DERIVATION_VERSION_V3, crate::domain::CDR_ENCODER_VERSION_V3) => {
+            derive_password_v3(&root_key()?, &record, &Ff1CycleWalking::default())?.password
+        }
+        (crate::domain::CDR_DERIVATION_VERSION, crate::domain::CDR_ENCODER_VERSION)
+            if record.schema_version >= crate::domain::CDR_SCHEMA_VERSION =>
+        {
+            let service_secret = kdf::derive_service_secret_v3(&root_key()?, &record)?;
+            encoder::encode_password(&service_secret, &record.encoding_descriptor)?
+        }
+        (1, 1 | 2) if record.schema_version < crate::domain::CDR_SCHEMA_VERSION => {
+            let derivation_key = kdf::derive_password_root_from_master(&master_key)?;
+            let service_secret = kdf::derive_service_secret_with_algorithm(
+                algorithm,
+                &derivation_key,
+                &config.user_id,
+                record.record_seq,
+                &record.record_id,
+                record.version,
+                &crate::crypto::b64_decode(&record.salt)?,
+            )?;
+            encoder::encode_password(&service_secret, &record.encoding_descriptor)?
+        }
+        versions => {
+            return Err(KeylessPassError::Validation(format!(
+                "unsupported derivation/encoder version pair: {versions:?}"
+            )))
+        }
+    };
 
     Ok(DerivedPasswordResponse {
         password,

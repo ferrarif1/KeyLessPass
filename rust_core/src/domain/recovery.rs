@@ -47,12 +47,17 @@ pub const RECOVERY_PHRASE_ENCODING_VERSION: u32 = 1;
 pub const RECOVERY_THRESHOLD: u8 = 2;
 pub const RECOVERY_SHARE_COUNT: u8 = 3;
 
+fn default_share_set_generation() -> u64 {
+    1
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum RecoveryFactorType {
     Recovery,
     ManagedComputer,
     Usb,
+    Network,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -93,6 +98,8 @@ pub struct RecoveryManifest {
     pub vault_id: Uuid,
     pub root_generation: u64,
     pub share_set_id: Uuid,
+    #[serde(default = "default_share_set_generation")]
+    pub share_set_generation: u64,
     pub threshold: u8,
     pub share_count: u8,
     pub committed_at: DateTime<Utc>,
@@ -105,6 +112,15 @@ pub struct RecoveryShareSet {
     pub recovery_phrase: String,
     pub managed_computer: ShareEnvelope,
     pub usb: ShareEnvelope,
+    pub manifest: RecoveryManifest,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NetworkRecoveryShareSet {
+    pub managed_computer: ShareEnvelope,
+    pub usb: ShareEnvelope,
+    pub network: ShareEnvelope,
     pub manifest: RecoveryManifest,
 }
 

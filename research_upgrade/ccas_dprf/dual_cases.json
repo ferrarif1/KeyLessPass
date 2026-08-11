@@ -1,0 +1,27 @@
+{
+  "access_models": "cases.json",
+  "context_models": "context_cases.json",
+  "cases": [
+    {
+      "name": "safe_threshold_and_exact_scope",
+      "access_case": "case_2_independent_approval",
+      "context_case": "ticket_binds_full_canonical_context",
+      "request_capability": "ClientToken",
+      "ticket_budget": 1
+    },
+    {
+      "name": "scope_amplification_without_root",
+      "access_case": "case_2_independent_approval",
+      "context_case": "dprf_token_accepts_any_context",
+      "request_capability": "ClientToken",
+      "ticket_budget": 1
+    },
+    {
+      "name": "root_collapse_dominates_exact_scope",
+      "access_case": "case_1_naive_automatically_callable_network",
+      "context_case": "ticket_binds_full_canonical_context",
+      "request_capability": "ClientToken",
+      "ticket_budget": 1
+    }
+  ]
+}

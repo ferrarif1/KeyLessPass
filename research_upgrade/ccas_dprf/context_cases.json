@@ -1,0 +1,52 @@
+{
+  "context_space": {
+    "serviceID": ["erp", "mail"],
+    "accountID": ["alice", "admin"],
+    "credentialLineage": ["lineage-1", "lineage-2"],
+    "rootGeneration": ["7", "8"],
+    "policyID": ["standard", "legacy"]
+  },
+  "authorized_context": {
+    "serviceID": "erp",
+    "accountID": "alice",
+    "credentialLineage": "lineage-1",
+    "rootGeneration": "8",
+    "policyID": "standard"
+  },
+  "max_ticket_budget": 4,
+  "cases": [
+    {
+      "name": "old_root_reconstruction",
+      "mode": "reconstructing"
+    },
+    {
+      "name": "dprf_token_accepts_any_context",
+      "mode": "dprf_unscoped"
+    },
+    {
+      "name": "ticket_binds_service_only",
+      "mode": "dprf_scoped",
+      "binding_fields": ["serviceID"]
+    },
+    {
+      "name": "ticket_omits_lineage_generation_and_policy",
+      "mode": "dprf_scoped",
+      "binding_fields": ["serviceID", "accountID"]
+    },
+    {
+      "name": "ticket_omits_generation_and_policy",
+      "mode": "dprf_scoped",
+      "binding_fields": ["serviceID", "accountID", "credentialLineage"]
+    },
+    {
+      "name": "ticket_omits_policy",
+      "mode": "dprf_scoped",
+      "binding_fields": ["serviceID", "accountID", "credentialLineage", "rootGeneration"]
+    },
+    {
+      "name": "ticket_binds_full_canonical_context",
+      "mode": "dprf_scoped",
+      "binding_fields": ["serviceID", "accountID", "credentialLineage", "rootGeneration", "policyID"]
+    }
+  ]
+}

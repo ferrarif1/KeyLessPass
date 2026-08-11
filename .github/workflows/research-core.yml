@@ -4,10 +4,20 @@ on:
   push:
     paths:
       - "rust_core/**"
+      - "models/**"
+      - "artifact/**"
+      - "experiments/**"
+      - "research/aster/**"
+      - "tla/**"
       - ".github/workflows/research-core.yml"
   pull_request:
     paths:
       - "rust_core/**"
+      - "models/**"
+      - "artifact/**"
+      - "experiments/**"
+      - "research/aster/**"
+      - "tla/**"
       - ".github/workflows/research-core.yml"
   workflow_dispatch:
 
@@ -31,12 +41,91 @@ jobs:
           workspaces: rust_core
       - run: cargo fmt --all -- --check
       - run: cargo clippy --all-targets --all-features -- -D warnings
-      - run: cargo test --all-targets
+      - run: cargo test --all-targets --all-features
       - name: Run reproducible quick experiment
         shell: bash
         run: cargo run --release --example research_evaluation -- ../experiments/results/ci-${{ runner.os }}
+      - name: Run factor-preserving recovery experiment
+        shell: bash
+        run: >-
+          cargo run --release --features peer-recovery
+          --example peer_recovery_experiment
+          -- ../experiments/results/peer-ci-${{ runner.os }}
       - uses: actions/upload-artifact@v4
         with:
           name: research-results-${{ runner.os }}
-          path: experiments/results/ci-${{ runner.os }}
+          path: |
+            experiments/results/ci-${{ runner.os }}
+            experiments/results/peer-ci-${{ runner.os }}
           if-no-files-found: error
+
+  redis-overlap-adapter:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: rust_core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_core
+      - name: Exercise real overlap-then-revoke behavior
+        run: cargo run --example redis_overlap_adapter
+        env:
+          KEYLESSPASS_REDIS_TEST_ADDR: 127.0.0.1:6379
+
+  rotation-model:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: models
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download pinned TLA+ tools
+        run: |
+          curl --fail --location --output tla2tools.jar \
+            https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
+          echo "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  tla2tools.jar" \
+            | sha256sum --check
+      - name: Exhaustively check the rotation model
+        run: >-
+          java -XX:+UseParallelGC -cp tla2tools.jar tlc2.TLC
+          -config PasswordRotation.cfg PasswordRotation.tla
+      - name: Exhaustively check the factor-preserving recovery model
+        run: >-
+          java -XX:+UseParallelGC -cp tla2tools.jar tlc2.TLC
+          -config FactorPreservingRecovery.cfg FactorPreservingRecovery.tla
+
+  aster-quick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_core
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install pillow
+      - name: Download pinned TLA+ tools
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/tla2tools-v1.7.4.jar" \
+            https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
+          echo "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  $RUNNER_TEMP/tla2tools-v1.7.4.jar" \
+            | sha256sum --check
+      - name: Reproduce ASTER quick artifact
+        run: ./research/aster/scripts/reproduce_all.sh --quick
+        env:
+          TLA2TOOLS_JAR: ${{ runner.temp }}/tla2tools-v1.7.4.jar

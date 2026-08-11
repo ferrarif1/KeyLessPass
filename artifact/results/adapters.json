@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "boundary": "The HTTP and LDAP-style adapters are high-fidelity local semantic models. They exercise durable SQLite reopen and adapter evidence contracts, but do not include a production HTTP application or OpenLDAP server.",
+  "adapters": {
+    "http_form": {
+      "cases": 15,
+      "finalStates": {
+        "UNKNOWN_OUTCOME": 6,
+        "COMMITTED": 8,
+        "PREPARED": 1
+      },
+      "allInvariantsHold": true
+    },
+    "ldap_style_directory": {
+      "cases": 15,
+      "finalStates": {
+        "ABORTED": 2,
+        "COMMITTED": 7,
+        "UNKNOWN_OUTCOME": 5,
+        "PREPARED": 1
+      },
+      "allInvariantsHold": true
+    }
+  }
+}

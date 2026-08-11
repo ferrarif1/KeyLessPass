@@ -1,0 +1,14 @@
+{
+  "title": "A new dichotomic algorithm for the uniform random generation of words in regular languages",
+  "authors": ["Johan Oudinet", "Alain Denise", "Marie-Claude Gaudel"],
+  "journal": "Theoretical Computer Science",
+  "volume": 502,
+  "pages": "165-176",
+  "year": 2013,
+  "doi": "10.1016/j.tcs.2012.07.025",
+  "source": "https://hal.science/hal-00716558",
+  "sourcePdfSha256": "b65b356fd60ffdb733b130377f451de95beb4cacc80049f2c01d87fc5286e4a0",
+  "algorithm": "Algorithm 1 (Dichopile)",
+  "arithmetic": "exact BigUint reproduction",
+  "reviewedPages": 23
+}

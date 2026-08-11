@@ -34,6 +34,7 @@ pub fn refresh_share_set(
         &root,
         manifest.vault_id,
         manifest.root_generation,
+        manifest.share_set_generation + 1,
         next_factor_generation,
         &managed.factor_id,
         next_factor_generation,
@@ -63,6 +64,7 @@ pub fn replace_usb_factor(
         &root,
         manifest.vault_id,
         manifest.root_generation,
+        manifest.share_set_generation + 1,
         next_factor_generation,
         &managed.factor_id,
         next_factor_generation,
@@ -93,6 +95,7 @@ pub fn replace_managed_computer(
         &root,
         manifest.vault_id,
         manifest.root_generation,
+        manifest.share_set_generation + 1,
         next_factor_generation,
         &device_id,
         next_factor_generation,
@@ -131,6 +134,7 @@ pub fn rotate_root_for_empty_vault(
         &root,
         manifest.vault_id,
         manifest.root_generation + 1,
+        manifest.share_set_generation + 1,
         next_factor_generation,
         &managed.factor_id,
         next_factor_generation,
@@ -167,7 +171,7 @@ mod tests {
         let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "lifecycle");
         let vault = Uuid::new_v4();
         let root = [0x31_u8; 32];
-        let set = create_share_set(&root, vault, 1, 1, "computer", 1, "usb", 1).unwrap();
+        let set = create_share_set(&root, vault, 1, 1, 1, "computer", 1, "usb", 1).unwrap();
         commit_recovery_share_set(&paths, &provider, usb.path(), &set).unwrap();
         let config = AppConfig::new(
             "test",

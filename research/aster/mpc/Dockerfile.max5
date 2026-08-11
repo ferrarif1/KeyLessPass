@@ -1,0 +1,8 @@
+ARG BASE_IMAGE=aster-mpspdz:mal-shamir-bmr
+FROM ${BASE_IMAGE}
+
+COPY mp-spdz-max-parties.patch /tmp/mp-spdz-max-parties.patch
+RUN git apply /tmp/mp-spdz-max-parties.patch \
+    && make clean \
+    && make mal-shamir-bmr-party.x \
+    && cp mal-shamir-bmr-party.x /usr/local/bin/

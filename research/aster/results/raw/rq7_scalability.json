@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "rows": [
+    {
+      "records": 100,
+      "insertMillis": 0.99796,
+      "databaseBytes": 36864,
+      "bytesPerCredentialAndReplayRow": 368.64,
+      "lookupSamples": 100,
+      "lookupMedianMicros": 8.394,
+      "lookupP95Micros": 12.538,
+      "lookupP99Micros": 42.785
+    },
+    {
+      "records": 1000,
+      "insertMillis": 7.809383,
+      "databaseBytes": 221184,
+      "bytesPerCredentialAndReplayRow": 221.184,
+      "lookupSamples": 1000,
+      "lookupMedianMicros": 8.595,
+      "lookupP95Micros": 9.414,
+      "lookupP99Micros": 12.961
+    },
+    {
+      "records": 10000,
+      "insertMillis": 74.722275,
+      "databaseBytes": 2015232,
+      "bytesPerCredentialAndReplayRow": 201.5232,
+      "lookupSamples": 2000,
+      "lookupMedianMicros": 8.696,
+      "lookupP95Micros": 10.372,
+      "lookupP99Micros": 36.237
+    },
+    {
+      "records": 100000,
+      "insertMillis": 803.519221,
+      "databaseBytes": 20168704,
+      "bytesPerCredentialAndReplayRow": 201.68704,
+      "lookupSamples": 2000,
+      "lookupMedianMicros": 13.527,
+      "lookupP95Micros": 14.318,
+      "lookupP99Micros": 18.025
+    }
+  ],
+  "boundary": "SQLite public credential metadata plus durable capability-use rows; no password values and no MPC computation."
+}

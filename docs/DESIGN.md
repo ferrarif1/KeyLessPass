@@ -28,9 +28,9 @@ Encoder v2 uses a domain-separated HMAC stream, rejection sampling for modulo-bi
 
 ## Lifecycle protocol
 
-Rotation is not two-phase commit. A legacy target is not a transactional participant. The persistent states include `STABLE`, `PREPARED`, `UPDATE_SENT`, `REMOTE_CONFIRMED`, `LOCAL_COMMITTED`, `UNKNOWN_OUTCOME`, `RECONCILIATION_REQUIRED`, `AMBIGUOUS_REMOTE_STATE`, `ROLLBACK_REQUIRED`, `ABORTED`, and `SUPERSEDED`.
+Rotation is not two-phase commit. A legacy target is not a transactional participant. Each pending CDR authenticates a target contract (`atomic_replacement`, `overlap_then_revoke`, or `opaque_replacement`) and a set of possible remote states refined by endpoint-labelled old/new authentication probes.
 
-After a timeout or crash with an unknown remote result, reconciliation tests the candidate password and old password within a lockout budget. New-only success permits local commit; old-only success aborts; both succeeding enters `AMBIGUOUS_REMOTE_STATE`; neither succeeding requires manual recovery. The external adapter and lockout-budget UI are interfaces, not production implementations in this repository.
+For an atomic target, only conclusive `NEW_ONLY` evidence permits local commit and `BOTH` stops automation. For an overlap target, `BOTH` establishes a planned intermediate state; the client requests old-credential revocation, resets its evidence after that mutation, and requires fresh `NEW_ONLY` evidence. An opaque target enters `EVIDENCE_INSUFFICIENT` and never commits automatically. `confirmRotation` consumes persisted evidence; it does not create remote-success evidence. The external adapter and lockout-budget UI remain interfaces rather than production integrations.
 
 Replica comparison distinguishes descendant, stale, concurrent, forked, replayed, and cross-vault state using parent hashes, credential generations, operation IDs, and replica metadata. Local-only mode detects tampering and partial-copy inconsistency but cannot detect rollback of every valid local copy. Enterprise-anchored mode exposes a compare-and-set freshness interface over Root-Key generation, CDR epoch, and digest; the included SQLite implementation proves persistence and atomic CAS semantics locally, but is not a deployed network service.
 

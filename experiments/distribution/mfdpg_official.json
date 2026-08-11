@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "publicationStatus": "preprint artifact; no verified peer-reviewed venue as of 2026-08-09",
+  "baseline": "official MFDPG output-generator dependencies",
+  "officialRepository": "https://github.com/multifactor/mfdpg",
+  "officialCommit": "6c26096dd22ff2b18aa5d8e4c3d5b0caf7b45bb7",
+  "lockfileVersion": 3,
+  "randexpVersion": "0.5.3",
+  "randomSeedVersion": "0.3.0",
+  "regex": "a|b[0-9]",
+  "acceptedLanguage": ["a", "b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9"],
+  "languageSize": 11,
+  "totalSamples": 100000,
+  "batchCount": 10,
+  "samplesPerBatch": 10000,
+  "rootSeed": "epscd-mfdpg-20260809",
+  "aggregate": {
+    "counts": {
+      "a": 50142,
+      "b0": 4984,
+      "b1": 5021,
+      "b2": 4943,
+      "b3": 4891,
+      "b4": 5064,
+      "b5": 4952,
+      "b6": 5002,
+      "b7": 5072,
+      "b8": 5021,
+      "b9": 4908
+    },
+    "totalVariationDistanceToUniform": 0.41051090909090915,
+    "chiSquare": 203912.01324000006,
+    "chiSquareDegreesOfFreedom": 10,
+    "expectedCountPerOutput": 9090.90909090909,
+    "minimumFrequency": 4891,
+    "maximumFrequency": 50142,
+    "maxMinFrequencyRatio": 10.251891228787569
+  },
+  "batches": [
+    {"batch": 0, "seedDomain": "epscd-mfdpg-20260809:batch=0", "samples": 10000, "totalVariationDistanceToUniform": 0.4047909090909091, "chiSquare": 19831.474200000004, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 472, "maximumFrequency": 4957, "maxMinFrequencyRatio": 10.502118644067796},
+    {"batch": 1, "seedDomain": "epscd-mfdpg-20260809:batch=1", "samples": 10000, "totalVariationDistanceToUniform": 0.41279090909090915, "chiSquare": 20622.123399999993, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 457, "maximumFrequency": 5037, "maxMinFrequencyRatio": 11.021881838074398},
+    {"batch": 2, "seedDomain": "epscd-mfdpg-20260809:batch=2", "samples": 10000, "totalVariationDistanceToUniform": 0.4096909090909091, "chiSquare": 20315.1772, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 461, "maximumFrequency": 5006, "maxMinFrequencyRatio": 10.859002169197398},
+    {"batch": 3, "seedDomain": "epscd-mfdpg-20260809:batch=3", "samples": 10000, "totalVariationDistanceToUniform": 0.41529090909090915, "chiSquare": 20875.2026, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 457, "maximumFrequency": 5062, "maxMinFrequencyRatio": 11.076586433260394},
+    {"batch": 4, "seedDomain": "epscd-mfdpg-20260809:batch=4", "samples": 10000, "totalVariationDistanceToUniform": 0.4139909090909091, "chiSquare": 20747.5168, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 444, "maximumFrequency": 5049, "maxMinFrequencyRatio": 11.371621621621621},
+    {"batch": 5, "seedDomain": "epscd-mfdpg-20260809:batch=5", "samples": 10000, "totalVariationDistanceToUniform": 0.41319090909090905, "chiSquare": 20663.685800000003, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 460, "maximumFrequency": 5041, "maxMinFrequencyRatio": 10.958695652173914},
+    {"batch": 6, "seedDomain": "epscd-mfdpg-20260809:batch=6", "samples": 10000, "totalVariationDistanceToUniform": 0.407490909090909, "chiSquare": 20095.08040000001, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 469, "maximumFrequency": 4984, "maxMinFrequencyRatio": 10.626865671641792},
+    {"batch": 7, "seedDomain": "epscd-mfdpg-20260809:batch=7", "samples": 10000, "totalVariationDistanceToUniform": 0.4047909090909091, "chiSquare": 19830.919799999996, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 478, "maximumFrequency": 4957, "maxMinFrequencyRatio": 10.370292887029288},
+    {"batch": 8, "seedDomain": "epscd-mfdpg-20260809:batch=8", "samples": 10000, "totalVariationDistanceToUniform": 0.40919090909090905, "chiSquare": 20264.537599999996, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 469, "maximumFrequency": 5001, "maxMinFrequencyRatio": 10.663113006396589},
+    {"batch": 9, "seedDomain": "epscd-mfdpg-20260809:batch=9", "samples": 10000, "totalVariationDistanceToUniform": 0.4138909090909091, "chiSquare": 20733.806399999998, "chiSquareDegreesOfFreedom": 10, "expectedCountPerOutput": 909.0909090909091, "minimumFrequency": 447, "maximumFrequency": 5048, "maxMinFrequencyRatio": 11.293064876957494}
+  ],
+  "boundary": "Artifact-specific output-selection observation. The probe executes the exact locked RandExp and random-seed dependencies and the randInt replacement used by MFDPG.generate, but replaces Argon2id preimages with labeled SHA-256 seeds; it is neither an end-to-end MFDPG benchmark nor a cryptographic-vulnerability claim."
+}

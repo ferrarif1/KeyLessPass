@@ -1,0 +1,4 @@
+repository=https://github.com/multifactor/mfdpg
+commit=6c26096dd22ff2b18aa5d8e4c3d5b0caf7b45bb7
+verified_at_utc=2026-08-09
+publication_status=preprint_only_not_verified_at_peer_reviewed_venue

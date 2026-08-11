@@ -1,0 +1,70 @@
+{
+  "backend": "MP-SPDZ mal-shamir-bmr-party.x",
+  "complete": true,
+  "constructionBoundary": "Generic malicious honest-majority MPC evaluation of an ASTER-composed AES Feistel/cycle-walk circuit; not FF1 and not a new threshold primitive.",
+  "rows": [
+    {
+      "corruptionThreshold": 1,
+      "fixedVectorAgreement": true,
+      "globalMB": {
+        "maximum": 2372.13,
+        "median": 2372.13,
+        "p95": 2372.13,
+        "p99": 2372.13,
+        "samples": 3
+      },
+      "maximumSeconds": 36.0598,
+      "medianSeconds": 33.0111,
+      "minimumSeconds": 19.0442,
+      "parties": 3,
+      "perPartyMB": {
+        "maximum": 790.705,
+        "median": 790.705,
+        "p95": 790.705,
+        "p99": 790.705,
+        "samples": 3
+      },
+      "rounds": {
+        "maximum": 22800,
+        "median": 22800,
+        "p95": 22800,
+        "p99": 22800,
+        "samples": 3
+      },
+      "samples": 3
+    },
+    {
+      "corruptionThreshold": 2,
+      "fixedVectorAgreement": true,
+      "globalMB": {
+        "maximum": 12225.8,
+        "median": 12225.8,
+        "p95": 12225.8,
+        "p99": 12225.8,
+        "samples": 3
+      },
+      "maximumSeconds": 127.265,
+      "medianSeconds": 125.534,
+      "minimumSeconds": 119.994,
+      "parties": 5,
+      "perPartyMB": {
+        "maximum": 2445.15,
+        "median": 2445.15,
+        "p95": 2445.15,
+        "p99": 2445.15,
+        "samples": 3
+      },
+      "rounds": {
+        "maximum": 35104,
+        "median": 35104,
+        "p95": 35104,
+        "p99": 35104,
+        "samples": 3
+      },
+      "samples": 3
+    }
+  ],
+  "sampleBoundary": "Small-sample fixed-vector feasibility run. No LAN/WAN, DKG, share-refresh, or history-window MPC timing is inferred from these measurements.",
+  "schemaVersion": 1,
+  "topology": "single-host loopback Docker container"
+}

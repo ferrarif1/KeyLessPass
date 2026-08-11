@@ -1,0 +1,44 @@
+diff --git a/Processor/ThreadQueues.h b/Processor/ThreadQueues.h
+index f011581..3203cba 100644
+--- a/Processor/ThreadQueues.h
++++ b/Processor/ThreadQueues.h
+@@ -8,7 +8,7 @@
+ #include "ThreadJob.h"
+ #include "ThreadQueue.h"
+
+-#include <barrier>
++#include <boost/thread/barrier.hpp>
+
+ class ThreadQueues :
+         public vector<ThreadQueue*>
+@@ -17,7 +17,7 @@ class ThreadQueues :
+ {
+     vector<int> available;
+
+-    barrier<>* sync_point;
++    boost::barrier* sync_point;
+
+ public:
+     thread_local static int counter;
+diff --git a/Processor/ThreadQueues.cpp b/Processor/ThreadQueues.cpp
+index 6225b6f..74ed6c1 100644
+--- a/Processor/ThreadQueues.cpp
++++ b/Processor/ThreadQueues.cpp
+@@ -37,7 +37,7 @@ int ThreadQueues::distribute_with_sync(ThreadJob job, int n_items)
+     if (n_threads > 1)
+     {
+         assert(not sync_point);
+-        sync_point = new barrier(n_threads);
++        sync_point = new boost::barrier(n_threads);
+     }
+     return distribute_no_setup(job, n_items);
+ }
+@@ -128,7 +128,7 @@ void ThreadQueues::sync()
+             fprintf(stderr, "%d wait\n", counter);
+             fprintf(stderr, "wait thread %lx\n", long(pthread_self()));
+         }
+-        sync_point->arrive_and_wait();
++        sync_point->wait();
+         if (debug)
+         {
+             fprintf(stderr, "%d continue\n", counter++);

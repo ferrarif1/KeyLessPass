@@ -1,0 +1,354 @@
+{
+  "context_fields": [
+    "serviceID",
+    "accountID",
+    "credentialLineage",
+    "rootGeneration",
+    "policyID"
+  ],
+  "context_count": 32,
+  "authorized_context": "erp/alice/lineage-1/8/standard#33aa79264491",
+  "ticket_budgets": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "empirical_minimal_injective_bindings": [
+    [
+      "serviceID",
+      "accountID",
+      "credentialLineage",
+      "rootGeneration",
+      "policyID"
+    ]
+  ],
+  "results": [
+    {
+      "case": "old_root_reconstruction",
+      "mode": "reconstructing",
+      "binding_fields": [],
+      "master_materialized_at_endpoint": true,
+      "authorized_context_count": 1,
+      "exposed_context_count": 32,
+      "unauthorized_spill_count": 31,
+      "exposure_fraction": 1.0,
+      "authorization_non_amplifying": false,
+      "failure_class": "routine_master_exposure",
+      "projection_class_sizes": null,
+      "maximum_unauthorized_spill_by_ticket_budget": null,
+      "exposed_contexts": [
+        "erp/alice/lineage-1/7/standard#98534e92fc53",
+        "erp/alice/lineage-1/7/legacy#d24b6cbbf835",
+        "erp/alice/lineage-1/8/standard#33aa79264491",
+        "erp/alice/lineage-1/8/legacy#5d3c6bc7e9d7",
+        "erp/alice/lineage-2/7/standard#2bd948cca132",
+        "erp/alice/lineage-2/7/legacy#71836c5ec730",
+        "erp/alice/lineage-2/8/standard#c97ac5f0f31a",
+        "erp/alice/lineage-2/8/legacy#d3ce0d5cd78c",
+        "erp/admin/lineage-1/7/standard#9f5d518e0bd0",
+        "erp/admin/lineage-1/7/legacy#c79658805744",
+        "erp/admin/lineage-1/8/standard#e0c12a44de85",
+        "erp/admin/lineage-1/8/legacy#bd5363cd3ea5",
+        "erp/admin/lineage-2/7/standard#462eb410b8c5",
+        "erp/admin/lineage-2/7/legacy#fbcea300fe19",
+        "erp/admin/lineage-2/8/standard#3325bf7a8ff7",
+        "erp/admin/lineage-2/8/legacy#ba71d6ff48ab",
+        "mail/alice/lineage-1/7/standard#1330cc54e67f",
+        "mail/alice/lineage-1/7/legacy#6d0cc0818bb2",
+        "mail/alice/lineage-1/8/standard#3a93c25a51f9",
+        "mail/alice/lineage-1/8/legacy#64172c2f199f",
+        "mail/alice/lineage-2/7/standard#8e98a929df69",
+        "mail/alice/lineage-2/7/legacy#1c32f9907d6e",
+        "mail/alice/lineage-2/8/standard#f47e6914226a",
+        "mail/alice/lineage-2/8/legacy#2a8a60c11789",
+        "mail/admin/lineage-1/7/standard#f4ae333c616a",
+        "mail/admin/lineage-1/7/legacy#b3a887bbbac8",
+        "mail/admin/lineage-1/8/standard#fcd8b509a418",
+        "mail/admin/lineage-1/8/legacy#9dfc6d68bb4c",
+        "mail/admin/lineage-2/7/standard#ae41b8ef6394",
+        "mail/admin/lineage-2/7/legacy#bbde50bbf016",
+        "mail/admin/lineage-2/8/standard#c7547b2c1759",
+        "mail/admin/lineage-2/8/legacy#e83d8a9ad594"
+      ]
+    },
+    {
+      "case": "dprf_token_accepts_any_context",
+      "mode": "dprf_unscoped",
+      "binding_fields": [],
+      "master_materialized_at_endpoint": false,
+      "authorized_context_count": 1,
+      "exposed_context_count": 32,
+      "unauthorized_spill_count": 31,
+      "exposure_fraction": 1.0,
+      "authorization_non_amplifying": false,
+      "failure_class": "authorization_amplification",
+      "projection_class_sizes": [
+        32
+      ],
+      "maximum_unauthorized_spill_by_ticket_budget": [
+        31,
+        31,
+        31,
+        31
+      ],
+      "exposed_contexts": [
+        "erp/alice/lineage-1/7/standard#98534e92fc53",
+        "erp/alice/lineage-1/7/legacy#d24b6cbbf835",
+        "erp/alice/lineage-1/8/standard#33aa79264491",
+        "erp/alice/lineage-1/8/legacy#5d3c6bc7e9d7",
+        "erp/alice/lineage-2/7/standard#2bd948cca132",
+        "erp/alice/lineage-2/7/legacy#71836c5ec730",
+        "erp/alice/lineage-2/8/standard#c97ac5f0f31a",
+        "erp/alice/lineage-2/8/legacy#d3ce0d5cd78c",
+        "erp/admin/lineage-1/7/standard#9f5d518e0bd0",
+        "erp/admin/lineage-1/7/legacy#c79658805744",
+        "erp/admin/lineage-1/8/standard#e0c12a44de85",
+        "erp/admin/lineage-1/8/legacy#bd5363cd3ea5",
+        "erp/admin/lineage-2/7/standard#462eb410b8c5",
+        "erp/admin/lineage-2/7/legacy#fbcea300fe19",
+        "erp/admin/lineage-2/8/standard#3325bf7a8ff7",
+        "erp/admin/lineage-2/8/legacy#ba71d6ff48ab",
+        "mail/alice/lineage-1/7/standard#1330cc54e67f",
+        "mail/alice/lineage-1/7/legacy#6d0cc0818bb2",
+        "mail/alice/lineage-1/8/standard#3a93c25a51f9",
+        "mail/alice/lineage-1/8/legacy#64172c2f199f",
+        "mail/alice/lineage-2/7/standard#8e98a929df69",
+        "mail/alice/lineage-2/7/legacy#1c32f9907d6e",
+        "mail/alice/lineage-2/8/standard#f47e6914226a",
+        "mail/alice/lineage-2/8/legacy#2a8a60c11789",
+        "mail/admin/lineage-1/7/standard#f4ae333c616a",
+        "mail/admin/lineage-1/7/legacy#b3a887bbbac8",
+        "mail/admin/lineage-1/8/standard#fcd8b509a418",
+        "mail/admin/lineage-1/8/legacy#9dfc6d68bb4c",
+        "mail/admin/lineage-2/7/standard#ae41b8ef6394",
+        "mail/admin/lineage-2/7/legacy#bbde50bbf016",
+        "mail/admin/lineage-2/8/standard#c7547b2c1759",
+        "mail/admin/lineage-2/8/legacy#e83d8a9ad594"
+      ]
+    },
+    {
+      "case": "ticket_binds_service_only",
+      "mode": "dprf_scoped",
+      "binding_fields": [
+        "serviceID"
+      ],
+      "master_materialized_at_endpoint": false,
+      "authorized_context_count": 1,
+      "exposed_context_count": 16,
+      "unauthorized_spill_count": 15,
+      "exposure_fraction": 0.5,
+      "authorization_non_amplifying": false,
+      "failure_class": "authorization_amplification",
+      "projection_class_sizes": [
+        16,
+        16
+      ],
+      "maximum_unauthorized_spill_by_ticket_budget": [
+        15,
+        30,
+        30,
+        30
+      ],
+      "exposed_contexts": [
+        "erp/alice/lineage-1/7/standard#98534e92fc53",
+        "erp/alice/lineage-1/7/legacy#d24b6cbbf835",
+        "erp/alice/lineage-1/8/standard#33aa79264491",
+        "erp/alice/lineage-1/8/legacy#5d3c6bc7e9d7",
+        "erp/alice/lineage-2/7/standard#2bd948cca132",
+        "erp/alice/lineage-2/7/legacy#71836c5ec730",
+        "erp/alice/lineage-2/8/standard#c97ac5f0f31a",
+        "erp/alice/lineage-2/8/legacy#d3ce0d5cd78c",
+        "erp/admin/lineage-1/7/standard#9f5d518e0bd0",
+        "erp/admin/lineage-1/7/legacy#c79658805744",
+        "erp/admin/lineage-1/8/standard#e0c12a44de85",
+        "erp/admin/lineage-1/8/legacy#bd5363cd3ea5",
+        "erp/admin/lineage-2/7/standard#462eb410b8c5",
+        "erp/admin/lineage-2/7/legacy#fbcea300fe19",
+        "erp/admin/lineage-2/8/standard#3325bf7a8ff7",
+        "erp/admin/lineage-2/8/legacy#ba71d6ff48ab"
+      ]
+    },
+    {
+      "case": "ticket_omits_lineage_generation_and_policy",
+      "mode": "dprf_scoped",
+      "binding_fields": [
+        "serviceID",
+        "accountID"
+      ],
+      "master_materialized_at_endpoint": false,
+      "authorized_context_count": 1,
+      "exposed_context_count": 8,
+      "unauthorized_spill_count": 7,
+      "exposure_fraction": 0.25,
+      "authorization_non_amplifying": false,
+      "failure_class": "authorization_amplification",
+      "projection_class_sizes": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "maximum_unauthorized_spill_by_ticket_budget": [
+        7,
+        14,
+        21,
+        28
+      ],
+      "exposed_contexts": [
+        "erp/alice/lineage-1/7/standard#98534e92fc53",
+        "erp/alice/lineage-1/7/legacy#d24b6cbbf835",
+        "erp/alice/lineage-1/8/standard#33aa79264491",
+        "erp/alice/lineage-1/8/legacy#5d3c6bc7e9d7",
+        "erp/alice/lineage-2/7/standard#2bd948cca132",
+        "erp/alice/lineage-2/7/legacy#71836c5ec730",
+        "erp/alice/lineage-2/8/standard#c97ac5f0f31a",
+        "erp/alice/lineage-2/8/legacy#d3ce0d5cd78c"
+      ]
+    },
+    {
+      "case": "ticket_omits_generation_and_policy",
+      "mode": "dprf_scoped",
+      "binding_fields": [
+        "serviceID",
+        "accountID",
+        "credentialLineage"
+      ],
+      "master_materialized_at_endpoint": false,
+      "authorized_context_count": 1,
+      "exposed_context_count": 4,
+      "unauthorized_spill_count": 3,
+      "exposure_fraction": 0.125,
+      "authorization_non_amplifying": false,
+      "failure_class": "authorization_amplification",
+      "projection_class_sizes": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "maximum_unauthorized_spill_by_ticket_budget": [
+        3,
+        6,
+        9,
+        12
+      ],
+      "exposed_contexts": [
+        "erp/alice/lineage-1/7/standard#98534e92fc53",
+        "erp/alice/lineage-1/7/legacy#d24b6cbbf835",
+        "erp/alice/lineage-1/8/standard#33aa79264491",
+        "erp/alice/lineage-1/8/legacy#5d3c6bc7e9d7"
+      ]
+    },
+    {
+      "case": "ticket_omits_policy",
+      "mode": "dprf_scoped",
+      "binding_fields": [
+        "serviceID",
+        "accountID",
+        "credentialLineage",
+        "rootGeneration"
+      ],
+      "master_materialized_at_endpoint": false,
+      "authorized_context_count": 1,
+      "exposed_context_count": 2,
+      "unauthorized_spill_count": 1,
+      "exposure_fraction": 0.0625,
+      "authorization_non_amplifying": false,
+      "failure_class": "authorization_amplification",
+      "projection_class_sizes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "maximum_unauthorized_spill_by_ticket_budget": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "exposed_contexts": [
+        "erp/alice/lineage-1/8/standard#33aa79264491",
+        "erp/alice/lineage-1/8/legacy#5d3c6bc7e9d7"
+      ]
+    },
+    {
+      "case": "ticket_binds_full_canonical_context",
+      "mode": "dprf_scoped",
+      "binding_fields": [
+        "serviceID",
+        "accountID",
+        "credentialLineage",
+        "rootGeneration",
+        "policyID"
+      ],
+      "master_materialized_at_endpoint": false,
+      "authorized_context_count": 1,
+      "exposed_context_count": 1,
+      "unauthorized_spill_count": 0,
+      "exposure_fraction": 0.03125,
+      "authorization_non_amplifying": true,
+      "failure_class": "none",
+      "projection_class_sizes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "maximum_unauthorized_spill_by_ticket_budget": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "exposed_contexts": [
+        "erp/alice/lineage-1/8/standard#33aa79264491"
+      ]
+    }
+  ]
+}

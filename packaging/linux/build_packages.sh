@@ -77,7 +77,6 @@ mkdir -p "$DIST"
 TAR_ROOT="$DIST/stage/$APP_NAME-linux-x64-$APP_VERSION"
 mkdir -p "$TAR_ROOT"
 cp -a "$BUNDLE/." "$TAR_ROOT/"
-cp "$ROOT/LICENSE" "$TAR_ROOT/LICENSE"
 cat >"$TAR_ROOT/run-keylesspass.sh" <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
@@ -121,7 +120,6 @@ if command -v dpkg-deb >/dev/null 2>&1; then
     "$DEB_ROOT/usr/share/icons/hicolor/512x512/apps" \
     "$DEB_ROOT/usr/share/doc/keylesspass"
   cp -a "$BUNDLE/." "$DEB_ROOT/opt/keylesspass/"
-  cp "$ROOT/LICENSE" "$DEB_ROOT/usr/share/doc/keylesspass/LICENSE"
   printf "%s" "$DEB_DESKTOP_FILE_CONTENT" >"$DEB_ROOT/usr/share/applications/$APP_ID.desktop"
   cp "$ROOT/flutter_app/assets/logo.png" \
     "$DEB_ROOT/usr/share/icons/hicolor/512x512/apps/$APP_ID.png"

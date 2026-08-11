@@ -1,0 +1,8 @@
+ARG BASE_IMAGE=c3c1ed593f6a
+FROM ${BASE_IMAGE}
+
+COPY mp-spdz-bullseye-barrier.patch /tmp/mp-spdz-bullseye-barrier.patch
+RUN git apply /tmp/mp-spdz-bullseye-barrier.patch \
+    && make clean \
+    && make mal-shamir-bmr-party.x \
+    && cp mal-shamir-bmr-party.x /usr/local/bin/

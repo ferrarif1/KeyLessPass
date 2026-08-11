@@ -1,0 +1,264 @@
+{
+  "backend": "MP-SPDZ mal-shamir-bmr-party.x",
+  "constructionBoundary": "Generic malicious honest-majority MPC evaluation of an ASTER-composed AES Feistel/cycle-walk circuit; not FF1 and not a new threshold primitive.",
+  "host": "macOS-26.5.2-x86_64-i386-64bit",
+  "image": "aster-mpspdz:mal-shamir-bmr-max5",
+  "reference": {
+    "configurations": [
+      {
+        "corruption_threshold": 1,
+        "effective_key_hex": "aaba8a9a150535259ebd9cfb9ab99877",
+        "parties": 3,
+        "rank": 70397,
+        "walks": 1
+      },
+      {
+        "corruption_threshold": 2,
+        "effective_key_hex": "ed248948d004ad60ca348ca7b7897103",
+        "parties": 5,
+        "rank": 697614,
+        "walks": 1
+      }
+    ],
+    "context_tweak_hex": "6f8e6fab7bfc9321be8fd9f529874379",
+    "domain_bits": 20,
+    "domain_size": 1000003,
+    "generation": 42,
+    "max_cycle_walks": 4,
+    "party_contributions_hex": [
+      "00112233445566778899aabbccddeeff",
+      "0f0e0d0c0b0a09080706050403020100",
+      "a5a5a5a55a5a5a5a1122334455667788",
+      "1234567890abcdeffedcba0987654321",
+      "55aa55aa55aa55aaaa55aa55aa55aa55"
+    ],
+    "rounds": 10
+  },
+  "rows": [
+    {
+      "containerWallSecondsIncludingCompilation": 95.907370355,
+      "corruptionThreshold": 1,
+      "emitted": {
+        "dataSentMB": [
+          790.705,
+          790.705,
+          790.705
+        ],
+        "globalDataSentMB": [
+          2372.13,
+          2372.13,
+          2372.13
+        ],
+        "protocolSeconds": [
+          19.0442,
+          33.0111,
+          36.0598
+        ],
+        "ranks": [
+          70397,
+          70397,
+          70397
+        ],
+        "roundCounts": [
+          22800,
+          22800,
+          22800
+        ],
+        "successes": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expectedRank": 70397,
+      "fixedVectorAgreement": true,
+      "onlineAvailabilityClaim": "all configured parties participate in this experiment",
+      "parties": 3,
+      "perRunEmitted": [
+        {
+          "dataSentMB": [
+            790.705
+          ],
+          "globalDataSentMB": [
+            2372.13
+          ],
+          "protocolSeconds": [
+            19.0442
+          ],
+          "ranks": [
+            70397
+          ],
+          "roundCounts": [
+            22800
+          ],
+          "successes": [
+            1
+          ]
+        },
+        {
+          "dataSentMB": [
+            790.705
+          ],
+          "globalDataSentMB": [
+            2372.13
+          ],
+          "protocolSeconds": [
+            33.0111
+          ],
+          "ranks": [
+            70397
+          ],
+          "roundCounts": [
+            22800
+          ],
+          "successes": [
+            1
+          ]
+        },
+        {
+          "dataSentMB": [
+            790.705
+          ],
+          "globalDataSentMB": [
+            2372.13
+          ],
+          "protocolSeconds": [
+            36.0598
+          ],
+          "ranks": [
+            70397
+          ],
+          "roundCounts": [
+            22800
+          ],
+          "successes": [
+            1
+          ]
+        }
+      ],
+      "protocolTimeSummary": {
+        "medianSeconds": 33.0111,
+        "p95Seconds": 35.75493,
+        "p99Seconds": 35.998826,
+        "samples": 3
+      },
+      "repetitionsRequested": 3,
+      "stderr": "Running /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 0 aster_exact_domain-3 -pn 18829 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 1 aster_exact_domain-3 -pn 18829 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 2 aster_exact_domain-3 -pn 18829 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 0 aster_exact_domain-3 -pn 19643 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 1 aster_exact_domain-3 -pn 19643 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 2 aster_exact_domain-3 -pn 19643 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 0 aster_exact_domain-3 -pn 12363 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 1 aster_exact_domain-3 -pn 12363 -h localhost -N 3\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 2 aster_exact_domain-3 -pn 12363 -h localhost -N 3\n",
+      "stdout": "Default bit length for compilation: 128\nCompiling file Programs/Source/aster_exact_domain.mpc\nWARNING: Order of memory instructions not preserved, errors possible\nWriting to Programs/Schedules/aster_exact_domain-3.sch\nWriting to Programs/Bytecode/aster_exact_domain-3-0.bc\nHash: fbefd4a81a282c4026939fd0b61b33dc98c8463030a96b4132911d04b9911ea2\nProgram requires at most:\n         128 bit inputs from player 0\n         128 bit inputs from player 1\n         128 bit inputs from player 2\n      256297 bit triples\n          16 bit opens\n       15467 virtual machine rounds\nASTER_RUN_BEGIN=0\nUsing statistical security parameter 40\nASTER_MPC_SUCCESS=1\nASTER_MPC_RANK=70397\nData sent = 790.705 MB in ~22800 rounds (party 0 only; use '-v' for more details)\nGlobal data sent = 2372.13 MB (all parties)\nData sent in online phase = 790.705 MB (this party only)\nTime = 19.0442 seconds\nASTER_RUN_END=0\nASTER_RUN_BEGIN=1\nUsing statistical security parameter 40\nASTER_MPC_SUCCESS=1\nASTER_MPC_RANK=70397\nData sent = 790.705 MB in ~22800 rounds (party 0 only; use '-v' for more details)\nGlobal data sent = 2372.13 MB (all parties)\nData sent in online phase = 790.705 MB (this party only)\nTime = 33.0111 seconds\nASTER_RUN_END=1\nASTER_RUN_BEGIN=2\nUsing statistical security parameter 40\nASTER_MPC_SUCCESS=1\nASTER_MPC_RANK=70397\nData sent = 790.705 MB in ~22800 rounds (party 0 only; use '-v' for more details)\nGlobal data sent = 2372.13 MB (all parties)\nData sent in online phase = 790.705 MB (this party only)\nTime = 36.0598 seconds\nASTER_RUN_END=2\n"
+    },
+    {
+      "containerWallSecondsIncludingCompilation": 386.73311239,
+      "corruptionThreshold": 2,
+      "emitted": {
+        "dataSentMB": [
+          2445.15,
+          2445.15,
+          2445.15
+        ],
+        "globalDataSentMB": [
+          12225.8,
+          12225.8,
+          12225.8
+        ],
+        "protocolSeconds": [
+          125.534,
+          127.265,
+          119.994
+        ],
+        "ranks": [
+          697614,
+          697614,
+          697614
+        ],
+        "roundCounts": [
+          35104,
+          35104,
+          35104
+        ],
+        "successes": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expectedRank": 697614,
+      "fixedVectorAgreement": true,
+      "onlineAvailabilityClaim": "all configured parties participate in this experiment",
+      "parties": 5,
+      "perRunEmitted": [
+        {
+          "dataSentMB": [
+            2445.15
+          ],
+          "globalDataSentMB": [
+            12225.8
+          ],
+          "protocolSeconds": [
+            125.534
+          ],
+          "ranks": [
+            697614
+          ],
+          "roundCounts": [
+            35104
+          ],
+          "successes": [
+            1
+          ]
+        },
+        {
+          "dataSentMB": [
+            2445.15
+          ],
+          "globalDataSentMB": [
+            12225.8
+          ],
+          "protocolSeconds": [
+            127.265
+          ],
+          "ranks": [
+            697614
+          ],
+          "roundCounts": [
+            35104
+          ],
+          "successes": [
+            1
+          ]
+        },
+        {
+          "dataSentMB": [
+            2445.15
+          ],
+          "globalDataSentMB": [
+            12225.8
+          ],
+          "protocolSeconds": [
+            119.994
+          ],
+          "ranks": [
+            697614
+          ],
+          "roundCounts": [
+            35104
+          ],
+          "successes": [
+            1
+          ]
+        }
+      ],
+      "protocolTimeSummary": {
+        "medianSeconds": 125.534,
+        "p95Seconds": 127.0919,
+        "p99Seconds": 127.23038000000001,
+        "samples": 3
+      },
+      "repetitionsRequested": 3,
+      "stderr": "Running /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 0 aster_exact_domain-5 -pn 11904 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 1 aster_exact_domain-5 -pn 11904 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 2 aster_exact_domain-5 -pn 11904 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 3 aster_exact_domain-5 -pn 11904 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 4 aster_exact_domain-5 -pn 11904 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 0 aster_exact_domain-5 -pn 11327 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 1 aster_exact_domain-5 -pn 11327 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 2 aster_exact_domain-5 -pn 11327 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 3 aster_exact_domain-5 -pn 11327 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 4 aster_exact_domain-5 -pn 11327 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 0 aster_exact_domain-5 -pn 12978 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 1 aster_exact_domain-5 -pn 12978 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 2 aster_exact_domain-5 -pn 12978 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 3 aster_exact_domain-5 -pn 12978 -h localhost -N 5\nRunning /usr/src/MP-SPDZ/Scripts/../mal-shamir-bmr-party.x 4 aster_exact_domain-5 -pn 12978 -h localhost -N 5\n",
+      "stdout": "Default bit length for compilation: 128\nCompiling file Programs/Source/aster_exact_domain.mpc\nWARNING: Order of memory instructions not preserved, errors possible\nWriting to Programs/Schedules/aster_exact_domain-5.sch\nWriting to Programs/Bytecode/aster_exact_domain-5-0.bc\nHash: 8b4ae9be684c38d5236ac4b858b46a63c2f6504fd2a56f9f8637e63c1de4fc89\nProgram requires at most:\n         128 bit inputs from player 0\n         128 bit inputs from player 1\n         128 bit inputs from player 2\n         128 bit inputs from player 3\n         128 bit inputs from player 4\n      256297 bit triples\n          16 bit opens\n       15469 virtual machine rounds\nASTER_RUN_BEGIN=0\nUsing statistical security parameter 40\nASTER_MPC_SUCCESS=1\nASTER_MPC_RANK=697614\nData sent = 2445.15 MB in ~35104 rounds (party 0 only; use '-v' for more details)\nGlobal data sent = 12225.8 MB (all parties)\nData sent in online phase = 2445.15 MB (this party only)\nTime = 125.534 seconds\nASTER_RUN_END=0\nASTER_RUN_BEGIN=1\nUsing statistical security parameter 40\nASTER_MPC_SUCCESS=1\nASTER_MPC_RANK=697614\nData sent = 2445.15 MB in ~35104 rounds (party 0 only; use '-v' for more details)\nGlobal data sent = 12225.8 MB (all parties)\nData sent in online phase = 2445.15 MB (this party only)\nTime = 127.265 seconds\nASTER_RUN_END=1\nASTER_RUN_BEGIN=2\nUsing statistical security parameter 40\nASTER_MPC_SUCCESS=1\nASTER_MPC_RANK=697614\nData sent = 2445.15 MB in ~35104 rounds (party 0 only; use '-v' for more details)\nGlobal data sent = 12225.8 MB (all parties)\nData sent in online phase = 2445.15 MB (this party only)\nTime = 119.994 seconds\nASTER_RUN_END=2\n"
+    }
+  ],
+  "sampleBoundary": "Small-sample fixed-vector feasibility run. No LAN/WAN, DKG, share-refresh, or history-window MPC timing is inferred from these measurements.",
+  "schemaVersion": 1,
+  "topology": "single-host loopback Docker container"
+}

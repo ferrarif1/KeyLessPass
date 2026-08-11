@@ -1,0 +1,41 @@
+{
+  "classification": "mechanistic controls; not competing published schemes",
+  "equalViableBranchWalk": {
+    "analyticTotalVariationDistance": 0.4090909090909091,
+    "probabilityA": 0.5,
+    "probabilityEachBDigit": 0.05,
+    "uniformTarget": 0.09090909090909091
+  },
+  "language": [
+    "a",
+    "b0",
+    "b1",
+    "b2",
+    "b3",
+    "b4",
+    "b5",
+    "b6",
+    "b7",
+    "b8",
+    "b9"
+  ],
+  "schemaVersion": 1,
+  "uniformRankOracle": {
+    "chiSquare": 15.426280000000002,
+    "chiSquareDegreesOfFreedom": 10,
+    "expectedCountPerPassword": 9090.90909090909,
+    "maxMinFrequencyRatio": 1.0419877163595757,
+    "maximumFrequency": 9331,
+    "method": "uniform-rank-unrank-oracle",
+    "minimumNonzeroFrequency": 8955,
+    "missingOutputs": 0,
+    "observedOutputs": 11,
+    "totalVariationDistanceEmpirical": 0.004785454545454537
+  },
+  "withReplacementOccupancy": {
+    "domain": 11,
+    "draws": 11,
+    "expectedRepetitions": 3.8554328942953164,
+    "expectedUnique": 7.144567105704684
+  }
+}

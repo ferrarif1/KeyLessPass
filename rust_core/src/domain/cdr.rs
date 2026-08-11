@@ -1,4 +1,5 @@
 use crate::crypto::mac;
+use crate::domain::rotation::{RotationContract, RotationEvidence};
 use crate::error::{KeylessPassError, Result};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -9,6 +10,8 @@ pub const CDR_SCHEMA_VERSION: u32 = 3;
 pub const CDR_CRYPTO_SUITE_VERSION: u32 = 1;
 pub const CDR_ENCODER_VERSION: u32 = 2;
 pub const CDR_DERIVATION_VERSION: u32 = 2;
+pub const CDR_ENCODER_VERSION_V3: u32 = 3;
+pub const CDR_DERIVATION_VERSION_V3: u32 = 3;
 
 fn default_one() -> u32 {
     1
@@ -41,7 +44,11 @@ pub enum RotationState {
     LocalCommitted,
     UnknownOutcome,
     ReconciliationRequired,
+    EvidenceInsufficient,
     AmbiguousRemoteState,
+    OverlapEstablished,
+    OldRevocationSent,
+    OldRevocationUnknown,
     RollbackRequired,
     Aborted,
     Superseded,
@@ -188,6 +195,8 @@ pub struct CredentialDescriptionRecord {
     pub policy_id: Uuid,
     #[serde(default = "default_one")]
     pub policy_version: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub policy_epoch: Option<u64>,
     #[serde(default = "default_one")]
     pub encoder_version: u32,
     #[serde(default = "default_one")]
@@ -203,6 +212,10 @@ pub struct CredentialDescriptionRecord {
     pub state: CredentialState,
     #[serde(default)]
     pub rotation_state: RotationState,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rotation_contract: Option<RotationContract>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rotation_evidence: Option<RotationEvidence>,
     #[serde(default)]
     pub operation_id: Option<Uuid>,
     #[serde(default)]
@@ -240,6 +253,7 @@ impl CredentialDescriptionRecord {
             root_generation,
             policy_id: Uuid::new_v4(),
             policy_version: encoding_descriptor.rule_version,
+            policy_epoch: None,
             encoder_version: CDR_ENCODER_VERSION,
             derivation_version: CDR_DERIVATION_VERSION,
             display_name: display_name.into(),
@@ -251,6 +265,8 @@ impl CredentialDescriptionRecord {
             encoding_descriptor,
             state: CredentialState::Active,
             rotation_state: RotationState::Stable,
+            rotation_contract: None,
+            rotation_evidence: None,
             operation_id: None,
             parent_record_hash: String::new(),
             replica: ReplicaMetadata {
@@ -269,6 +285,18 @@ impl CredentialDescriptionRecord {
         previous: &Self,
         encoding_descriptor: EncodingDescriptor,
     ) -> CredentialDescriptionRecord {
+        Self::rotation_from_with_contract(
+            previous,
+            encoding_descriptor,
+            RotationContract::OpaqueReplacement,
+        )
+    }
+
+    pub fn rotation_from_with_contract(
+        previous: &Self,
+        encoding_descriptor: EncodingDescriptor,
+        rotation_contract: RotationContract,
+    ) -> CredentialDescriptionRecord {
         let now = Utc::now();
         let parent_record_hash = previous.record_hash().unwrap_or_default();
         Self {
@@ -283,6 +311,7 @@ impl CredentialDescriptionRecord {
             root_generation: previous.root_generation,
             policy_id: previous.policy_id,
             policy_version: encoding_descriptor.rule_version,
+            policy_epoch: previous.policy_epoch,
             encoder_version: CDR_ENCODER_VERSION,
             derivation_version: previous.derivation_version,
             display_name: previous.display_name.clone(),
@@ -294,6 +323,70 @@ impl CredentialDescriptionRecord {
             encoding_descriptor,
             state: CredentialState::PendingRotation,
             rotation_state: RotationState::Prepared,
+            rotation_contract: Some(rotation_contract),
+            rotation_evidence: Some(RotationEvidence::default()),
+            operation_id: Some(Uuid::new_v4()),
+            parent_record_hash,
+            replica: ReplicaMetadata {
+                replica_id: previous.replica.replica_id,
+                lamport_clock: previous.replica.lamport_clock + 1,
+                epoch: previous.replica.epoch + 1,
+            },
+            created_at: now,
+            updated_at: now,
+            retired_at: None,
+            mac_tag: String::new(),
+        }
+    }
+
+    /// Creates an explicit encoder/derivation-v3 candidate without changing v2 semantics.
+    /// The credential salt is stable inside the v3 permutation domain.
+    pub fn rotation_to_v3_with_contract(
+        previous: &Self,
+        encoding_descriptor: EncodingDescriptor,
+        rotation_contract: RotationContract,
+    ) -> CredentialDescriptionRecord {
+        let now = Utc::now();
+        let parent_record_hash = previous.record_hash().unwrap_or_default();
+        let previous_is_v3 = previous.derivation_version == CDR_DERIVATION_VERSION_V3
+            && previous.encoder_version == CDR_ENCODER_VERSION_V3;
+        let policy_changed = previous.encoding_descriptor != encoding_descriptor;
+        let policy_epoch = if previous_is_v3 {
+            previous.policy_epoch.unwrap_or(1) + u64::from(policy_changed)
+        } else {
+            1
+        };
+        let credential_generation = if previous_is_v3 && !policy_changed {
+            previous.credential_generation + 1
+        } else {
+            0
+        };
+        Self {
+            schema_version: CDR_SCHEMA_VERSION,
+            crypto_suite_version: previous.crypto_suite_version,
+            vault_id: previous.vault_id,
+            record_id: previous.record_id,
+            record_seq: previous.record_seq,
+            service_id: previous.service_id,
+            account_id: previous.account_id,
+            credential_generation,
+            root_generation: previous.root_generation,
+            policy_id: previous.policy_id,
+            policy_version: encoding_descriptor.rule_version,
+            policy_epoch: Some(policy_epoch),
+            encoder_version: CDR_ENCODER_VERSION_V3,
+            derivation_version: CDR_DERIVATION_VERSION_V3,
+            display_name: previous.display_name.clone(),
+            service_hint: previous.service_hint.clone(),
+            account_hint: previous.account_hint.clone(),
+            notes: previous.notes.clone(),
+            version: previous.version + 1,
+            salt: previous.salt.clone(),
+            encoding_descriptor,
+            state: CredentialState::PendingRotation,
+            rotation_state: RotationState::Prepared,
+            rotation_contract: Some(rotation_contract),
+            rotation_evidence: Some(RotationEvidence::default()),
             operation_id: Some(Uuid::new_v4()),
             parent_record_hash,
             replica: ReplicaMetadata {
@@ -354,6 +447,8 @@ impl CredentialDescriptionRecord {
     pub fn mark_active(&mut self, master_key: &[u8]) -> Result<()> {
         self.state = CredentialState::Active;
         self.rotation_state = RotationState::Stable;
+        self.rotation_contract = None;
+        self.rotation_evidence = None;
         self.retired_at = None;
         self.updated_at = Utc::now();
         self.set_mac(master_key)
@@ -487,6 +582,7 @@ mod vector_tests {
             root_generation: 2,
             policy_id: Uuid::from_u128(0xcccccccc111122223333444444444444),
             policy_version: 2,
+            policy_epoch: None,
             encoder_version: 2,
             derivation_version: 1,
             display_name: "Example".to_string(),
@@ -498,6 +594,8 @@ mod vector_tests {
             encoding_descriptor: EncodingDescriptor::default(),
             state: CredentialState::Active,
             rotation_state: RotationState::Stable,
+            rotation_contract: None,
+            rotation_evidence: None,
             operation_id: None,
             parent_record_hash: "parent".to_string(),
             replica: ReplicaMetadata {

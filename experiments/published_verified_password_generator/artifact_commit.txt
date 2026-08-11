@@ -1,0 +1,5 @@
+repository=https://github.com/passcert-project/random-password-generator
+commit=ceeb8988f87b0ac4b6826fc20af4f8acafb3c841
+commit_date=2022-01-23T21:53:42Z
+build_status=not_reproduced_unpinned_jasmin_and_easycrypt_toolchains
+benchmark_status=property_comparison_only

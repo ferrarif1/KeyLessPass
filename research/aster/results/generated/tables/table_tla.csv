@@ -1,0 +1,6 @@
+Metric,Result
+Positive generated states,2426
+Positive distinct states,777
+Maximum depth,11
+Positive invariant violations,0
+Negative controls detected,8/8

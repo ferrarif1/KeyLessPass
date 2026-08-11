@@ -1,0 +1,267 @@
+{
+  "environment": {
+    "arch": "x86_64",
+    "command": "KEYLESSPASS_FULL=1 cargo run --release --example research_evaluation -- <output>",
+    "fullRun": true,
+    "os": "macos",
+    "randomness": "OS CSPRNG for Shamir; fixed CDR fields with credentialGeneration=iteration+1 for deterministic derivation/encoder inputs",
+    "rustPackageVersion": "0.1.0"
+  },
+  "measurements": [
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 48.931025700000006,
+      "medianUs": 48.090999999999994,
+      "name": "shamir_split_2_of_3",
+      "p95Us": 50.769,
+      "stddevUs": 8.37138329893925,
+      "totalMs": 489.31025700000004
+    },
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 80.24353119999999,
+      "medianUs": 78.775,
+      "name": "recover_recovery+computer",
+      "p95Us": 86.145,
+      "stddevUs": 7.422234455848158,
+      "totalMs": 802.435312
+    },
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 81.9017934,
+      "medianUs": 78.029,
+      "name": "recover_recovery+usb",
+      "p95Us": 84.69,
+      "stddevUs": 86.99876394133348,
+      "totalMs": 819.017934
+    },
+    {
+      "detail": {},
+      "iterations": 10000,
+      "meanUs": 81.2342357,
+      "medianUs": 76.989,
+      "name": "recover_computer+usb",
+      "p95Us": 83.357,
+      "stddevUs": 98.37843831411534,
+      "totalMs": 812.342357
+    },
+    {
+      "detail": {
+        "managedEnvelopeJcs": 474,
+        "manifestJcs": 316,
+        "recoveryPhraseUtf8": 723,
+        "recoveryPhraseWords": 108,
+        "usbEnvelopeJcs": 456
+      },
+      "iterations": 1,
+      "meanUs": 0.0,
+      "medianUs": null,
+      "name": "factor_storage_bytes",
+      "p95Us": null,
+      "stddevUs": null,
+      "totalMs": 0.0
+    },
+    {
+      "detail": {
+        "characterCounts": {
+          "!": 3049,
+          "#": 3120,
+          "$": 3174,
+          "%": 3106,
+          "*": 3038,
+          "+": 3111,
+          "-": 3013,
+          "2": 3270,
+          "3": 3398,
+          "4": 3425,
+          "5": 3314,
+          "6": 3351,
+          "7": 3445,
+          "8": 3274,
+          "9": 3280,
+          "=": 3072,
+          "@": 3123,
+          "A": 2618,
+          "B": 2458,
+          "C": 2643,
+          "D": 2487,
+          "E": 2513,
+          "F": 2520,
+          "G": 2567,
+          "H": 2493,
+          "J": 2576,
+          "K": 2361,
+          "L": 2535,
+          "M": 2488,
+          "N": 2515,
+          "P": 2616,
+          "Q": 2469,
+          "R": 2436,
+          "S": 2562,
+          "T": 2471,
+          "U": 2518,
+          "V": 2577,
+          "W": 2536,
+          "X": 2519,
+          "Y": 2537,
+          "Z": 2473,
+          "_": 2958,
+          "a": 2570,
+          "b": 2490,
+          "c": 2512,
+          "d": 2421,
+          "e": 2526,
+          "f": 2402,
+          "g": 2490,
+          "h": 2504,
+          "i": 2389,
+          "j": 2493,
+          "k": 2416,
+          "m": 2565,
+          "n": 2540,
+          "o": 2432,
+          "p": 2537,
+          "q": 2385,
+          "r": 2453,
+          "s": 2439,
+          "t": 2438,
+          "u": 2510,
+          "v": 2500,
+          "w": 2543,
+          "x": 2435,
+          "y": 2546,
+          "z": 2455
+        },
+        "passwordSpaceUpperBoundLog2": 109.1896054282399,
+        "positionObservationCount": [
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000
+        ]
+      },
+      "iterations": 10000,
+      "meanUs": 36506.0268459,
+      "medianUs": 36497.304000000004,
+      "name": "password_derivation_and_encoding",
+      "p95Us": 46097.073000000004,
+      "stddevUs": 6577.380037065325,
+      "totalMs": 365060.268459
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 233472,
+        "loadMs": 2.054084,
+        "loadedRecords": 100,
+        "queryUs": 393.98900000000003,
+        "writeMs": 4.985519
+      },
+      "iterations": 100,
+      "meanUs": 70.39603,
+      "medianUs": null,
+      "name": "cdr_scale_100",
+      "p95Us": null,
+      "stddevUs": null,
+      "totalMs": 7.039603
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 2146304,
+        "loadMs": 13.571558,
+        "loadedRecords": 1000,
+        "queryUs": 427.487,
+        "writeMs": 34.603067
+      },
+      "iterations": 1000,
+      "meanUs": 48.174625000000006,
+      "medianUs": null,
+      "name": "cdr_scale_1000",
+      "p95Us": null,
+      "stddevUs": null,
+      "totalMs": 48.174625000000006
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 21336064,
+        "loadMs": 117.837503,
+        "loadedRecords": 10000,
+        "queryUs": 431.072,
+        "writeMs": 294.995403
+      },
+      "iterations": 10000,
+      "meanUs": 41.283290599999994,
+      "medianUs": null,
+      "name": "cdr_scale_10000",
+      "p95Us": null,
+      "stddevUs": null,
+      "totalMs": 412.832906
+    },
+    {
+      "detail": {
+        "conflictDetection": "concurrent_modification",
+        "databaseBytes": 213401600,
+        "loadMs": 1327.721717,
+        "loadedRecords": 100000,
+        "queryUs": 501.741,
+        "writeMs": 4175.811828
+      },
+      "iterations": 100000,
+      "meanUs": 55.03533545,
+      "medianUs": null,
+      "name": "cdr_scale_100000",
+      "p95Us": null,
+      "stddevUs": null,
+      "totalMs": 5503.533545
+    },
+    {
+      "detail": {
+        "outcomes": [
+          "new_only",
+          "old_only",
+          "both",
+          "neither"
+        ],
+        "successfulStateExecutions": 4000
+      },
+      "iterations": 4000,
+      "meanUs": 198.017253,
+      "medianUs": 186.607,
+      "name": "unknown_outcome_reconciliation",
+      "p95Us": 229.895,
+      "stddevUs": 22.929665869795045,
+      "totalMs": 792.069012
+    },
+    {
+      "detail": {
+        "persistedAfterRestart": true
+      },
+      "iterations": 10000,
+      "meanUs": 1401.6364601,
+      "medianUs": 1352.011,
+      "name": "persistent_freshness_compare_and_set",
+      "p95Us": 1663.5720000000001,
+      "stddevUs": 652.925905888905,
+      "totalMs": 14016.364601
+    }
+  ]
+}

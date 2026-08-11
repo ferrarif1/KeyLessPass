@@ -1,0 +1,15 @@
+diff --git a/Dockerfile b/Dockerfile
+index c5e3b0b..0c81cde 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -38,7 +38,9 @@
+ ###############################################################################
+ FROM python:3.10.3-bullseye as buildenv
+
+-RUN apt-get update && apt-get install -y --no-install-recommends \
++RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g; s|http://security.debian.org|https://security.debian.org|g' /etc/apt/sources.list \
++        && apt-get -o Acquire::Retries=10 update \
++        && apt-get -o Acquire::Retries=10 install -y --no-install-recommends \
+                 automake \
+                 build-essential \
+                 clang-11 \

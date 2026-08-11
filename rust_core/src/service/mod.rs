@@ -1,4 +1,5 @@
 pub mod credentials;
+pub mod derivation_migration;
 pub mod derive;
 pub mod enrollment;
 pub(crate) mod factor_keys;
@@ -12,6 +13,7 @@ pub mod settings;
 pub mod usb;
 
 pub use credentials::*;
+pub use derivation_migration::*;
 pub use derive::*;
 pub use enrollment::*;
 pub use freshness::*;

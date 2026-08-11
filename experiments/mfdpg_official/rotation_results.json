@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "classification": "EMPIRICAL_END_TO_END_ARTIFACT_RESULT",
+  "officialRepository": "https://github.com/multifactor/mfdpg",
+  "officialCommit": "6c26096dd22ff2b18aa5d8e4c3d5b0caf7b45bb7",
+  "mechanism": "MFDPG.generate followed by MFDPG.revoke",
+  "regex": "a|b[0-9]",
+  "acceptedLanguageSize": 11,
+  "factorSets": 3,
+  "versionsPerSet": 12,
+  "aggregateVersions": 36,
+  "aggregateDistinctWithinSets": 17,
+  "aggregateRepeatedWithinSets": 19,
+  "rows": [
+    {
+      "factorSet": 0,
+      "domain": "enumerable-0.example",
+      "versions": 12,
+      "distinctPasswords": 5,
+      "repeatedPasswords": 7,
+      "passwords": [
+        "b3",
+        "b4",
+        "a",
+        "a",
+        "a",
+        "b6",
+        "b4",
+        "a",
+        "b4",
+        "b0",
+        "a",
+        "b3"
+      ]
+    },
+    {
+      "factorSet": 1,
+      "domain": "enumerable-1.example",
+      "versions": 12,
+      "distinctPasswords": 6,
+      "repeatedPasswords": 6,
+      "passwords": [
+        "a",
+        "b2",
+        "a",
+        "a",
+        "b2",
+        "b2",
+        "b7",
+        "a",
+        "a",
+        "b6",
+        "b0",
+        "b8"
+      ]
+    },
+    {
+      "factorSet": 2,
+      "domain": "enumerable-2.example",
+      "versions": 12,
+      "distinctPasswords": 6,
+      "repeatedPasswords": 6,
+      "passwords": [
+        "a",
+        "a",
+        "a",
+        "b0",
+        "b8",
+        "a",
+        "b1",
+        "b4",
+        "b6",
+        "a",
+        "a",
+        "a"
+      ]
+    }
+  ],
+  "boundary": "The 11-word toy domain makes repetition observable and is not representative of real password-space security. The experiment asks only whether the released revoke mechanism structurally prevents output reuse; it does not assess MFDPG security."
+}

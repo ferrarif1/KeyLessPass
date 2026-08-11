@@ -1,5 +1,7 @@
 use crate::crypto::kdf;
-use crate::domain::{CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm};
+use crate::domain::{
+    CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm, RotationContract,
+};
 use crate::platform::fallback::FallbackPlatformFactorProvider;
 use crate::platform::linux::LinuxPlatformFactorProvider;
 use crate::platform::macos::MacOSPlatformFactorProvider;
@@ -16,7 +18,8 @@ use crate::service::recovery::{
     RecoverLocalRequest, RecoverUsbRequest, ResetMnemonicRequest,
 };
 use crate::service::rotation::{
-    confirm_rotation_with_provider, rotate_credential_with_provider, ConfirmRotationRequest,
+    confirm_rotation_with_provider, reconcile_rotation_with_provider,
+    rotate_credential_with_provider, ConfirmRotationRequest, ReconciliationResult,
     RotateCredentialRequest,
 };
 use crate::service::usb::{
@@ -727,6 +730,7 @@ fn encoding_descriptor_change_requires_rotation() {
         RotateCredentialRequest {
             record_id: harness.record_id,
             encoding_descriptor: Some(changed),
+            rotation_contract: RotationContract::AtomicReplacement,
         },
     )
     .unwrap();
@@ -745,6 +749,7 @@ fn staged_rotation_keeps_previous_active_until_remote_confirmation() {
         RotateCredentialRequest {
             record_id: harness.record_id,
             encoding_descriptor: None,
+            rotation_contract: RotationContract::AtomicReplacement,
         },
     )
     .unwrap();
@@ -781,6 +786,14 @@ fn staged_rotation_keeps_previous_active_until_remote_confirmation() {
     assert_eq!(before, previous_password);
     assert_ne!(previous_password, current_password);
 
+    reconcile_rotation_with_provider(
+        &harness.paths,
+        &harness.provider,
+        harness.record_id,
+        current.version,
+        ReconciliationResult::NewPasswordWorks,
+    )
+    .unwrap();
     confirm_rotation_with_provider(
         &harness.paths,
         &harness.provider,

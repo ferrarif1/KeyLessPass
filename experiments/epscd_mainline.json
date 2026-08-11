@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "rejectionDensity": [
+    {
+      "alpha": 0.1,
+      "successfulOutputs": 2000,
+      "expectedRetries": 10.0,
+      "observedMeanRetries": 9.601,
+      "medianRetries": 7,
+      "p95Retries": 28,
+      "p99Retries": 40,
+      "p999Retries": 60,
+      "maximumRetries": 64,
+      "elapsedMillis": 0.41379699999999997,
+      "successfulOutputsPerSecond": 4833287.819873029
+    },
+    {
+      "alpha": 0.01,
+      "successfulOutputs": 2000,
+      "expectedRetries": 100.0,
+      "observedMeanRetries": 98.7595,
+      "medianRetries": 69,
+      "p95Retries": 291,
+      "p99Retries": 449,
+      "p999Retries": 933,
+      "maximumRetries": 1129,
+      "elapsedMillis": 1.818962,
+      "successfulOutputsPerSecond": 1099528.1924526186
+    },
+    {
+      "alpha": 0.001,
+      "successfulOutputs": 2000,
+      "expectedRetries": 1000.0,
+      "observedMeanRetries": 982.0015,
+      "medianRetries": 661,
+      "p95Retries": 3012,
+      "p99Retries": 4713,
+      "p999Retries": 7427,
+      "maximumRetries": 9240,
+      "elapsedMillis": 8.886705,
+      "successfulOutputsPerSecond": 225055.29327236585
+    },
+    {
+      "alpha": 0.0001,
+      "successfulOutputs": 2000,
+      "expectedRetries": 10000.0,
+      "observedMeanRetries": 10066.3395,
+      "medianRetries": 6696,
+      "p95Retries": 31022,
+      "p99Retries": 45236,
+      "p999Retries": 75963,
+      "maximumRetries": 85106,
+      "elapsedMillis": 249.04865,
+      "successfulOutputsPerSecond": 8030.559491087383
+    }
+  ],
+  "sequence": {
+    "scheme": "EPSCD scheme v2",
+    "generations": 100000,
+    "policyViolations": 0,
+    "duplicatePasswords": 0,
+    "replayMismatches": 0,
+    "domainSize": "2351927613440572602240",
+    "effectiveBits": 70.99433365087972,
+    "elapsedSeconds": 23.549656032,
+    "derivationsPerSecondIncludingReplay": 8492.693045207701,
+    "boundary": "This is an implementation-scale check. Exact compliance and same-lineage non-repetition follow from the compiled-language and bijection/permutation arguments, not from observing this finite sample."
+  }
+}

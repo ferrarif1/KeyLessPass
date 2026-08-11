@@ -30,13 +30,6 @@
 #define IconFile EnvIconFile
 #endif
 
-#define EnvLicenseFile GetEnv("KEYLESSPASS_LICENSE_FILE")
-#if EnvLicenseFile == ""
-#define LicenseFilePath "..\..\LICENSE"
-#else
-#define LicenseFilePath EnvLicenseFile
-#endif
-
 [Setup]
 AppId={{30D45E65-7D7A-4C76-9C85-3A8A2A08B9C4}
 AppName={#AppName}
@@ -49,7 +42,6 @@ OutputDir={#OutputDir}
 OutputBaseFilename=KeyLessPass-Setup-{#AppVersion}
 SetupIconFile={#IconFile}
 UninstallDisplayIcon={app}\{#AppExeName}
-LicenseFile={#LicenseFilePath}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

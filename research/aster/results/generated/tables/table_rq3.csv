@@ -1,0 +1,7 @@
+Attack configuration,Capture time,Without new approval,With approval compromise
+LocalRoot,post-use,32,32
+LocalLineage,post-use,2,2
+RemoteBroadPRF,post-use,32,32
+ASTERExact,pre-request,0,32
+ASTERExact,in-flight-output,1,32
+ASTERExact,post-use,0,32

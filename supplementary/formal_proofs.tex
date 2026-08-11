@@ -1,0 +1,158 @@
+\section{Formal proofs for exposure, history exclusion, and cycle walking}
+\label{app:formal-proofs}
+
+\subsection{Residual uniformity after observed credentials}
+
+Let $D$ be a rank domain of size $N$ and let $\pi$ be uniformly sampled from
+all permutations on $D$.  Condition on $q<N$ distinct consistent pairs
+$(g_i,r_i)$, so $\pi(g_i)=r_i$ for $1\leq i\leq q$.  Let $g^*$ be an
+unobserved input and let $r^*$ be any rank outside
+$R=\{r_1,\ldots,r_q\}$.
+
+\textbf{Theorem A.1 (observed-credential residual uniformity).}
+Under the conditioning above,
+\[
+\Pr[\pi(g^*)=r^*\mid \pi(g_i)=r_i,1\leq i\leq q]
+=\frac{1}{N-q}.
+\]
+Consequently $\Unrank_P(\pi(g^*))$ is uniform over the $N-q$ legal passwords
+whose ranks have not been observed.
+
+\textit{Proof.}
+Exactly $(N-q)!$ permutations are consistent with the observed pairs.  Fixing
+the additional pair $(g^*,r^*)$ leaves $(N-q-1)!$ consistent permutations.
+Their ratio is $1/(N-q)$.  The rank/unrank bijection transfers this statement
+to the accepted language. \hfill$\square$
+
+This is standard random-permutation symmetry specialized to the credential
+sequence, not a new combinatorial theorem.  For a real finite-domain PRP, let
+$\mathcal A$ distinguish the unseen EPSCD rank from this conditional ideal
+game after at most $q$ observed or chosen generation queries.  Replacing the
+real permutation with a uniformly random one changes $\mathcal A$'s success
+probability by at most the PRP advantage at the stated domain, query, and tweak
+bounds.  Any preceding replacement of a Root-Key-derived credential key by an
+independent key additionally incurs the relevant HKDF/PRF advantage.  The
+statement does not turn the ideal equality into an unconditional claim about
+the bounded FF1 prototype.
+
+\subsection{Uniform exclusion}
+
+Let $D=\{0,\ldots,N-1\}$ be the rank domain and let
+$\Unrank:D\rightarrow\Lang_P$ be a bijection.  The authenticated history is
+first rederived, restricted to $\Lang_P$, and deduplicated as a set of strings.
+Its inverse rank set is
+\[
+B=\{\Rank_P(w):w\in E\cap\Lang_P\}\subset D,
+\qquad e=|B|.
+\]
+Thus repeated history descriptors that rederive the same password contribute
+one element to $B$, not multiple exclusions.
+
+Fix distinct, unused generation inputs $g_1,g_2,\ldots$ in $D$, and sample
+$\pi$ uniformly from the $N!$ permutations of $D$.  Write $Y_i=\pi(g_i)$ and
+let
+\[
+T=\min\{i\geq 1:Y_i\notin B\}.
+\]
+
+\textbf{Theorem A.2 (uniform exclusion marginal).}
+If $e<N$ and at least $e+1$ distinct generation inputs are available, then
+$T\leq e+1$.  For every $z\in D\setminus B$,
+\[
+\Pr[Y_T=z]=\frac{1}{N-e},
+\qquad
+\mathbb{E}[T]=\frac{N+1}{N-e+1}.
+\]
+Consequently, $\Unrank(Y_T)$ is uniform on $\Lang_P\setminus E$.
+
+\textit{Proof.}
+For every $t\leq N$ and every tuple of distinct values
+$(y_1,\ldots,y_t)$, a uniformly sampled permutation satisfies
+\[
+\Pr[(Y_1,\ldots,Y_t)=(y_1,\ldots,y_t)]=\frac{1}{(N)_t},
+\]
+where $(N)_t=N(N-1)\cdots(N-t+1)$.  Hence the images of the distinct scanned
+inputs form an ordered sample without replacement.
+
+No more than the $e$ distinct members of $B$ can occur before the first value
+outside $B$, which proves $T\leq e+1$.  For a fixed $z\in D\setminus B$,
+\[
+\Pr[Y_T=z]
+=\sum_{t=1}^{e+1}\frac{(e)_{t-1}}{(N)_t}.
+\]
+The right-hand side does not depend on $z$.  Since termination is certain and
+the $N-e$ events $\{Y_T=z\}$ partition the sample space, each probability is
+$1/(N-e)$.  Applying the rank/unrank bijection gives the password-space
+marginal.
+
+For the expectation, expose a uniformly random ordering of all $N$ ranks and
+mark its $N-e$ non-excluded positions.  $T$ is the minimum marked position.
+For $0\leq k\leq e$,
+\[
+\Pr[T>k]=\frac{(e)_k}{(N)_k}
+=\frac{\binom{N-k}{N-e}}{\binom{N}{N-e}}.
+\]
+The tail-sum identity followed by the hockey-stick identity yields
+\[
+\mathbb{E}[T]
+=\sum_{k=0}^{e}\Pr[T>k]
+=\frac{1}{\binom{N}{N-e}}
+  \sum_{j=N-e}^{N}\binom{j}{N-e}
+=\frac{\binom{N+1}{N-e+1}}{\binom{N}{N-e}}
+=\frac{N+1}{N-e+1}.
+\tag*{$\square$}
+\]
+
+The theorem fixes $E$ independently of the newly sampled ideal permutation.
+In the protocol, this means the history descriptors are authenticated and
+their passwords are rederived before candidate scanning.  Undocumented remote
+history and adversarial modification of local descriptors are outside this
+probability statement.
+
+\subsection{Cycle-walk termination and ideal tail}
+
+Let $D=\{0,\ldots,N-1\}$ and embed it in
+$U=\{0,\ldots,M-1\}$, where $M=2^{\lceil\log_2N\rceil}$.  Starting at
+$x\in D$, apply a permutation $P$ on $U$ until its iterate returns to $D$.
+Let $W$ count primitive permutation calls, including the accepting call.
+
+\textbf{Lemma A.3 (deterministic termination).}
+For every permutation $P$ and every $x\in D$, unbounded cycle walking stops
+within $M-N+1$ primitive calls.
+
+\textit{Proof.}
+The orbit of $x$ is a finite cycle containing $x\in D$.  Before the next visit
+to $D$, it cannot repeat an outside point and there are only $M-N$ such points.
+The following call either reaches another member of $D$ or returns to $x$.
+\hfill$\square$
+
+\textbf{Lemma A.4 (ideal-permutation tail).}
+If $P$ is a uniformly random permutation on $U$, then for every integer
+$k\geq0$,
+\[
+\Pr[W>k]=\frac{(M-N)_k}{(M)_k},
+\]
+where the numerator is defined as zero for $k>M-N$.  If $N<M$, then
+\[
+\Pr[W>k]
+\leq\left(\frac{M-N}{M}\right)^k<2^{-k}.
+\]
+If $N=M$, $W=1$ deterministically.
+
+\textit{Proof.}
+The event $W>k$ says that the first $k$ orbit images are distinct members of
+$U\setminus D$.  Under a random permutation, these images are sampled without
+replacement, giving
+\[
+\frac{M-N}{M}\frac{M-N-1}{M-1}\cdots
+\frac{M-N-k+1}{M-k+1}=\frac{(M-N)_k}{(M)_k}.
+\]
+Each factor is at most $(M-N)/M$.  For a non-power-of-two $N$, the definition
+of $M$ gives $M/2<N<M$, hence $(M-N)/M<1/2$.  The power-of-two case has no
+outside point and accepts after one call. \hfill$\square$
+
+For a cap of $c$ primitive calls, the ideal-model probability of a cap failure
+is $\Pr[W>c]$, not $\Pr[W\geq c]$.  The concrete FF1 implementation is only
+computationally related to the ideal permutation experiment.  The bound above
+is therefore an ideal-model tail calculation; it is not an unconditional
+availability guarantee for FF1 or its implementation.

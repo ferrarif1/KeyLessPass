@@ -1,0 +1,41 @@
+{
+  "benchmark": "context-exposure-analysis",
+  "results": [
+    {
+      "contexts": 32,
+      "repetitions": 5,
+      "median_ms": 1.3966610000000004,
+      "p95_ms": 1.552747,
+      "min_ms": 1.3716230000000023,
+      "max_ms": 1.552747,
+      "median_contexts_per_second": 22911.78747025942
+    },
+    {
+      "contexts": 1024,
+      "repetitions": 5,
+      "median_ms": 34.820503999999985,
+      "p95_ms": 36.884209,
+      "min_ms": 34.366862,
+      "max_ms": 36.884209,
+      "median_contexts_per_second": 29407.960321309547
+    },
+    {
+      "contexts": 10000,
+      "repetitions": 5,
+      "median_ms": 335.01221400000003,
+      "p95_ms": 340.11881099999994,
+      "min_ms": 332.453125,
+      "max_ms": 340.11881099999994,
+      "median_contexts_per_second": 29849.65795903787
+    },
+    {
+      "contexts": 100000,
+      "repetitions": 5,
+      "median_ms": 3555.3831569999998,
+      "p95_ms": 3863.8984320000027,
+      "min_ms": 3537.560805,
+      "max_ms": 3863.8984320000027,
+      "median_contexts_per_second": 28126.363765636754
+    }
+  ]
+}

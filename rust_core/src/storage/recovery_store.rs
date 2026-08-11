@@ -116,7 +116,8 @@ mod tests {
         let paths = StoragePaths::from_app_dir(app.path().to_path_buf());
         let provider = FallbackPlatformFactorProvider::new(paths.app_dir.clone(), "test");
         let root = [0x44_u8; 32];
-        let set = create_share_set(&root, Uuid::new_v4(), 1, 1, "computer", 1, "usb", 1).unwrap();
+        let set =
+            create_share_set(&root, Uuid::new_v4(), 1, 1, 1, "computer", 1, "usb", 1).unwrap();
         commit_recovery_share_set(&paths, &provider, usb.path(), &set).unwrap();
         let manifest = read_recovery_manifest_v3(&paths).unwrap();
         let local = read_managed_share(&paths, &provider, &manifest).unwrap();

@@ -103,8 +103,10 @@ ThemeData _evidenceTheme() {
 }
 
 Future<void> _loadEvidenceFonts() async {
-  final flutterRoot = Platform.environment['FLUTTER_ROOT'] ??
-      '/Users/zhangyuanyi/development/flutter';
+  final flutterRoot = Platform.environment['FLUTTER_ROOT'];
+  if (flutterRoot == null || flutterRoot.isEmpty) {
+    return;
+  }
   final materialFonts = '$flutterRoot/bin/cache/artifacts/material_fonts';
   await _loadFont('Roboto', [
     '$materialFonts/Roboto-Regular.ttf',

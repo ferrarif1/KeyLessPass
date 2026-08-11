@@ -1,0 +1,5963 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "title": "Improving Password Generation Through the Design of a Password Composition Policy Description Language",
+    "authors": "Gautam, Lalani, and Ruoti",
+    "venue": "SOUPS 2022",
+    "archiveUrl": "https://userlab.utk.edu/files/data/ruoti/2022/gautam2022improving.zip",
+    "workbookPath": "pcp dataset/clean_data.xlsx",
+    "workbookSha256": "2d424c30fa1e4d2e5f0b82a5c67b4214fc2a96574d8b70052994d6f92712a77a",
+    "datasetScope": "historical website policies collected by the source authors; not current live policies"
+  },
+  "translation": {
+    "tool": "experiments/scripts/import_soups2022_pcp.py",
+    "unsupportedSemanticsAreRejected": true,
+    "evaluationMaxLength": 32
+  },
+  "records": [
+    {
+      "sourceRow": 2,
+      "website": "google.com",
+      "globalRank": 1,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 3,
+      "website": "amazon.com",
+      "globalRank": 12,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 4,
+      "website": "facebook.com",
+      "globalRank": 7,
+      "sourcePolicy": {
+        "min_length": 6,
+        "require": [
+          "symbols",
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 5,
+      "website": "reddit.com",
+      "globalRank": 19,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 6,
+      "website": "wikipedia.org",
+      "globalRank": 13,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 7,
+      "website": "yahoo.com",
+      "globalRank": 11,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_consecutive": 7
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 8,
+      "website": "twitter.com",
+      "globalRank": 41,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 9,
+      "website": "walmart.com",
+      "globalRank": 106,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 12
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 12,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 10,
+      "website": "ebay.com",
+      "globalRank": 38,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 11,
+      "website": "linkedin.com",
+      "globalRank": 52,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 12,
+      "website": "target.com",
+      "globalRank": 258,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 13,
+      "website": "nytimes.com",
+      "globalRank": 100,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 14,
+      "website": "netflix.com",
+      "globalRank": 20,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 60
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 60,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 15,
+      "website": "paypal.com",
+      "globalRank": 95,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "max_consecutive": 3,
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 16,
+      "website": "bestbuy.com",
+      "globalRank": 185,
+      "sourcePolicy": {
+        "min_length": 9,
+        "max_length": 54
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 9,
+        "maxLength": 54,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 17,
+      "website": "quora.com",
+      "globalRank": 371,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 74
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 74,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 18,
+      "website": "imdb.com",
+      "globalRank": 70,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 19,
+      "website": "homedepot.com",
+      "globalRank": 195,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 70,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 20,
+      "website": "live.com",
+      "globalRank": 18,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 21,
+      "website": "espn.com",
+      "globalRank": 105,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 256,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 22,
+      "website": "craigslist.org",
+      "globalRank": 160,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 23,
+      "website": "usatoday.com",
+      "globalRank": 442,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 24,
+      "website": "vimeo.com",
+      "globalRank": 156,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 71
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 71,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 25,
+      "website": "apple.com",
+      "globalRank": 50,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 32,
+        "max_consecutive": 3,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": 3,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 26,
+      "website": "yelp.com",
+      "globalRank": 239,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 200
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 27,
+      "website": "etsy.com",
+      "globalRank": 69,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 512
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 28,
+      "website": "webmd.com",
+      "globalRank": 424,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 30,
+        "require": [
+          "digits"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 29,
+      "website": "allrecipes.com",
+      "globalRank": 1179,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 32,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 30,
+      "website": "bing.com",
+      "globalRank": 33,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 31,
+      "website": "usps.com",
+      "globalRank": 191,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50,
+        "max_consecutive": 2,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "lower",
+            "alphabet": "abcdefghijklmnopqrstuvwxyz",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "upper",
+            "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": 2,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 32,
+      "website": "zillow.com",
+      "globalRank": 98,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 128,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 33,
+      "website": "lowes.com",
+      "globalRank": 422,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 12,
+        "max_consecutive": 3,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 12,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": 3,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 34,
+      "website": "macys.com",
+      "globalRank": 510,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": "!\"#$%&'()*+:;<>?@[]^`{}~"
+        },
+        "rules": [
+          {
+            "min_length": 7,
+            "max_length": 16
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 35,
+      "website": "cnet.com",
+      "globalRank": 202,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 36,
+      "website": "adobe.com",
+      "globalRank": 39,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 37,
+      "website": "buzzfeed.com",
+      "globalRank": 571,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 38,
+      "website": "indeed.com",
+      "globalRank": 67,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 39,
+      "website": "wordpress.com",
+      "globalRank": 57,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 40,
+      "website": "tripadvisor.com",
+      "globalRank": 347,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 41,
+      "website": "aol.com",
+      "globalRank": 335,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 42,
+      "website": "pinterest.com",
+      "globalRank": 143,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 43,
+      "website": "quizlet.com",
+      "globalRank": 158,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 44,
+      "website": "instagram.com",
+      "globalRank": 25,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 45,
+      "website": "imgur.com",
+      "globalRank": 90,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 46,
+      "website": "foodnetwork.com",
+      "globalRank": 1797,
+      "sourcePolicy": {
+        "min_length": 6,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 47,
+      "website": "legacy.com",
+      "globalRank": 1870,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 48,
+      "website": "ups.com",
+      "globalRank": 196,
+      "sourcePolicy": {
+        "min_length": 7,
+        "max_length": 26,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 49,
+      "website": "ranker.com",
+      "globalRank": 3036,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 50,
+      "website": "glassdoor.com",
+      "globalRank": 352,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 500
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 51,
+      "website": "bedbathandbeyond.com",
+      "globalRank": 1425,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 52,
+      "website": "cnbc.com",
+      "globalRank": 259,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 53,
+      "website": "wikihow.com",
+      "globalRank": 248,
+      "sourcePolicy": {
+        "min_length": 4
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 54,
+      "website": "giphy.com",
+      "globalRank": 565,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 55,
+      "website": "people.com",
+      "globalRank": 966,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20,
+        "require": [
+          "lower"
+        ],
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "symbols",
+            "upper"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 56,
+      "website": "jcpenney.com",
+      "globalRank": 2516,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 64,
+        "max_consecutive": 2,
+        "prohibited_substrings": [
+          "jcp",
+          "jcpenny"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 57,
+      "website": "medicalnewstoday.com",
+      "globalRank": 575,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 58,
+      "website": "fedex.com",
+      "globalRank": 206,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 35,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 35,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "lower",
+            "alphabet": "abcdefghijklmnopqrstuvwxyz",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "upper",
+            "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 59,
+      "website": "nfl.com",
+      "globalRank": 1420,
+      "sourcePolicy": {
+        "min_length": 4
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 60,
+      "website": "hulu.com",
+      "globalRank": 198,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 61,
+      "website": "goodreads.com",
+      "globalRank": 338,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 62,
+      "website": "costco.com",
+      "globalRank": 389,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": "!#$%&'()*+-/:;=?@[]^_`{|}~"
+        },
+        "rules": [
+          {
+            "min_length": 8,
+            "max_length": 20,
+            "require": [
+              "alphabet"
+            ]
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 63,
+      "website": "ikea.com",
+      "globalRank": 199,
+      "sourcePolicy": {
+        "min_length": 7,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 7,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 64,
+      "website": "groupon.com",
+      "globalRank": 1055,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 65,
+      "website": "priceline.com",
+      "globalRank": 1549,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 66,
+      "website": "cbsnews.com",
+      "globalRank": 1101,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64,
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 67,
+      "website": "politico.com",
+      "globalRank": 1722,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": "!\"#$%&'()*+,-./"
+        },
+        "rules": [
+          {
+            "min_length": 10,
+            "max_length": 15,
+            "require_subset": {
+              "count": 3
+            }
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 68,
+      "website": "office.com",
+      "globalRank": 22,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 69,
+      "website": "spotify.com",
+      "globalRank": 86,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 70,
+      "website": "mapquest.com",
+      "globalRank": 1718,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 71,
+      "website": "creditkarma.com",
+      "globalRank": 550,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 72,
+      "website": "cbssports.com",
+      "globalRank": 539,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": "!@#$%&*"
+        },
+        "rules": [
+          {
+            "min_length": 6,
+            "max_length": 75,
+            "require": [
+              "lower",
+              "upper"
+            ],
+            "require_subset": {
+              "count": 1,
+              "options": [
+                "digits",
+                "symbols"
+              ]
+            }
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 73,
+      "website": "theverge.com",
+      "globalRank": 941,
+      "sourcePolicy": {
+        "min_length": 6,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 74,
+      "website": "gamespot.com",
+      "globalRank": 1032,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "lower",
+            "alphabet": "abcdefghijklmnopqrstuvwxyz",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "upper",
+            "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 75,
+      "website": "gfycat.com",
+      "globalRank": 2508,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 76,
+      "website": "slate.com",
+      "globalRank": 2050,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 77,
+      "website": "bleacherreport.com",
+      "globalRank": 1159,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 78,
+      "website": "roblox.com",
+      "globalRank": 93,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 79,
+      "website": "deviantart.com",
+      "globalRank": 434,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 80,
+      "website": "narvar.com",
+      "globalRank": 1565,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 81,
+      "website": "avast.com",
+      "globalRank": 2041,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 82,
+      "website": "kbb.com",
+      "globalRank": 1415,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 32
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 83,
+      "website": "imore.com",
+      "globalRank": 5831,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 84,
+      "website": "hgtv.com",
+      "globalRank": 3841,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 85,
+      "website": "expedia.com",
+      "globalRank": 527,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 86,
+      "website": "wattpad.com",
+      "globalRank": 704,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 87,
+      "website": "polygon.com",
+      "globalRank": 2378,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 40,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 88,
+      "website": "newegg.com",
+      "globalRank": 534,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 30,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 89,
+      "website": "spanishdict.com",
+      "globalRank": 1232,
+      "sourcePolicy": {
+        "min_length": 7,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 7,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 90,
+      "website": "sbnation.com",
+      "globalRank": 2814,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 40,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 91,
+      "website": "express.co.uk",
+      "globalRank": 2796,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 92,
+      "website": "sfgate.com",
+      "globalRank": 1303,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 93,
+      "website": "thechive.com",
+      "globalRank": 3223,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 94,
+      "website": "walgreens.com",
+      "globalRank": 467,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 30,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 95,
+      "website": "stackoverflow.com",
+      "globalRank": 48,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 96,
+      "website": "newyorker.com",
+      "globalRank": 2791,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 97,
+      "website": "vox.com",
+      "globalRank": 2653,
+      "sourcePolicy": {
+        "min_length": 6,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 98,
+      "website": "discordapp.com",
+      "globalRank": 470,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 99,
+      "website": "androidcentral.com",
+      "globalRank": 6445,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 100,
+      "website": "cargurus.com",
+      "globalRank": 1369,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 101,
+      "website": "airbnb.com",
+      "globalRank": 253,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 128,
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 102,
+      "website": "yellowpages.com",
+      "globalRank": 2148,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 103,
+      "website": "comicbook.com",
+      "globalRank": 3179,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 104,
+      "website": "southwest.com",
+      "globalRank": 869,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 105,
+      "website": "eventbrite.com",
+      "globalRank": 630,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 106,
+      "website": "nordstrom.com",
+      "globalRank": 566,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 107,
+      "website": "gamestop.com",
+      "globalRank": 1699,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 32,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 108,
+      "website": "ajc.com",
+      "globalRank": 9030,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 109,
+      "website": "epicurious.com",
+      "globalRank": 8938,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 110,
+      "website": "trulia.com",
+      "globalRank": 802,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 64,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 111,
+      "website": "twitch.tv",
+      "globalRank": 35,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 72
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 72,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 112,
+      "website": "pornhub.com",
+      "globalRank": 81,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 40,
+        "max_consecutive": 2
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": 2,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 113,
+      "website": "livejasmin.com",
+      "globalRank": 97,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 114,
+      "website": "github.com",
+      "globalRank": 71,
+      "sourcePolicy": {
+        "rules": [
+          {
+            "min_length": 8,
+            "max_length": 72,
+            "require": [
+              "lower",
+              "digits"
+            ]
+          },
+          {
+            "min_length": 15,
+            "max_length": 72
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 115,
+      "website": "tumblr.com",
+      "globalRank": 118,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 512
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 116,
+      "website": "intuit.com",
+      "globalRank": 96,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 117,
+      "website": "dropbox.com",
+      "globalRank": 61,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 118,
+      "website": "amazonaws.com",
+      "globalRank": 76,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 119,
+      "website": "investing.com",
+      "globalRank": 180,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 15,
+        "charset_requirements": {
+          "alphabet": {
+            "min_required": 2
+          },
+          "digits": {
+            "min_required": 2
+          }
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "per_charset_location_or_run_constraint"
+    },
+    {
+      "sourceRow": 120,
+      "website": "wikidot.com",
+      "globalRank": 3474,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 121,
+      "website": "sinovision.net",
+      "globalRank": 98635,
+      "sourcePolicy": {
+        "min_length": 6,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 122,
+      "website": "nexusmods.com",
+      "globalRank": 1044,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 32
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 123,
+      "website": "flightaware.com",
+      "globalRank": 5977,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 124,
+      "website": "seagate.com",
+      "globalRank": 9355,
+      "sourcePolicy": {
+        "min_length": 10,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 10,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 125,
+      "website": "javlibrary.com",
+      "globalRank": 8588,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": null
+        },
+        "rules": [
+          {
+            "min_length": 4,
+            "max_length": 32
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 126,
+      "website": "dwnews.com",
+      "globalRank": 16881,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 16
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 127,
+      "website": "askubuntu.com",
+      "globalRank": 4487,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 128,
+      "website": "superuser.com",
+      "globalRank": "inf",
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 129,
+      "website": "independent.co.uk",
+      "globalRank": 1498,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 130,
+      "website": "sugardaddyforme.com",
+      "globalRank": 180800,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 15
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 15,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 131,
+      "website": "snapchatfriends.io",
+      "globalRank": "inf",
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 132,
+      "website": "baidu.com",
+      "globalRank": 4,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 14,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 133,
+      "website": "qq.com",
+      "globalRank": 5,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 134,
+      "website": "tmall.com",
+      "globalRank": 3,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20,
+        "require_subset": {
+          "count": 2,
+          "options": [
+            "symbols",
+            "digits",
+            "alphabet"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 135,
+      "website": "sohu.com",
+      "globalRank": 6,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 136,
+      "website": "jd.com",
+      "globalRank": 10,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 137,
+      "website": "weibo.com",
+      "globalRank": 14,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 16,
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "upper",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 138,
+      "website": "360.cn",
+      "globalRank": 9,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "require_subset": {
+          "count": 2,
+          "options": [
+            "symbols",
+            "digits",
+            "alphabet"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 139,
+      "website": "bilibili.com",
+      "globalRank": 102,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 16
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 140,
+      "website": "babytree.com",
+      "globalRank": 72,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 24
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 24,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 141,
+      "website": "tianya.cn",
+      "globalRank": 42,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_consecutive": 1,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 142,
+      "website": "so.com",
+      "globalRank": 55,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "require_subset": {
+          "count": 2,
+          "options": [
+            "symbols",
+            "digits",
+            "alphabet"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 143,
+      "website": "cnblogs.com",
+      "globalRank": 91,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 30,
+        "require": [
+          "symbols",
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "symbols",
+            "alphabet": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 144,
+      "website": "panda.tv",
+      "globalRank": 23,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 16
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 145,
+      "website": "zhanqi.tv",
+      "globalRank": 24,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 146,
+      "website": "douban.com",
+      "globalRank": 354,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 147,
+      "website": "1688.com",
+      "globalRank": "inf",
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 148,
+      "website": "douyu.com",
+      "globalRank": 817,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 25,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 25,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 149,
+      "website": "yy.com",
+      "globalRank": 45,
+      "sourcePolicy": {
+        "rules": [
+          {
+            "min_length": 8,
+            "max_length": 72,
+            "require": [
+              "alphabet"
+            ]
+          },
+          {
+            "min_length": 9,
+            "max_length": 72
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 150,
+      "website": "youku.com",
+      "globalRank": 580,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 16,
+        "require_subset": {
+          "count": 2,
+          "options": [
+            "symbols",
+            "digits",
+            "alphabet"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 151,
+      "website": "ci123.com",
+      "globalRank": 79794,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 152,
+      "website": "ifeng.com",
+      "globalRank": 1238,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 153,
+      "website": "veblr.com",
+      "globalRank": 547458,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 25
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 25,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 154,
+      "website": "metacafe.com",
+      "globalRank": 18995,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 155,
+      "website": "porn555.com",
+      "globalRank": 46427,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 16
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 156,
+      "website": "hotstar.com",
+      "globalRank": 165,
+      "sourcePolicy": {
+        "min_length": 4
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 157,
+      "website": "irctc.co.in",
+      "globalRank": 498,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 15,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 15,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "lower",
+            "alphabet": "abcdefghijklmnopqrstuvwxyz",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "upper",
+            "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 158,
+      "website": "primevideo.com\n",
+      "globalRank": 145,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 159,
+      "website": "rediff.com",
+      "globalRank": 622,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 12
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 12,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 160,
+      "website": "softonic.com",
+      "globalRank": 380,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 161,
+      "website": "naukri.com",
+      "globalRank": 337,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 40
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 162,
+      "website": "streamable.com",
+      "globalRank": 1775,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 163,
+      "website": "amag.ru",
+      "globalRank": 321112,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 164,
+      "website": "soundclick.com",
+      "globalRank": 45380,
+      "sourcePolicy": {
+        "min_length": 5
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 165,
+      "website": "knowyourmeme.com",
+      "globalRank": 3475,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 40
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 166,
+      "website": "motorsport.com",
+      "globalRank": 7762,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 167,
+      "website": "planetminecraft.com",
+      "globalRank": 8687,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 168,
+      "website": "socialblade.com",
+      "globalRank": 1229,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 169,
+      "website": "gta5-mods.com",
+      "globalRank": 4983,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 170,
+      "website": "serverfault.com",
+      "globalRank": 4501,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 171,
+      "website": "yandex.ru",
+      "globalRank": 53,
+      "sourcePolicy": {
+        "rules": [
+          {
+            "min_length": 6,
+            "max_length": 255,
+            "require_subset": {
+              "count": 2,
+              "options": [
+                "symbols",
+                "digits",
+                "alphabet"
+              ]
+            }
+          },
+          {
+            "min_length": 15,
+            "max_length": 255
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 172,
+      "website": "vk.com",
+      "globalRank": 27,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 173,
+      "website": "mail.ru",
+      "globalRank": 54,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 40
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 174,
+      "website": "aliexpress.com",
+      "globalRank": 40,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": null
+        },
+        "rules": [
+          {
+            "min_length": 6,
+            "max_length": 20
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 175,
+      "website": "kinopoisk.ru",
+      "globalRank": 3643,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 176,
+      "website": "rambler.ru",
+      "globalRank": 385,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 32,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "lower",
+            "alphabet": "abcdefghijklmnopqrstuvwxyz",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "upper",
+            "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 177,
+      "website": "livejournal.com",
+      "globalRank": 427,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 30,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 178,
+      "website": "pikabu.ru",
+      "globalRank": 1540,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 160
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 179,
+      "website": "fb.ru",
+      "globalRank": 4041,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 32
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 180,
+      "website": "ria.ru",
+      "globalRank": 488,
+      "sourcePolicy": {
+        "min_length": 9,
+        "require": [
+          "digits"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 181,
+      "website": "znanija.com",
+      "globalRank": 1158,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 182,
+      "website": "wildberries.ru",
+      "globalRank": 290,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 183,
+      "website": "yadi.sk",
+      "globalRank": 9562,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255,
+        "require": [
+          "lower",
+          "digits",
+          "upper"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 184,
+      "website": "ozon.ru",
+      "globalRank": 419,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 35
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 35,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 185,
+      "website": "dns-shop.ru",
+      "globalRank": 3480,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 186,
+      "website": "ivi.ru",
+      "globalRank": 642,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 190
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 187,
+      "website": "hdlava.me",
+      "globalRank": 8896008,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 188,
+      "website": "xvideos.com",
+      "globalRank": 88,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 189,
+      "website": "yaplakal.com",
+      "globalRank": 2383,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 32
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 190,
+      "website": "eurosport.de",
+      "globalRank": 15543,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 64,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 191,
+      "website": "wg-gesucht.de",
+      "globalRank": 15231,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 192,
+      "website": "fanfiktion.de",
+      "globalRank": 476744,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 193,
+      "website": "thesun.co.uk",
+      "globalRank": 1960,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 194,
+      "website": "liveleak.com",
+      "globalRank": 9576,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 195,
+      "website": "gmx.net",
+      "globalRank": 391,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 40
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 40,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 196,
+      "website": "spiegel.de",
+      "globalRank": 915,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50,
+        "require": [
+          "lower",
+          "upper"
+        ],
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 197,
+      "website": "bild.de",
+      "globalRank": 1082,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 200
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 198,
+      "website": "t-online.de",
+      "globalRank": 776,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 199,
+      "website": "shop-apotheke.com",
+      "globalRank": 19885,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 200,
+      "website": "otto.de",
+      "globalRank": 2221,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 201,
+      "website": "idealo.de",
+      "globalRank": 2574,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 256
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 202,
+      "website": "immobilienscout24.de",
+      "globalRank": 2767,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 203,
+      "website": "focus.de",
+      "globalRank": 2019,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 204,
+      "website": "welt.de",
+      "globalRank": 2048,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 200
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 205,
+      "website": "heise.de",
+      "globalRank": 2965,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 206,
+      "website": "zdf.de",
+      "globalRank": 1419,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 207,
+      "website": "booking.com",
+      "globalRank": 135,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 208,
+      "website": "entitledto.co.uk",
+      "globalRank": 336206,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 209,
+      "website": "lastminute.com",
+      "globalRank": 32546,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 25
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 25,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 210,
+      "website": "wordplays.com",
+      "globalRank": 23602,
+      "sourcePolicy": {
+        "min_length": 1,
+        "max_length": 10
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 1,
+        "maxLength": 10,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 211,
+      "website": "planningfinder.co.uk",
+      "globalRank": "inf",
+      "sourcePolicy": {
+        "min_length": 1
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 212,
+      "website": "theguardian.com",
+      "globalRank": 183,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 72
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 72,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 213,
+      "website": "hellomagazine.com",
+      "globalRank": 9106,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 32
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 214,
+      "website": "bbc.com",
+      "globalRank": 104,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50,
+        "require": [
+          "alphabet"
+        ],
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 215,
+      "website": "rightmove.co.uk",
+      "globalRank": 1409,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 216,
+      "website": "chaturbate.com",
+      "globalRank": 51,
+      "sourcePolicy": {
+        "min_length": 10,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 10,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 217,
+      "website": "bt.com",
+      "globalRank": 2557,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 50,
+        "require": [
+          "alphabet"
+        ],
+        "require_subset": {
+          "count": 1,
+          "options": [
+            "digits",
+            "symbols"
+          ]
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 218,
+      "website": "ig.com.br",
+      "globalRank": 2748,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 219,
+      "website": "lovemondays.com.br",
+      "globalRank": "inf",
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 220,
+      "website": "spiritfanfiction.com",
+      "globalRank": 15162,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 221,
+      "website": "globo.com",
+      "globalRank": 212,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 15
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 15,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 222,
+      "website": "mercadolivre.com.br",
+      "globalRank": 310,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 223,
+      "website": "uol.com.br",
+      "globalRank": 189,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 224,
+      "website": "olx.com.br",
+      "globalRank": 1125,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 20,
+        "require": [
+          "lower",
+          "digits",
+          "upper",
+          "symbols"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "lower",
+            "alphabet": "abcdefghijklmnopqrstuvwxyz",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "upper",
+            "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "symbols",
+            "alphabet": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 225,
+      "website": "americanas.com.br",
+      "globalRank": 1270,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 315
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 226,
+      "website": "reclameaqui.com.br",
+      "globalRank": 799,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 227,
+      "website": "bet365.com",
+      "globalRank": 250,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 32
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 228,
+      "website": "popads.net",
+      "globalRank": 1095,
+      "sourcePolicy": {
+        "min_length": 7
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 229,
+      "website": "bol.uol.com.br",
+      "globalRank": 3248,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 230,
+      "website": "techtudo.com.br",
+      "globalRank": 2504,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 15
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 15,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 231,
+      "website": "noticias.uol.com.br",
+      "globalRank": 1944,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 232,
+      "website": "dugout.com",
+      "globalRank": 202091,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 233,
+      "website": "auctionexport.com",
+      "globalRank": 36067,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 250
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 234,
+      "website": "allafrica.com",
+      "globalRank": 24197,
+      "sourcePolicy": {
+        "min_length": 1
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 235,
+      "website": "allmusic.com",
+      "globalRank": 8313,
+      "sourcePolicy": {
+        "min_length": 5,
+        "max_length": 25
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 5,
+        "maxLength": 25,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 236,
+      "website": "sermoncentral.com",
+      "globalRank": 39994,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 237,
+      "website": "yourtango.com",
+      "globalRank": 16387,
+      "sourcePolicy": {
+        "min_length": 1,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 1,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 238,
+      "website": "bet9ja.com",
+      "globalRank": 166,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 100,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "context_dependent_policy_exclusions"
+    },
+    {
+      "sourceRow": 239,
+      "website": "nnu.ng",
+      "globalRank": 89361,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 240,
+      "website": "jumia.com.ng",
+      "globalRank": 1485,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 241,
+      "website": "eskimi.com",
+      "globalRank": 31150,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 15
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 15,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 242,
+      "website": "jiji.ng",
+      "globalRank": 2811,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 243,
+      "website": "remita.net",
+      "globalRank": 12743,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 244,
+      "website": "researchgate.net",
+      "globalRank": 167,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 245,
+      "website": "shmoop.com",
+      "globalRank": 9438,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require_subset": {
+          "count": 3
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 246,
+      "website": "windowscentral.com",
+      "globalRank": 3862,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 100
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 100,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 247,
+      "website": "aparat.com",
+      "globalRank": 47,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 248,
+      "website": "digikala.com",
+      "globalRank": 141,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 255
+      },
+      "translationStatus": "rejected",
+      "reason": "protocol_max_length_128"
+    },
+    {
+      "sourceRow": 249,
+      "website": "varzesh3.com",
+      "globalRank": 162,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 250,
+      "website": "telewebion.com",
+      "globalRank": 184,
+      "sourcePolicy": {
+        "min_length": 3
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 251,
+      "website": "namasha.com",
+      "globalRank": 341,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 252,
+      "website": "tarafdari.com",
+      "globalRank": 1266,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 128
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 253,
+      "website": "mydiba.xyz",
+      "globalRank": 1840526,
+      "sourcePolicy": {
+        "min_length": 3,
+        "max_length": 70
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 3,
+        "maxLength": 70,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 254,
+      "website": "blogfa.com",
+      "globalRank": 1391,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 20
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 20,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 255,
+      "website": "soft98.ir",
+      "globalRank": 883,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 256,
+      "website": "emalls.ir",
+      "globalRank": 779,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 32
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 32,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 257,
+      "website": "moshtix.com.au",
+      "globalRank": 116532,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 258,
+      "website": "rent.com.au",
+      "globalRank": 80383,
+      "sourcePolicy": {
+        "min_length": 4,
+        "max_length": 64
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 4,
+        "maxLength": 64,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 259,
+      "website": "popsugar.com.au",
+      "globalRank": 183042,
+      "sourcePolicy": {
+        "min_length": 1,
+        "max_length": 30
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 1,
+        "maxLength": 30,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 260,
+      "website": "standard.co.uk",
+      "globalRank": 8408,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 261,
+      "website": "gumtree.com.au",
+      "globalRank": 1923,
+      "sourcePolicy": {
+        "rules": [
+          {
+            "min_length": 10,
+            "max_length": 255,
+            "require": [
+              "alphabet"
+            ],
+            "require_subset": {
+              "count": 1,
+              "options": [
+                "digits",
+                "symbols"
+              ]
+            }
+          },
+          {
+            "min_length": 20,
+            "max_length": 255,
+            "require": [
+              "alphabet"
+            ]
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 262,
+      "website": "news.com.au",
+      "globalRank": 1072,
+      "sourcePolicy": {
+        "min_length": 8
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 263,
+      "website": "abc.net.au",
+      "globalRank": 1225,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 50
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 50,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 264,
+      "website": "realestate.com.au",
+      "globalRank": 853,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 265,
+      "website": "seek.com.au",
+      "globalRank": 1134,
+      "sourcePolicy": {
+        "min_length": 7
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 266,
+      "website": "smh.com.au",
+      "globalRank": 2720,
+      "sourcePolicy": {
+        "min_length": 6
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 267,
+      "website": "my.gov.au",
+      "globalRank": 2623,
+      "sourcePolicy": {
+        "charsets": {
+          "symbols": "!@#$%^&*"
+        },
+        "rules": [
+          {
+            "min_length": 7,
+            "max_consecutive": 3
+          }
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "disjunctive_rules"
+    },
+    {
+      "sourceRow": 268,
+      "website": "bunnings.com.au",
+      "globalRank": 4170,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "rejected",
+      "reason": "unbounded_max_length"
+    },
+    {
+      "sourceRow": 269,
+      "website": "jbhifi.com.au",
+      "globalRank": 4942,
+      "sourcePolicy": {
+        "min_length": 6,
+        "max_length": 128,
+        "require": [
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "skipped",
+      "evaluationReason": "evaluation_max_length_32",
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 6,
+        "maxLength": 128,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    },
+    {
+      "sourceRow": 270,
+      "website": "tribunnews.com",
+      "globalRank": 59,
+      "sourcePolicy": {
+        "min_length": 8,
+        "require_subset": {
+          "count": 2
+        }
+      },
+      "translationStatus": "rejected",
+      "reason": "subset_of_classes_constraint"
+    },
+    {
+      "sourceRow": 271,
+      "website": "naver.com",
+      "globalRank": 36,
+      "sourcePolicy": {
+        "min_length": 8,
+        "max_length": 16,
+        "require": [
+          "symbols",
+          "digits",
+          "alphabet"
+        ]
+      },
+      "translationStatus": "translated",
+      "evaluationStatus": "eligible",
+      "evaluationReason": null,
+      "policySpec": {
+        "policyIrVersion": 1,
+        "minLength": 8,
+        "maxLength": 16,
+        "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+        "forbiddenCharacters": "",
+        "classes": [
+          {
+            "name": "symbols",
+            "alphabet": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "digits",
+            "alphabet": "0123456789",
+            "minCount": 1,
+            "maxCount": null
+          },
+          {
+            "name": "alphabet",
+            "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "minCount": 1,
+            "maxCount": null
+          }
+        ],
+        "fixedCharacters": [],
+        "fixedPrefix": "",
+        "fixedSuffix": "",
+        "forbiddenFirstCharacters": "",
+        "forbiddenLastCharacters": "",
+        "maxTotalPerCharacter": null,
+        "maxIdenticalRun": null,
+        "maxSequentialRun": null,
+        "forbiddenSubstrings": []
+      }
+    }
+  ]
+}

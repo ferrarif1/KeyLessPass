@@ -1,0 +1,13 @@
+{
+  "cargo": "cargo 1.87.0 (99624be96 2025-05-06)",
+  "docker": "29.3.1/29.3.1",
+  "experimentSeed": "ASTER-SEMANTIC-2026-08-11",
+  "java": "java version \"21\" 2023-09-19 LTS",
+  "machine": "x86_64",
+  "mpSpdzCommit": "9d809599ea6ce627216a389ca7d984fbb75d0cb9",
+  "outlierRule": "No samples removed",
+  "platform": "macOS-26.5.2-x86_64-i386-64bit",
+  "python": "3.9.6",
+  "rustc": "rustc 1.87.0 (17067e9ac 2025-05-09)",
+  "schemaVersion": 1
+}

@@ -1,0 +1,15 @@
+{
+  "blockers": [
+    {
+      "id": "RQ6-MPC",
+      "reason": "Three- and five-party malicious honest-majority MP-SPDZ fixed-vector loopback measurements are present; LAN/WAN and production-availability claims remain out of scope.",
+      "resolved": true
+    },
+    {
+      "id": "OPENLDAP",
+      "reason": "A pinned real OpenLDAP server passed modify/new-bind/old-bind-rejection smoke verification; replication remains outside the claim boundary.",
+      "resolved": true
+    }
+  ],
+  "schemaVersion": 1
+}

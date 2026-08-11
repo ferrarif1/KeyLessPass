@@ -1,0 +1,12 @@
+{
+  "scheme": "EPSCD scheme v2",
+  "generations": 100000,
+  "policyViolations": 0,
+  "duplicatePasswords": 0,
+  "replayMismatches": 0,
+  "domainSize": "2351927613440572602240",
+  "effectiveBits": 70.99433365087972,
+  "elapsedSeconds": 23.549656032,
+  "derivationsPerSecondIncludingReplay": 8492.693045207701,
+  "boundary": "This is an implementation-scale check. Exact compliance and same-lineage non-repetition follow from the compiled-language and bijection/permutation arguments, not from observing this finite sample."
+}

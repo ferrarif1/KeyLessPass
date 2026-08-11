@@ -1,0 +1,1353 @@
+{
+  "results": [
+    {
+      "case": "case_1_naive_automatically_callable_network",
+      "nominal_share_threshold": 2,
+      "configured_domain_threshold": 2,
+      "effective_domain_threshold": 1,
+      "weighted_effective_compromise_cost": 3.0,
+      "threshold_collapse": true,
+      "minimal_compromising_domain_sets": [
+        [
+          "D"
+        ],
+        [
+          "N",
+          "U"
+        ]
+      ],
+      "gamma_eff": [
+        [
+          "D"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "N",
+          "U"
+        ],
+        [
+          "D",
+          "N",
+          "U"
+        ]
+      ],
+      "witnesses": [
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "cost": 3.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "CanRequestNetworkShare",
+            "ClientToken",
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise D -> obtain ClientToken",
+            "ClientToken --[client may request network share]--> CanRequestNetworkShare",
+            "CanRequestNetworkShare --[honest network automatically releases]--> S_N"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N",
+            "U"
+          ],
+          "cost": 6.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N -> obtain S_N",
+            "compromise U -> obtain S_U"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "case_2_independent_approval",
+      "nominal_share_threshold": 2,
+      "configured_domain_threshold": 2,
+      "effective_domain_threshold": 2,
+      "weighted_effective_compromise_cost": 5.0,
+      "threshold_collapse": false,
+      "minimal_compromising_domain_sets": [
+        [
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "N",
+          "U"
+        ]
+      ],
+      "gamma_eff": [
+        [
+          "D",
+          "U"
+        ],
+        [
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "N",
+          "U"
+        ],
+        [
+          "A",
+          "D",
+          "U"
+        ],
+        [
+          "D",
+          "N",
+          "U"
+        ],
+        [
+          "A",
+          "D",
+          "N"
+        ],
+        [
+          "A",
+          "N",
+          "U"
+        ],
+        [
+          "A",
+          "D",
+          "N",
+          "U"
+        ]
+      ],
+      "witnesses": [
+        {
+          "compromised_domains": [
+            "A",
+            "D"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "Approval_A",
+            "CanRequestNetworkShare",
+            "ClientToken",
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise A -> obtain Approval_A",
+            "compromise D -> obtain ClientToken",
+            "ClientToken --[client may request network share]--> CanRequestNetworkShare",
+            "Approval_A + CanRequestNetworkShare --[approved network release]--> S_N"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "D",
+            "N"
+          ],
+          "cost": 7.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "CanRequestNetworkShare",
+            "ClientToken",
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise N -> obtain S_N"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "D",
+            "U"
+          ],
+          "cost": 5.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_U"
+          ],
+          "closure": [
+            "CanRequestNetworkShare",
+            "ClientToken",
+            "S_D",
+            "S_U"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N",
+            "U"
+          ],
+          "cost": 6.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N -> obtain S_N",
+            "compromise U -> obtain S_U"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "case_3_approval_key_leaked_into_endpoint",
+      "nominal_share_threshold": 2,
+      "configured_domain_threshold": 2,
+      "effective_domain_threshold": 1,
+      "weighted_effective_compromise_cost": 3.0,
+      "threshold_collapse": true,
+      "minimal_compromising_domain_sets": [
+        [
+          "D"
+        ],
+        [
+          "N",
+          "U"
+        ]
+      ],
+      "gamma_eff": [
+        [
+          "D"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "N",
+          "U"
+        ],
+        [
+          "D",
+          "N",
+          "U"
+        ]
+      ],
+      "witnesses": [
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "cost": 3.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "Approval_A",
+            "CanRequestNetworkShare",
+            "ClientToken",
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise D -> obtain Approval_A",
+            "compromise D -> obtain ClientToken",
+            "ClientToken --[client may request network share]--> CanRequestNetworkShare",
+            "Approval_A + CanRequestNetworkShare --[approved network release]--> S_N"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N",
+            "U"
+          ],
+          "cost": 6.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N -> obtain S_N",
+            "compromise U -> obtain S_U"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "case_4_removable_medium_holds_release_credential",
+      "nominal_share_threshold": 2,
+      "configured_domain_threshold": 2,
+      "effective_domain_threshold": 1,
+      "weighted_effective_compromise_cost": 2.0,
+      "threshold_collapse": true,
+      "minimal_compromising_domain_sets": [
+        [
+          "U"
+        ],
+        [
+          "D",
+          "N"
+        ]
+      ],
+      "gamma_eff": [
+        [
+          "U"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "D",
+          "N"
+        ],
+        [
+          "N",
+          "U"
+        ],
+        [
+          "D",
+          "N",
+          "U"
+        ]
+      ],
+      "witnesses": [
+        {
+          "compromised_domains": [
+            "U"
+          ],
+          "cost": 2.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "NetworkReleaseCredential",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise U -> obtain NetworkReleaseCredential",
+            "NetworkReleaseCredential --[release credential is automatically honored]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "D",
+            "N"
+          ],
+          "cost": 7.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise N -> obtain S_N"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "case_5_three_of_five_nodes_callable_by_one_endpoint",
+      "nominal_share_threshold": 2,
+      "configured_domain_threshold": 2,
+      "effective_domain_threshold": 1,
+      "weighted_effective_compromise_cost": 3.0,
+      "threshold_collapse": true,
+      "minimal_compromising_domain_sets": [
+        [
+          "D"
+        ],
+        [
+          "N1",
+          "N2",
+          "N3",
+          "U"
+        ],
+        [
+          "N1",
+          "N2",
+          "N4",
+          "U"
+        ],
+        [
+          "N1",
+          "N2",
+          "N5",
+          "U"
+        ],
+        [
+          "N1",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "N1",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "N1",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "N2",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "N2",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "N2",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ]
+      ],
+      "gamma_eff": [
+        [
+          "D"
+        ],
+        [
+          "D",
+          "U"
+        ],
+        [
+          "D",
+          "N1"
+        ],
+        [
+          "D",
+          "N2"
+        ],
+        [
+          "D",
+          "N3"
+        ],
+        [
+          "D",
+          "N4"
+        ],
+        [
+          "D",
+          "N5"
+        ],
+        [
+          "D",
+          "N1",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "U"
+        ],
+        [
+          "D",
+          "N3",
+          "U"
+        ],
+        [
+          "D",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2"
+        ],
+        [
+          "D",
+          "N1",
+          "N3"
+        ],
+        [
+          "D",
+          "N1",
+          "N4"
+        ],
+        [
+          "D",
+          "N1",
+          "N5"
+        ],
+        [
+          "D",
+          "N2",
+          "N3"
+        ],
+        [
+          "D",
+          "N2",
+          "N4"
+        ],
+        [
+          "D",
+          "N2",
+          "N5"
+        ],
+        [
+          "D",
+          "N3",
+          "N4"
+        ],
+        [
+          "D",
+          "N3",
+          "N5"
+        ],
+        [
+          "D",
+          "N4",
+          "N5"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N4"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N5"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "N4"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "N5"
+        ],
+        [
+          "D",
+          "N1",
+          "N4",
+          "N5"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "N4"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "N5"
+        ],
+        [
+          "D",
+          "N2",
+          "N4",
+          "N5"
+        ],
+        [
+          "D",
+          "N3",
+          "N4",
+          "N5"
+        ],
+        [
+          "N1",
+          "N2",
+          "N3",
+          "U"
+        ],
+        [
+          "N1",
+          "N2",
+          "N4",
+          "U"
+        ],
+        [
+          "N1",
+          "N2",
+          "N5",
+          "U"
+        ],
+        [
+          "N1",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "N1",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "N1",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "N2",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "N2",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "N2",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "N4"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "N5"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N4",
+          "N5"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "N4",
+          "N5"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "N4",
+          "N5"
+        ],
+        [
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "N1",
+          "N2",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "N1",
+          "N2",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "N1",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "N2",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N2",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "N5"
+        ],
+        [
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ],
+        [
+          "D",
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "N5",
+          "U"
+        ]
+      ],
+      "witnesses": [
+        {
+          "compromised_domains": [
+            "D"
+          ],
+          "cost": 3.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "AllNodeToken",
+            "Fragment_1",
+            "Fragment_2",
+            "Fragment_3",
+            "Fragment_4",
+            "Fragment_5",
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise D -> obtain S_D",
+            "compromise D -> obtain AllNodeToken",
+            "AllNodeToken --[token calls node 1]--> Fragment_1",
+            "AllNodeToken --[token calls node 2]--> Fragment_2",
+            "AllNodeToken --[token calls node 3]--> Fragment_3",
+            "Fragment_1 + Fragment_2 + Fragment_3 --[nodes 1 2 3 reconstruct network share]--> S_N"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N1",
+            "N2",
+            "N3",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_1",
+            "Fragment_2",
+            "Fragment_3",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N1 -> obtain Fragment_1",
+            "compromise N2 -> obtain Fragment_2",
+            "compromise N3 -> obtain Fragment_3",
+            "Fragment_1 + Fragment_2 + Fragment_3 --[nodes 1 2 3 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N1",
+            "N2",
+            "N4",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_1",
+            "Fragment_2",
+            "Fragment_4",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N1 -> obtain Fragment_1",
+            "compromise N2 -> obtain Fragment_2",
+            "compromise N4 -> obtain Fragment_4",
+            "Fragment_1 + Fragment_2 + Fragment_4 --[nodes 1 2 4 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N1",
+            "N2",
+            "N5",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_1",
+            "Fragment_2",
+            "Fragment_5",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N1 -> obtain Fragment_1",
+            "compromise N2 -> obtain Fragment_2",
+            "compromise N5 -> obtain Fragment_5",
+            "Fragment_1 + Fragment_2 + Fragment_5 --[nodes 1 2 5 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N1",
+            "N3",
+            "N4",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_1",
+            "Fragment_3",
+            "Fragment_4",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N1 -> obtain Fragment_1",
+            "compromise N3 -> obtain Fragment_3",
+            "compromise N4 -> obtain Fragment_4",
+            "Fragment_1 + Fragment_3 + Fragment_4 --[nodes 1 3 4 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N1",
+            "N3",
+            "N5",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_1",
+            "Fragment_3",
+            "Fragment_5",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N1 -> obtain Fragment_1",
+            "compromise N3 -> obtain Fragment_3",
+            "compromise N5 -> obtain Fragment_5",
+            "Fragment_1 + Fragment_3 + Fragment_5 --[nodes 1 3 5 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N1",
+            "N4",
+            "N5",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_1",
+            "Fragment_4",
+            "Fragment_5",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N1 -> obtain Fragment_1",
+            "compromise N4 -> obtain Fragment_4",
+            "compromise N5 -> obtain Fragment_5",
+            "Fragment_1 + Fragment_4 + Fragment_5 --[nodes 1 4 5 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N2",
+            "N3",
+            "N4",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_2",
+            "Fragment_3",
+            "Fragment_4",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N2 -> obtain Fragment_2",
+            "compromise N3 -> obtain Fragment_3",
+            "compromise N4 -> obtain Fragment_4",
+            "Fragment_2 + Fragment_3 + Fragment_4 --[nodes 2 3 4 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N2",
+            "N3",
+            "N5",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_2",
+            "Fragment_3",
+            "Fragment_5",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N2 -> obtain Fragment_2",
+            "compromise N3 -> obtain Fragment_3",
+            "compromise N5 -> obtain Fragment_5",
+            "Fragment_2 + Fragment_3 + Fragment_5 --[nodes 2 3 5 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N2",
+            "N4",
+            "N5",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_2",
+            "Fragment_4",
+            "Fragment_5",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N2 -> obtain Fragment_2",
+            "compromise N4 -> obtain Fragment_4",
+            "compromise N5 -> obtain Fragment_5",
+            "Fragment_2 + Fragment_4 + Fragment_5 --[nodes 2 4 5 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        },
+        {
+          "compromised_domains": [
+            "N3",
+            "N4",
+            "N5",
+            "U"
+          ],
+          "cost": 8.0,
+          "nominal_share_set_reached": [
+            "S_N",
+            "S_U"
+          ],
+          "closure": [
+            "Fragment_3",
+            "Fragment_4",
+            "Fragment_5",
+            "S_N",
+            "S_U"
+          ],
+          "trace": [
+            "compromise N3 -> obtain Fragment_3",
+            "compromise N4 -> obtain Fragment_4",
+            "compromise N5 -> obtain Fragment_5",
+            "Fragment_3 + Fragment_4 + Fragment_5 --[nodes 3 4 5 reconstruct network share]--> S_N",
+            "compromise U -> obtain S_U"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "case_6_shared_administrative_domain",
+      "nominal_share_threshold": 2,
+      "configured_domain_threshold": 2,
+      "effective_domain_threshold": 1,
+      "weighted_effective_compromise_cost": 4.0,
+      "threshold_collapse": true,
+      "minimal_compromising_domain_sets": [
+        [
+          "Admin"
+        ]
+      ],
+      "gamma_eff": [
+        [
+          "Admin"
+        ],
+        [
+          "Admin",
+          "U"
+        ],
+        [
+          "Admin",
+          "N4"
+        ],
+        [
+          "Admin",
+          "N5"
+        ],
+        [
+          "Admin",
+          "N4",
+          "U"
+        ],
+        [
+          "Admin",
+          "N5",
+          "U"
+        ],
+        [
+          "Admin",
+          "N4",
+          "N5"
+        ],
+        [
+          "Admin",
+          "N4",
+          "N5",
+          "U"
+        ]
+      ],
+      "witnesses": [
+        {
+          "compromised_domains": [
+            "Admin"
+          ],
+          "cost": 4.0,
+          "nominal_share_set_reached": [
+            "S_D",
+            "S_N"
+          ],
+          "closure": [
+            "Approval_A",
+            "CanRequestNetworkShare",
+            "ClientToken",
+            "Fragment_1",
+            "Fragment_2",
+            "Fragment_3",
+            "S_D",
+            "S_N"
+          ],
+          "trace": [
+            "compromise Admin -> obtain S_D",
+            "compromise Admin -> obtain Approval_A",
+            "compromise Admin -> obtain ClientToken",
+            "ClientToken --[client may request network share]--> CanRequestNetworkShare",
+            "compromise Admin -> obtain Fragment_1",
+            "compromise Admin -> obtain Fragment_2",
+            "compromise Admin -> obtain Fragment_3",
+            "Approval_A + CanRequestNetworkShare + Fragment_1 + Fragment_2 + Fragment_3 --[three node fragments form network share]--> S_N"
+          ]
+        }
+      ]
+    }
+  ]
+}

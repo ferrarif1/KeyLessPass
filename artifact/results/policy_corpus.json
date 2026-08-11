@@ -1,0 +1,3480 @@
+{
+  "schemaVersion": 2,
+  "source": {
+    "title": "Improving Password Generation Through the Design of a Password Composition Policy Description Language",
+    "authors": "Gautam, Lalani, and Ruoti",
+    "venue": "SOUPS 2022",
+    "archiveUrl": "https://userlab.utk.edu/files/data/ruoti/2022/gautam2022improving.zip",
+    "workbookPath": "pcp dataset/clean_data.xlsx",
+    "workbookSha256": "2d424c30fa1e4d2e5f0b82a5c67b4214fc2a96574d8b70052994d6f92712a77a",
+    "datasetScope": "historical website policies collected by the source authors; not current live policies"
+  },
+  "translation": {
+    "tool": "experiments/scripts/import_soups2022_pcp.py",
+    "unsupportedSemanticsAreRejected": true,
+    "compilationPrefilter": null
+  },
+  "budgetFixedBeforeRun": {
+    "maxStates": 250000,
+    "maxMemoryBytes": 4294967296,
+    "maxWallTimeSecondsPerPolicy": 60,
+    "preCompilationLengthFilter": null
+  },
+  "environment": {
+    "platform": "macOS-26.5.2-x86_64-i386-64bit",
+    "python": "3.9.6",
+    "worker": "rust_core/target/release/examples/compile_policy_worker"
+  },
+  "totalSourceRecords": 270,
+  "exactTranslationsAttempted": 121,
+  "compileStatusCounts": {
+    "SUCCESS": 121
+  },
+  "aggregateSuccessful": {
+    "reachableStates": {
+      "samples": 121,
+      "mean": 806.7851239669421,
+      "median": 65,
+      "p95": 508,
+      "p99": 23227,
+      "maximum": 49401,
+      "standardDeviation": 4996.803404965806
+    },
+    "countPayloadBytes": {
+      "samples": 121,
+      "mean": 8638096.008264463,
+      "median": 505290,
+      "p95": 19662457,
+      "p99": 77404601,
+      "maximum": 460740141,
+      "standardDeviation": 43072290.138237864
+    },
+    "peakRssBytes": {
+      "samples": 121,
+      "mean": 36151532.95867769,
+      "median": 110592,
+      "p95": 58290176,
+      "p99": 400158720,
+      "maximum": 2164862976,
+      "standardDeviation": 200430630.681629
+    },
+    "compileMicros": {
+      "samples": 121,
+      "mean": 578562.1005867769,
+      "median": 42726.348,
+      "p95": 694994.309,
+      "p99": 7272524.8100000005,
+      "maximum": 38453401.627,
+      "standardDeviation": 3551574.1509125954
+    },
+    "rankMedianMicrosPerPolicy": {
+      "samples": 121,
+      "mean": 32.28617355371901,
+      "median": 23.570999999999998,
+      "p95": 90.95800000000001,
+      "p99": 96.97,
+      "maximum": 97.047,
+      "standardDeviation": 24.953513838480433
+    },
+    "unrankMedianMicrosPerPolicy": {
+      "samples": 121,
+      "mean": 41.42280991735537,
+      "median": 33.191,
+      "p95": 114.126,
+      "p99": 119.045,
+      "maximum": 121.181,
+      "standardDeviation": 31.355669772486504
+    }
+  },
+  "metricBoundary": "countPayloadBytes sums serialized BigUint payloads. peakRssBytes is the maximum sampled resident set of the isolated worker and may miss short-lived peaks.",
+  "records": [
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1387.603,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 2155,
+      "countTableCells": 910,
+      "entropyBits": 78.85353405662467,
+      "exactSpace": "546108599233508259390625",
+      "maxLength": 12,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 7.2379999999999995,
+        "p95": 8.284,
+        "p99": 8.493,
+        "samples": 31
+      },
+      "reachableStates": 13,
+      "sourceRow": 9,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 8.572000000000001,
+        "p95": 10.114,
+        "p99": 11.884,
+        "samples": 31
+      },
+      "website": "walmart.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 86740.44499999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 36.652,
+        "p95": 45.859,
+        "p99": 46.958,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 10,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 48.446999999999996,
+        "p95": 59.323,
+        "p99": 60.23,
+        "samples": 31
+      },
+      "website": "ebay.com",
+      "peakRssBytes": 6930432
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 72358.04299999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1023479,
+      "countTableCells": 114741,
+      "entropyBits": 394.20660325651016,
+      "exactSpace": "46559903231494119157640432265266889890124185118452993594258718344515893556311773225022109647610743698525301953578650625",
+      "maxLength": 60,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 34.099,
+        "p95": 43.557,
+        "p99": 55.86,
+        "samples": 31
+      },
+      "reachableStates": 61,
+      "sourceRow": 14,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 44.536,
+        "p95": 56.409,
+        "p99": 73.711,
+        "samples": 31
+      },
+      "website": "netflix.com",
+      "peakRssBytes": 6524928
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 53657.69,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 672858,
+      "countTableCells": 82225,
+      "entropyBits": 354.7874696065245,
+      "exactSpace": "63338888410137831749584786497612425473931455286829288838964626341018402601578520474543032090984867937500000",
+      "maxLength": 54,
+      "minLength": 9,
+      "rankMicros": {
+        "median": 30.253,
+        "p95": 68.593,
+        "p99": 99.89599999999999,
+        "samples": 31
+      },
+      "reachableStates": 55,
+      "sourceRow": 16,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 39.945,
+        "p95": 88.137,
+        "p99": 91.27300000000001,
+        "samples": 31
+      },
+      "website": "bestbuy.com",
+      "peakRssBytes": 6443008
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 131546.87300000002,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 2305192,
+      "countTableCells": 212625,
+      "entropyBits": 486.18458177314346,
+      "exactSpace": "227060998360399857546231733396219046505259077831146960372169472330689693591152534474849740383708178771842637531310204314862896856713168164434700000",
+      "maxLength": 74,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 44.769,
+        "p95": 55.061,
+        "p99": 55.482,
+        "samples": 31
+      },
+      "reachableStates": 75,
+      "sourceRow": 17,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 58.264,
+        "p95": 79.406,
+        "p99": 85.241,
+        "samples": 31
+      },
+      "website": "quora.com",
+      "peakRssBytes": 11091968
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 8247.707,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 72568,
+      "countTableCells": 14911,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430059700000",
+      "maxLength": 30,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 14.231,
+        "p95": 18.134,
+        "p99": 18.414,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 23,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.122999999999998,
+        "p95": 23.513,
+        "p99": 23.92,
+        "samples": 31
+      },
+      "website": "usatoday.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 115924.227,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1955652,
+      "countTableCells": 186624,
+      "entropyBits": 466.4750149481506,
+      "exactSpace": "264832772544569013029574845774858196827828054038369395389613030856614309480860223910015734519560494266619201086234383221884119313255600000000",
+      "maxLength": 71,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 42.821999999999996,
+        "p95": 54.258,
+        "p99": 74.526,
+        "samples": 31
+      },
+      "reachableStates": 72,
+      "sourceRow": 24,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 52.651,
+        "p95": 67.157,
+        "p99": 94.308,
+        "samples": 31
+      },
+      "website": "vimeo.com",
+      "peakRssBytes": 11141120
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 7272524.8100000005,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 58449134,
+      "countTableCells": 12194175,
+      "entropyBits": 210.20888934051086,
+      "exactSpace": "1901870957984869150459942501569779432166776028829488714075794720",
+      "maxLength": 32,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 15.007,
+        "p95": 57.987,
+        "p99": 62.37899999999999,
+        "samples": 31
+      },
+      "reachableStates": 23227,
+      "sourceRow": 25,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 36.053999999999995,
+        "p95": 64.855,
+        "p99": 76.92899999999999,
+        "samples": 31
+      },
+      "website": "apple.com",
+      "peakRssBytes": 400158720
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 18313.278,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 134924,
+      "countTableCells": 28060,
+      "entropyBits": 197.05864426409573,
+      "exactSpace": "209200553077795564392598035510286167558439957221015746093750",
+      "maxLength": 30,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 14.481000000000002,
+        "p95": 16.721,
+        "p99": 17.331,
+        "samples": 31
+      },
+      "reachableStates": 61,
+      "sourceRow": 28,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.393,
+        "p95": 20.945999999999998,
+        "p99": 21.763,
+        "samples": 31
+      },
+      "website": "webmd.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 38453401.627,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 460740141,
+      "countTableCells": 63727290,
+      "entropyBits": 328.4948966256587,
+      "exactSpace": "770579244003304887192131015463405816039837265337781224290602564101393272998193360235628582497923440",
+      "maxLength": 50,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 23.570999999999998,
+        "p95": 28.223,
+        "p99": 40.20099999999999,
+        "samples": 31
+      },
+      "reachableStates": 49401,
+      "sourceRow": 31,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 36.711,
+        "p95": 98.572,
+        "p99": 125.947,
+        "samples": 31
+      },
+      "website": "usps.com",
+      "peakRssBytes": 2164862976
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2707094.558,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 77370004,
+      "countTableCells": 4274688,
+      "entropyBits": 840.9567836752084,
+      "exactSpace": "14230394612325434394416764217602394628383543532569431812001860381714981771638646225029443899372092605674931368558835483233666247392273772669077062863244328856968006536400961880818520645292571196573883809995720648962899108290270055221405345214250011611040",
+      "maxLength": 128,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 64.821,
+        "p95": 70.336,
+        "p99": 71.238,
+        "samples": 31
+      },
+      "reachableStates": 512,
+      "sourceRow": 32,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 78.96799999999999,
+        "p95": 86.966,
+        "p99": 134.78900000000002,
+        "samples": 31
+      },
+      "website": "zillow.com",
+      "peakRssBytes": 203587584
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 354904.528,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 827330,
+      "countTableCells": 432685,
+      "entropyBits": 78.41201071021744,
+      "exactSpace": "402130713187009132990560",
+      "maxLength": 12,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 4.569,
+        "p95": 6.127,
+        "p99": 6.595000000000001,
+        "samples": 31
+      },
+      "reachableStates": 7867,
+      "sourceRow": 33,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 6.306,
+        "p95": 8.427999999999999,
+        "p99": 13.18,
+        "samples": 31
+      },
+      "website": "lowes.com",
+      "peakRssBytes": 32006144
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 10609.465,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 71872,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "maxLength": 30,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 19.488,
+        "p95": 23.462999999999997,
+        "p99": 23.699,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 37,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 24.375999999999998,
+        "p95": 30.362,
+        "p99": 30.744000000000003,
+        "samples": 31
+      },
+      "website": "buzzfeed.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 322879.672,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 66.38499999999999,
+        "p95": 83.917,
+        "p99": 84.557,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 39,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 85.212,
+        "p95": 105.587,
+        "p99": 107.092,
+        "samples": 31
+      },
+      "website": "wordpress.com",
+      "peakRssBytes": 26112000
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2863.207,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 12.116000000000001,
+        "p95": 14.82,
+        "p99": 15.068,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 47,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 15.648,
+        "p95": 19.198,
+        "p99": 20.145,
+        "samples": 31
+      },
+      "website": "legacy.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 45500.505,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 505290,
+      "countTableCells": 66555,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "maxLength": 50,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 31.453,
+        "p95": 43.866,
+        "p99": 53.644999999999996,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 49,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 38.812,
+        "p95": 47.527,
+        "p99": 56.691,
+        "samples": 31
+      },
+      "website": "ranker.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 6705.529,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 20664,
+      "countTableCells": 7488,
+      "entropyBits": 104.86601851545416,
+      "exactSpace": "36967246124613593730165567647200",
+      "maxLength": 16,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 8.800999999999998,
+        "p95": 10.99,
+        "p99": 11.114,
+        "samples": 31
+      },
+      "reachableStates": 64,
+      "sourceRow": 52,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 10.604999999999999,
+        "p95": 13.794,
+        "p99": 14.337,
+        "samples": 31
+      },
+      "website": "cnbc.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 683661.96,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19662457,
+      "countTableCells": 1078956,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "maxLength": 128,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 96.97,
+        "p95": 119.307,
+        "p99": 120.889,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 54,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 118.606,
+        "p95": 148.956,
+        "p99": 155.524,
+        "samples": 31
+      },
+      "website": "giphy.com",
+      "peakRssBytes": 58220544
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 102556.658,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 931238,
+      "countTableCells": 173880,
+      "entropyBits": 229.9304198358972,
+      "exactSpace": "1644194860060635440259129733258210695906314086869028898586813602514000",
+      "maxLength": 35,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 14.671000000000001,
+        "p95": 86.109,
+        "p99": 153.075,
+        "samples": 31
+      },
+      "reachableStates": 276,
+      "sourceRow": 58,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.491,
+        "p95": 58.867,
+        "p99": 59.254,
+        "samples": 31
+      },
+      "website": "fedex.com",
+      "peakRssBytes": 8982528
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 693627.599,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19662457,
+      "countTableCells": 1078956,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "maxLength": 128,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 91.525,
+        "p95": 131.30999999999997,
+        "p99": 141.462,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 61,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 113.82199999999999,
+        "p95": 142.393,
+        "p99": 147.537,
+        "samples": 31
+      },
+      "website": "goodreads.com",
+      "peakRssBytes": 58269696
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2796.924,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 14952,
+      "countTableCells": 4263,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344179417500000",
+      "maxLength": 20,
+      "minLength": 7,
+      "rankMicros": {
+        "median": 8.714,
+        "p95": 11.203,
+        "p99": 11.274000000000001,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 63,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 11.301,
+        "p95": 14.473,
+        "p99": 14.752999999999998,
+        "samples": 31
+      },
+      "website": "ikea.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 40857.319,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 501626,
+      "countTableCells": 65790,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268273369125390625",
+      "maxLength": 50,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 27.305999999999997,
+        "p95": 33.763999999999996,
+        "p99": 34.226,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 65,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 35.946,
+        "p95": 45.242,
+        "p99": 45.271,
+        "samples": 31
+      },
+      "website": "priceline.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 318805.613,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7465575,
+      "countTableCells": 519241,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258984828650625",
+      "maxLength": 100,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 65.917,
+        "p95": 113.31400000000001,
+        "p99": 117.166,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 69,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 82.832,
+        "p95": 106.551,
+        "p99": 133.85999999999999,
+        "samples": 31
+      },
+      "website": "spotify.com",
+      "peakRssBytes": 25120768
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 321382.173,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7453682,
+      "countTableCells": 516615,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006188408187890625",
+      "maxLength": 100,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 65.657,
+        "p95": 84.02999999999999,
+        "p99": 156.52,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 71,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 84.451,
+        "p95": 105.37700000000001,
+        "p99": 106.037,
+        "samples": 31
+      },
+      "website": "creditkarma.com",
+      "peakRssBytes": 26005504
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 629561.5020000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 9993777,
+      "countTableCells": 1078992,
+      "entropyBits": 420.4848551222267,
+      "exactSpace": "3789257459332188704226350957816873339467927512148352739029463429559146795357196870462319655099456905247253436618988016116817200",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 27.378,
+        "p95": 30.824,
+        "p99": 31.075000000000003,
+        "samples": 31
+      },
+      "reachableStates": 508,
+      "sourceRow": 74,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 35.235,
+        "p95": 39.830000000000005,
+        "p99": 64.767,
+        "samples": 31
+      },
+      "website": "gamespot.com",
+      "peakRssBytes": 42647552
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 83356.352,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1313483,
+      "countTableCells": 138775,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772656703650625",
+      "maxLength": 64,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 38.535000000000004,
+        "p95": 113.407,
+        "p99": 167.292,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 75,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 51.631,
+        "p95": 169.569,
+        "p99": 178.686,
+        "samples": 31
+      },
+      "website": "gfycat.com",
+      "peakRssBytes": 7241728
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 321315.56799999997,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7453682,
+      "countTableCells": 516615,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006188408187890625",
+      "maxLength": 100,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 65.99900000000001,
+        "p95": 100.213,
+        "p99": 148.942,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 81,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 84.283,
+        "p95": 256.489,
+        "p99": 319.305,
+        "samples": 31
+      },
+      "website": "avast.com",
+      "peakRssBytes": 25964544
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 11235.144,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 91809,
+      "countTableCells": 17820,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "maxLength": 32,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 19.2,
+        "p95": 30.866,
+        "p99": 34.464,
+        "samples": 31
+      },
+      "reachableStates": 33,
+      "sourceRow": 82,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 23.897,
+        "p95": 38.315000000000005,
+        "p99": 58.893,
+        "samples": 31
+      },
+      "website": "kbb.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 313255.579,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 64.62299999999999,
+        "p95": 81.372,
+        "p99": 121.493,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 83,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 83.021,
+        "p95": 102.315,
+        "p99": 105.349,
+        "samples": 31
+      },
+      "website": "imore.com",
+      "peakRssBytes": 26079232
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 11760.448999999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 71872,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "maxLength": 30,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 23.678,
+        "p95": 29.203000000000003,
+        "p99": 29.492,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 85,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 30.211,
+        "p95": 37.781000000000006,
+        "p99": 38.314,
+        "samples": 31
+      },
+      "website": "expedia.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3427.1079999999997,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 14.556,
+        "p95": 33.232000000000006,
+        "p99": 70.358,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 86,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.802,
+        "p95": 34.565,
+        "p99": 35.84,
+        "samples": 31
+      },
+      "website": "wattpad.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 84271.03199999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 816800,
+      "countTableCells": 134400,
+      "entropyBits": 262.79250531558046,
+      "exactSpace": "12835912137827693040284421885441412013483600128215973021213600326939456010846320",
+      "maxLength": 40,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 16.403,
+        "p95": 20.843999999999998,
+        "p99": 75.845,
+        "samples": 31
+      },
+      "reachableStates": 160,
+      "sourceRow": 87,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 20.792,
+        "p95": 32.387,
+        "p99": 44.955,
+        "samples": 31
+      },
+      "website": "polygon.com",
+      "peakRssBytes": 6000640
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2755.4010000000003,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 14952,
+      "countTableCells": 4263,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344179417500000",
+      "maxLength": 20,
+      "minLength": 7,
+      "rankMicros": {
+        "median": 8.815,
+        "p95": 11.346,
+        "p99": 11.506,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 89,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 11.272,
+        "p95": 14.424,
+        "p99": 14.766,
+        "samples": 31
+      },
+      "website": "spanishdict.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 82727.937,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 816800,
+      "countTableCells": 134400,
+      "entropyBits": 262.79250531558046,
+      "exactSpace": "12835912137827693040284421885441412013483600128215973021213600326939456010846320",
+      "maxLength": 40,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 15.964000000000002,
+        "p95": 20.372,
+        "p99": 46.055,
+        "samples": 31
+      },
+      "reachableStates": 160,
+      "sourceRow": 90,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 20.058999999999997,
+        "p95": 29.445999999999998,
+        "p99": 39.582,
+        "samples": 31
+      },
+      "website": "sbnation.com",
+      "peakRssBytes": 6348800
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 311037.958,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 78.08200000000001,
+        "p95": 169.39000000000001,
+        "p99": 243.922,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 91,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 94.76599999999999,
+        "p95": 192.147,
+        "p99": 228.578,
+        "samples": 31
+      },
+      "website": "express.co.uk",
+      "peakRssBytes": 25513984
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 84140.631,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1306054,
+      "countTableCells": 137085,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432702080062890625",
+      "maxLength": 64,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 36.711999999999996,
+        "p95": 45.722,
+        "p99": 67.19200000000001,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 92,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 47.952,
+        "p95": 59.436,
+        "p99": 60.221,
+        "samples": 31
+      },
+      "website": "sfgate.com",
+      "peakRssBytes": 6979584
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2855.0009999999997,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 12.183,
+        "p95": 14.677,
+        "p99": 14.852,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 93,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 15.654999999999998,
+        "p95": 18.894,
+        "p99": 19.238,
+        "samples": 31
+      },
+      "website": "thechive.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 36987.804,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 262171,
+      "countTableCells": 55200,
+      "entropyBits": 197.05864426402448,
+      "exactSpace": "209200553067465165229115354217012372839883214189190209984800",
+      "maxLength": 30,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 14.409999999999998,
+        "p95": 15.809000000000001,
+        "p99": 18.709,
+        "samples": 31
+      },
+      "reachableStates": 120,
+      "sourceRow": 94,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.372999999999998,
+        "p95": 23.256,
+        "p99": 23.695,
+        "samples": 31
+      },
+      "website": "walgreens.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 688589.83,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19662457,
+      "countTableCells": 1078956,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "maxLength": 128,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 91.455,
+        "p95": 115.163,
+        "p99": 140.449,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 98,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 115.499,
+        "p95": 140.803,
+        "p99": 141.529,
+        "samples": 31
+      },
+      "website": "discordapp.com",
+      "peakRssBytes": 58290176
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 317343.783,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 64.363,
+        "p95": 84.11699999999999,
+        "p99": 136.003,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 99,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 82.8,
+        "p95": 132.72,
+        "p99": 171.731,
+        "samples": 31
+      },
+      "website": "androidcentral.com",
+      "peakRssBytes": 26157056
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 317760.116,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 64.569,
+        "p95": 81.093,
+        "p99": 82.384,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 102,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 83.04,
+        "p95": 103.153,
+        "p99": 104.675,
+        "samples": 31
+      },
+      "website": "yellowpages.com",
+      "peakRssBytes": 26120192
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 87438.30399999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1306054,
+      "countTableCells": 137085,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432702080062890625",
+      "maxLength": 64,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 37.609,
+        "p95": 46.754,
+        "p99": 53.577,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 105,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 49.048,
+        "p95": 100.507,
+        "p99": 107.829,
+        "samples": 31
+      },
+      "website": "eventbrite.com",
+      "peakRssBytes": 6852608
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 41935.194,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 505290,
+      "countTableCells": 66555,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "maxLength": 50,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 27.039,
+        "p95": 33.683,
+        "p99": 34.196000000000005,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 109,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 36.185,
+        "p95": 44.333999999999996,
+        "p99": 45.644,
+        "samples": 31
+      },
+      "website": "epicurious.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 318168.271,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 5061775,
+      "countTableCells": 539904,
+      "entropyBits": 420.48485512597915,
+      "exactSpace": "3789257469188005312355258456553709710328495201499491780909425995131916649156568730087926262356079925250354569521025841293964960",
+      "maxLength": 64,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 27.443,
+        "p95": 31.167999999999996,
+        "p99": 31.377999999999997,
+        "samples": 31
+      },
+      "reachableStates": 256,
+      "sourceRow": 110,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 34.285000000000004,
+        "p95": 39.958,
+        "p99": 57.244,
+        "samples": 31
+      },
+      "website": "trulia.com",
+      "peakRssBytes": 23052288
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 117387.969,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 2065119,
+      "countTableCells": 194545,
+      "entropyBits": 473.04487055648156,
+      "exactSpace": "25159113391734056237809610348611528698643665133645092562013237931378359400681721271451494779358246955328824103192266406078991341393486312890625",
+      "maxLength": 72,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 42.752,
+        "p95": 53.294000000000004,
+        "p99": 53.963,
+        "samples": 31
+      },
+      "reachableStates": 73,
+      "sourceRow": 111,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 56.471000000000004,
+        "p95": 69.393,
+        "p99": 69.44999999999999,
+        "samples": 31
+      },
+      "website": "twitch.tv",
+      "peakRssBytes": 11378688
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3711294.49,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 38102764,
+      "countTableCells": 6305040,
+      "entropyBits": 262.8034789305566,
+      "exactSpace": "12933918587197586810390973765123418786880625111169664167779621176404036249372900",
+      "maxLength": 40,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 17.11,
+        "p95": 46.287,
+        "p99": 78.831,
+        "samples": 31
+      },
+      "reachableStates": 7506,
+      "sourceRow": 112,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 24.537,
+        "p95": 37.385000000000005,
+        "p99": 98.112,
+        "samples": 31
+      },
+      "website": "pornhub.com",
+      "peakRssBytes": 211488768
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 683017.9130000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19662457,
+      "countTableCells": 1078956,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "maxLength": 128,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 91.652,
+        "p95": 113.118,
+        "p99": 114.714,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 113,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 116.448,
+        "p95": 145.05700000000002,
+        "p99": 170.24,
+        "samples": 31
+      },
+      "website": "livejasmin.com",
+      "peakRssBytes": 58314752
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 42726.348,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 501626,
+      "countTableCells": 65790,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268273369125390625",
+      "maxLength": 50,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 28.45,
+        "p95": 37.07,
+        "p99": 43.598,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 116,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 36.721000000000004,
+        "p95": 44.672999999999995,
+        "p99": 45.751000000000005,
+        "samples": 31
+      },
+      "website": "intuit.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 81088.36,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 37.359,
+        "p95": 46.727999999999994,
+        "p99": 47.459,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 120,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 50.038,
+        "p95": 60.72,
+        "p99": 62.418,
+        "samples": 31
+      },
+      "website": "wikidot.com",
+      "peakRssBytes": 6873088
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 11024.182999999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 89603,
+      "countTableCells": 17325,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "maxLength": 32,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 20.456,
+        "p95": 24.97,
+        "p99": 25.218,
+        "samples": 31
+      },
+      "reachableStates": 33,
+      "sourceRow": 122,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 25.625,
+        "p95": 31.612999999999996,
+        "p99": 32.122,
+        "samples": 31
+      },
+      "website": "nexusmods.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 83182.219,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1298442,
+      "countTableCells": 135850,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697421795818466025390625",
+      "maxLength": 64,
+      "minLength": 10,
+      "rankMicros": {
+        "median": 39.066,
+        "p95": 86.271,
+        "p99": 90.381,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 124,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 52.857,
+        "p95": 133.965,
+        "p99": 136.888,
+        "samples": 31
+      },
+      "website": "seagate.com",
+      "peakRssBytes": 7290880
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1515.7949999999998,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 6633,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "maxLength": 16,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 9.526,
+        "p95": 11.354,
+        "p99": 11.51,
+        "samples": 31
+      },
+      "reachableStates": 17,
+      "sourceRow": 126,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 11.995,
+        "p95": 14.274,
+        "p99": 14.437999999999999,
+        "samples": 31
+      },
+      "website": "dwnews.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 85165.504,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 37.368,
+        "p95": 46.307,
+        "p99": 50.61,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 129,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 49.336000000000006,
+        "p95": 60.943999999999996,
+        "p99": 70.33800000000001,
+        "samples": 31
+      },
+      "website": "independent.co.uk",
+      "peakRssBytes": 7024640
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1327.158,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 5481,
+      "countTableCells": 1936,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835848675909309375",
+      "maxLength": 15,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 9.16,
+        "p95": 11.364,
+        "p99": 11.713,
+        "samples": 31
+      },
+      "reachableStates": 16,
+      "sourceRow": 130,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 11.406,
+        "p95": 14.125,
+        "p99": 14.305,
+        "samples": 31
+      },
+      "website": "sugardaddyforme.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 6268.033,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 20664,
+      "countTableCells": 7488,
+      "entropyBits": 104.86601851545416,
+      "exactSpace": "36967246124613593730165567647200",
+      "maxLength": 16,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 8.088,
+        "p95": 10.053,
+        "p99": 10.091000000000001,
+        "samples": 31
+      },
+      "reachableStates": 64,
+      "sourceRow": 135,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 9.636000000000001,
+        "p95": 12.519,
+        "p99": 12.824,
+        "samples": 31
+      },
+      "website": "sohu.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3448.189,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 14.639,
+        "p95": 17.672,
+        "p99": 17.797,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 136,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.776,
+        "p95": 22.61,
+        "p99": 22.957,
+        "samples": 31
+      },
+      "website": "jd.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1757.006,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 6633,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "maxLength": 16,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 11.075,
+        "p95": 12.880999999999998,
+        "p99": 24.883,
+        "samples": 31
+      },
+      "reachableStates": 17,
+      "sourceRow": 139,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 13.444,
+        "p95": 16.019000000000002,
+        "p99": 16.189999999999998,
+        "samples": 31
+      },
+      "website": "bilibili.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 5844.72,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 30892,
+      "countTableCells": 7600,
+      "entropyBits": 157.69180135659605,
+      "exactSpace": "295095290555142625648321021999764315617634390625",
+      "maxLength": 24,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 17.980999999999998,
+        "p95": 21.901,
+        "p99": 22.007,
+        "samples": 31
+      },
+      "reachableStates": 25,
+      "sourceRow": 140,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 22.650000000000002,
+        "p95": 28.004,
+        "p99": 28.427,
+        "samples": 31
+      },
+      "website": "babytree.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 57622.903000000006,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 443735,
+      "countTableCells": 94760,
+      "entropyBits": 197.05864014121516,
+      "exactSpace": "209199955233042401278880606516418111471250411958352067679520",
+      "maxLength": 30,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 11.747,
+        "p95": 13.030000000000001,
+        "p99": 13.913,
+        "samples": 31
+      },
+      "reachableStates": 206,
+      "sourceRow": 143,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 14.687,
+        "p95": 17.672,
+        "p99": 23.035,
+        "samples": 31
+      },
+      "website": "cnblogs.com",
+      "peakRssBytes": 6115328
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1663.6509999999998,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 6633,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "maxLength": 16,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 10.114,
+        "p95": 12.069,
+        "p99": 12.143,
+        "samples": 31
+      },
+      "reachableStates": 17,
+      "sourceRow": 144,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 12.669,
+        "p95": 15.128,
+        "p99": 15.232,
+        "samples": 31
+      },
+      "website": "panda.tv",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 13762.137,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 56556,
+      "countTableCells": 16800,
+      "entropyBits": 131.2470808970041,
+      "exactSpace": "3230786007847978725323620233044714393920",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 11.184,
+        "p95": 13.771,
+        "p99": 14.221,
+        "samples": 31
+      },
+      "reachableStates": 80,
+      "sourceRow": 145,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 13.781,
+        "p95": 17.646,
+        "p99": 20.349,
+        "samples": 31
+      },
+      "website": "zhanqi.tv",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 150539.421,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 56556,
+      "countTableCells": 16800,
+      "entropyBits": 131.2470808970041,
+      "exactSpace": "3230786007847978725323620233044714393920",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 38.719,
+        "p95": 81.58800000000001,
+        "p99": 92.679,
+        "samples": 31
+      },
+      "reachableStates": 80,
+      "sourceRow": 147,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 54.936,
+        "p95": 117.45599999999999,
+        "p99": 10530.099,
+        "samples": 31
+      },
+      "website": "1688.com",
+      "peakRssBytes": 4067328
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 18891.546,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 133513,
+      "countTableCells": 33000,
+      "entropyBits": 164.16919919418734,
+      "exactSpace": "26293797964159047976352732177092727522315330673200",
+      "maxLength": 25,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 10.876999999999999,
+        "p95": 26.888,
+        "p99": 43.919,
+        "samples": 31
+      },
+      "reachableStates": 100,
+      "sourceRow": 148,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 13.226,
+        "p95": 15.238000000000001,
+        "p99": 32.531,
+        "samples": 31
+      },
+      "website": "douyu.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3094.9089999999997,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 12.523,
+        "p95": 14.69,
+        "p99": 14.874,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 151,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 16.101,
+        "p95": 19.092,
+        "p99": 32.519,
+        "samples": 31
+      },
+      "website": "ci123.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3024.929,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 14271,
+      "countTableCells": 4095,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169274345687890625",
+      "maxLength": 20,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 12.774,
+        "p95": 15.161999999999999,
+        "p99": 15.366000000000001,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 152,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 16.466,
+        "p95": 19.476000000000003,
+        "p99": 19.758999999999997,
+        "samples": 31
+      },
+      "website": "ifeng.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 5536.188,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 36612,
+      "countTableCells": 8736,
+      "entropyBits": 164.261656964927,
+      "exactSpace": "28034052602738549436590497089977609984418096809375",
+      "maxLength": 25,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 14.927,
+        "p95": 18.306,
+        "p99": 18.549000000000003,
+        "samples": 31
+      },
+      "reachableStates": 26,
+      "sourceRow": 153,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 19.003,
+        "p95": 23.834,
+        "p99": 33.151999999999994,
+        "samples": 31
+      },
+      "website": "veblr.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 80212.48300000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1312432,
+      "countTableCells": 138450,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772656622200000",
+      "maxLength": 64,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 36.638,
+        "p95": 50.013,
+        "p99": 105.081,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 154,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 48.522,
+        "p95": 75.961,
+        "p99": 113.67399999999999,
+        "samples": 31
+      },
+      "website": "metacafe.com",
+      "peakRssBytes": 7692288
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1502.291,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 6633,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "maxLength": 16,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 9.676,
+        "p95": 11.409999999999998,
+        "p99": 11.471,
+        "samples": 31
+      },
+      "reachableStates": 17,
+      "sourceRow": 155,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 12.033,
+        "p95": 14.331000000000001,
+        "p99": 14.431,
+        "samples": 31
+      },
+      "website": "porn555.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 9135.908,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 29410,
+      "countTableCells": 11600,
+      "entropyBits": 98.23434735854511,
+      "exactSpace": "372807945224800631065027716000",
+      "maxLength": 15,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 7.0040000000000004,
+        "p95": 8.882000000000001,
+        "p99": 9.588000000000001,
+        "samples": 31
+      },
+      "reachableStates": 116,
+      "sourceRow": 157,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 8.427999999999999,
+        "p95": 11.841000000000001,
+        "p99": 13.497,
+        "samples": 31
+      },
+      "website": "irctc.co.in",
+      "peakRssBytes": 114688
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 697.302,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 2155,
+      "countTableCells": 910,
+      "entropyBits": 78.85353405662467,
+      "exactSpace": "546108599233508259390625",
+      "maxLength": 12,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 7.068,
+        "p95": 8.205,
+        "p99": 8.216000000000001,
+        "samples": 31
+      },
+      "reachableStates": 13,
+      "sourceRow": 159,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 8.539000000000001,
+        "p95": 10.074,
+        "p99": 10.863,
+        "samples": 31
+      },
+      "website": "rediff.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 22196.159,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 214756,
+      "countTableCells": 34440,
+      "entropyBits": 262.80949108989125,
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456698430134390625",
+      "maxLength": 40,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 26.165000000000003,
+        "p95": 32.434999999999995,
+        "p99": 32.861000000000004,
+        "samples": 31
+      },
+      "reachableStates": 41,
+      "sourceRow": 161,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 33.191,
+        "p95": 42.261,
+        "p99": 42.986,
+        "samples": 31
+      },
+      "website": "naukri.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 84885.542,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 37.369,
+        "p95": 47.364000000000004,
+        "p99": 76.335,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 163,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 50.245,
+        "p95": 92.176,
+        "p99": 106.326,
+        "samples": 31
+      },
+      "website": "amag.ru",
+      "peakRssBytes": 6897664
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 22474.615999999998,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 216355,
+      "countTableCells": 34891,
+      "entropyBits": 262.80949108989125,
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456698437953650625",
+      "maxLength": 40,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 26.848000000000003,
+        "p95": 33.881,
+        "p99": 34.138,
+        "samples": 31
+      },
+      "reachableStates": 41,
+      "sourceRow": 165,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 34.744,
+        "p95": 45.037000000000006,
+        "p99": 45.126999999999995,
+        "samples": 31
+      },
+      "website": "knowyourmeme.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 9928.817,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 72568,
+      "countTableCells": 14911,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430059700000",
+      "maxLength": 30,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 16.95,
+        "p95": 21.970000000000002,
+        "p99": 22.285,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 166,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 21.532999999999998,
+        "p95": 28.061,
+        "p99": 28.57,
+        "samples": 31
+      },
+      "website": "motorsport.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 9334.749,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 71872,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "maxLength": 30,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 19.187,
+        "p95": 23.533,
+        "p99": 39.385999999999996,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 167,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 24.345000000000002,
+        "p95": 30.821999999999996,
+        "p99": 30.874000000000002,
+        "samples": 31
+      },
+      "website": "planetminecraft.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 40433.323,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 505290,
+      "countTableCells": 66555,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "maxLength": 50,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 28.399,
+        "p95": 56.7,
+        "p99": 64.01899999999999,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 168,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 37.141999999999996,
+        "p95": 59.203,
+        "p99": 67.95,
+        "samples": 31
+      },
+      "website": "socialblade.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 679090.187,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19652475,
+      "countTableCells": 1077021,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202233330062890625",
+      "maxLength": 128,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 97.047,
+        "p95": 147.693,
+        "p99": 189.335,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 169,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 119.045,
+        "p95": 172.635,
+        "p99": 297.40099999999995,
+        "samples": 31
+      },
+      "website": "gta5-mods.com",
+      "peakRssBytes": 58212352
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 23332.478,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 214756,
+      "countTableCells": 34440,
+      "entropyBits": 262.80949108989125,
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456698430134390625",
+      "maxLength": 40,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 26.153,
+        "p95": 32.422000000000004,
+        "p99": 33.753,
+        "samples": 31
+      },
+      "reachableStates": 41,
+      "sourceRow": 173,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 34.174,
+        "p95": 42.232,
+        "p99": 42.785,
+        "samples": 31
+      },
+      "website": "mail.ru",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 79752.453,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 654400,
+      "countTableCells": 132300,
+      "entropyBits": 210.20883049951783,
+      "exactSpace": "1901793390868775616473017978775254981057412308440661152696154080",
+      "maxLength": 32,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 13.322999999999999,
+        "p95": 15.551,
+        "p99": 15.776,
+        "samples": 31
+      },
+      "reachableStates": 252,
+      "sourceRow": 176,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 16.311,
+        "p95": 19.427,
+        "p99": 29.108999999999998,
+        "samples": 31
+      },
+      "website": "rambler.ru",
+      "peakRssBytes": 6344704
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 11364.647,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 91809,
+      "countTableCells": 17820,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "maxLength": 32,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 21.034,
+        "p95": 25.831,
+        "p99": 26.101,
+        "samples": 31
+      },
+      "reachableStates": 33,
+      "sourceRow": 179,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 26.123,
+        "p95": 32.662,
+        "p99": 33.151999999999994,
+        "samples": 31
+      },
+      "website": "fb.ru",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 89155.515,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 38.68,
+        "p95": 76.658,
+        "p99": 77.437,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 181,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 51.201,
+        "p95": 107.969,
+        "p99": 120.485,
+        "samples": 31
+      },
+      "website": "znanija.com",
+      "peakRssBytes": 6754304
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 148187.816,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1927820,
+      "countTableCells": 258000,
+      "entropyBits": 328.5024840136187,
+      "exactSpace": "774642531718728338652028455938445488438117455593107420467238377849581988923168358872370928988412400",
+      "maxLength": 50,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 20.454,
+        "p95": 23.447000000000003,
+        "p99": 24.269000000000002,
+        "samples": 31
+      },
+      "reachableStates": 200,
+      "sourceRow": 182,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 26.333,
+        "p95": 31.554000000000002,
+        "p99": 43.345,
+        "samples": 31
+      },
+      "website": "wildberries.ru",
+      "peakRssBytes": 12472320
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 15489.681999999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 129067,
+      "countTableCells": 23220,
+      "entropyBits": 229.96021304823648,
+      "exactSpace": "1678502284981138890416014999354759820605904877122660028807652546500000",
+      "maxLength": 35,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 19.97,
+        "p95": 25.468,
+        "p99": 25.785,
+        "samples": 31
+      },
+      "reachableStates": 36,
+      "sourceRow": 184,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 25.397000000000002,
+        "p95": 32.768,
+        "p99": 33.277,
+        "samples": 31
+      },
+      "website": "ozon.ru",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 715572.631,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19652475,
+      "countTableCells": 1077021,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202233330062890625",
+      "maxLength": 128,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 95.85300000000001,
+        "p95": 120.158,
+        "p99": 121.991,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 188,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 121.181,
+        "p95": 147.73999999999998,
+        "p99": 152.738,
+        "samples": 31
+      },
+      "website": "xvideos.com",
+      "peakRssBytes": 58253312
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 11150.088000000002,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 89603,
+      "countTableCells": 17325,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "maxLength": 32,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 17.965000000000003,
+        "p95": 49.4,
+        "p99": 63.571999999999996,
+        "samples": 31
+      },
+      "reachableStates": 33,
+      "sourceRow": 189,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 22.900000000000002,
+        "p95": 41.299,
+        "p99": 71.866,
+        "samples": 31
+      },
+      "website": "yaplakal.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 82770.74299999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1306054,
+      "countTableCells": 137085,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432702080062890625",
+      "maxLength": 64,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 38.657,
+        "p95": 48.257000000000005,
+        "p99": 48.92,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 191,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 51.644000000000005,
+        "p95": 62.72500000000001,
+        "p99": 64.833,
+        "samples": 31
+      },
+      "website": "wg-gesucht.de",
+      "peakRssBytes": 7311360
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 85922.19099999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 40.065,
+        "p95": 71.262,
+        "p99": 97.78399999999999,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 192,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 52.147,
+        "p95": 70.41300000000001,
+        "p99": 80.055,
+        "samples": 31
+      },
+      "website": "fanfiktion.de",
+      "peakRssBytes": 7217152
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 9323.506000000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 52307,
+      "countTableCells": 15600,
+      "entropyBits": 131.2470808970041,
+      "exactSpace": "3230786007847978725323620195144981300880",
+      "maxLength": 20,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 8.019,
+        "p95": 10.177,
+        "p99": 10.34,
+        "samples": 31
+      },
+      "reachableStates": 80,
+      "sourceRow": 193,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 9.845,
+        "p95": 12.914,
+        "p99": 15.515,
+        "samples": 31
+      },
+      "website": "thesun.co.uk",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 8359.610999999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 73041,
+      "countTableCells": 15066,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430141150625",
+      "maxLength": 30,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 16.449,
+        "p95": 44.513,
+        "p99": 55.665000000000006,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 194,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 20.846,
+        "p95": 59.799,
+        "p99": 65.34400000000001,
+        "samples": 31
+      },
+      "website": "liveleak.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 19236.155000000002,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 211902,
+      "countTableCells": 33825,
+      "entropyBits": 262.80949108989125,
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456627861312890625",
+      "maxLength": 40,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 23.027,
+        "p95": 76.22200000000001,
+        "p99": 77.774,
+        "samples": 31
+      },
+      "reachableStates": 41,
+      "sourceRow": 195,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 29.274,
+        "p95": 124.02600000000001,
+        "p99": 128.51999999999998,
+        "samples": 31
+      },
+      "website": "gmx.net",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 324372.89,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7453682,
+      "countTableCells": 516615,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006188408187890625",
+      "maxLength": 100,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 66.738,
+        "p95": 82.939,
+        "p99": 83.833,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 202,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 83.826,
+        "p95": 104.611,
+        "p99": 105.979,
+        "samples": 31
+      },
+      "website": "immobilienscout24.de",
+      "peakRssBytes": 26058752
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 319903.123,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 67.97999999999999,
+        "p95": 83.563,
+        "p99": 87.53699999999999,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 208,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 87.452,
+        "p95": 162.863,
+        "p99": 219.619,
+        "samples": 31
+      },
+      "website": "entitledto.co.uk",
+      "peakRssBytes": 26095616
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 5192.564,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 34407,
+      "countTableCells": 8190,
+      "entropyBits": 164.261656964927,
+      "exactSpace": "28034052602738549436590497089977609913841537500000",
+      "maxLength": 25,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 11.439,
+        "p95": 14.627,
+        "p99": 14.816,
+        "samples": 31
+      },
+      "reachableStates": 26,
+      "sourceRow": 209,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 14.75,
+        "p95": 18.989,
+        "p99": 19.338,
+        "samples": 31
+      },
+      "website": "lastminute.com",
+      "peakRssBytes": 106496
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 555.789,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1485,
+      "countTableCells": 715,
+      "entropyBits": 65.71382283996279,
+      "exactSpace": "60510648114517017120",
+      "maxLength": 10,
+      "minLength": 1,
+      "rankMicros": {
+        "median": 6.416,
+        "p95": 8.327,
+        "p99": 8.433,
+        "samples": 31
+      },
+      "reachableStates": 11,
+      "sourceRow": 210,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 7.518,
+        "p95": 9.802,
+        "p99": 9.905999999999999,
+        "samples": 31
+      },
+      "website": "wordplays.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 123006.91699999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 2070565,
+      "countTableCells": 195640,
+      "entropyBits": 473.04487055648156,
+      "exactSpace": "25159113391734056237809610348611528698643665133645092562013237931378359400681721271451494779358246955328824103192266406078991341464055134390625",
+      "maxLength": 72,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 43.217000000000006,
+        "p95": 109.27199999999999,
+        "p99": 114.163,
+        "samples": 31
+      },
+      "reachableStates": 73,
+      "sourceRow": 212,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 58.158,
+        "p95": 104.75399999999999,
+        "p99": 108.816,
+        "samples": 31
+      },
+      "website": "theguardian.com",
+      "peakRssBytes": 11128832
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 12201.335000000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 91809,
+      "countTableCells": 17820,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "maxLength": 32,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 20.954,
+        "p95": 25.927,
+        "p99": 26.060000000000002,
+        "samples": 31
+      },
+      "reachableStates": 33,
+      "sourceRow": 213,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 26.327,
+        "p95": 32.724000000000004,
+        "p99": 33.237,
+        "samples": 31
+      },
+      "website": "hellomagazine.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 689180.4249999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19636351,
+      "countTableCells": 1074570,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117160565349716025390625",
+      "maxLength": 128,
+      "minLength": 10,
+      "rankMicros": {
+        "median": 90.95800000000001,
+        "p95": 265.497,
+        "p99": 304.786,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 216,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 114.819,
+        "p95": 225.025,
+        "p99": 379.19,
+        "samples": 31
+      },
+      "website": "chaturbate.com",
+      "peakRssBytes": 58138624
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1345.536,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 4346,
+      "countTableCells": 1600,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835778099350000000",
+      "maxLength": 15,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 5.663,
+        "p95": 7.369,
+        "p99": 7.443,
+        "samples": 31
+      },
+      "reachableStates": 16,
+      "sourceRow": 221,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 7.140000000000001,
+        "p95": 9.422,
+        "p99": 9.562,
+        "samples": 31
+      },
+      "website": "globo.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3440.088,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 14.633000000000001,
+        "p95": 17.64,
+        "p99": 17.8,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 222,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 18.751,
+        "p95": 22.565,
+        "p99": 22.951,
+        "samples": 31
+      },
+      "website": "mercadolivre.com.br",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 35004.481,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 176908,
+      "countTableCells": 55380,
+      "entropyBits": 131.24157524185472,
+      "exactSpace": "3218480083530512814050256457464586897680",
+      "maxLength": 20,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 8.309,
+        "p95": 9.545,
+        "p99": 10.343,
+        "samples": 31
+      },
+      "reachableStates": 284,
+      "sourceRow": 224,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 10.309000000000001,
+        "p95": 12.899,
+        "p99": 13.806,
+        "samples": 31
+      },
+      "website": "olx.com.br",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2879.333,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 15505,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "maxLength": 20,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 12.206,
+        "p95": 14.762,
+        "p99": 14.854000000000001,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 226,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 15.628,
+        "p95": 18.982,
+        "p99": 19.121,
+        "samples": 31
+      },
+      "website": "reclameaqui.com.br",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1345.8310000000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 4346,
+      "countTableCells": 1600,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835778099350000000",
+      "maxLength": 15,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 5.708,
+        "p95": 7.382,
+        "p99": 7.452999999999999,
+        "samples": 31
+      },
+      "reachableStates": 16,
+      "sourceRow": 230,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 7.168,
+        "p95": 9.462,
+        "p99": 9.472,
+        "samples": 31
+      },
+      "website": "techtudo.com.br",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 6487.4800000000005,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 36612,
+      "countTableCells": 8736,
+      "entropyBits": 164.261656964927,
+      "exactSpace": "28034052602738549436590497089977609984418096809375",
+      "maxLength": 25,
+      "minLength": 5,
+      "rankMicros": {
+        "median": 17.604999999999997,
+        "p95": 21.878999999999998,
+        "p99": 29.978,
+        "samples": 31
+      },
+      "reachableStates": 26,
+      "sourceRow": 235,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 21.773999999999997,
+        "p95": 27.584,
+        "p99": 28.021,
+        "samples": 31
+      },
+      "website": "allmusic.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 323540.723,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 64.546,
+        "p95": 81.699,
+        "p99": 82.23299999999999,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 236,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 82.41799999999999,
+        "p95": 162.935,
+        "p99": 164.552,
+        "samples": 31
+      },
+      "website": "sermoncentral.com",
+      "peakRssBytes": 26132480
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 688092.7529999999,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19670007,
+      "countTableCells": 1081536,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303906704517120",
+      "maxLength": 128,
+      "minLength": 1,
+      "rankMicros": {
+        "median": 90.633,
+        "p95": 116.41199999999999,
+        "p99": 152.087,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 237,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 114.126,
+        "p95": 143.593,
+        "p99": 222.23,
+        "samples": 31
+      },
+      "website": "yourtango.com",
+      "peakRssBytes": 58286080
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 44799.613000000005,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 505290,
+      "countTableCells": 66555,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "maxLength": 50,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 33.221,
+        "p95": 41.403999999999996,
+        "p99": 42.577000000000005,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 240,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 43.477,
+        "p95": 55.471,
+        "p99": 56.288000000000004,
+        "samples": 31
+      },
+      "website": "jumia.com.ng",
+      "peakRssBytes": 5951488
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 1529.969,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 5175,
+      "countTableCells": 1840,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835848668171500000",
+      "maxLength": 15,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 7.075,
+        "p95": 9.171000000000001,
+        "p99": 9.286999999999999,
+        "samples": 31
+      },
+      "reachableStates": 16,
+      "sourceRow": 241,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 9.217,
+        "p95": 11.661000000000001,
+        "p99": 22.368,
+        "samples": 31
+      },
+      "website": "eskimi.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 320144.36000000004,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 66.521,
+        "p95": 81.412,
+        "p99": 82.866,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 242,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 83.034,
+        "p95": 102.461,
+        "p99": 104.191,
+        "samples": 31
+      },
+      "website": "jiji.ng",
+      "peakRssBytes": 26079232
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 10722.145,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 71872,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "maxLength": 30,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 20.907,
+        "p95": 25.671,
+        "p99": 25.935000000000002,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 243,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 26.523999999999997,
+        "p95": 33.071999999999996,
+        "p99": 33.612,
+        "samples": 31
+      },
+      "website": "remita.net",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 318192.77499999997,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 7461396,
+      "countTableCells": 518130,
+      "entropyBits": 657.000827589748,
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "maxLength": 100,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 70.626,
+        "p95": 130.99300000000002,
+        "p99": 169.34799999999998,
+        "samples": 31
+      },
+      "reachableStates": 101,
+      "sourceRow": 246,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 89.449,
+        "p95": 176.345,
+        "p99": 236.571,
+        "samples": 31
+      },
+      "website": "windowscentral.com",
+      "peakRssBytes": 26099712
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 86895.114,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1310852,
+      "countTableCells": 138060,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "maxLength": 64,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 38.669,
+        "p95": 61.470000000000006,
+        "p99": 98.36200000000001,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 251,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 51.035999999999994,
+        "p95": 76.20400000000001,
+        "p99": 113.473,
+        "samples": 31
+      },
+      "website": "namasha.com",
+      "peakRssBytes": 7196672
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 694994.309,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 19662457,
+      "countTableCells": 1078956,
+      "entropyBits": 840.9567846230146,
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "maxLength": 128,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 89.625,
+        "p95": 114.488,
+        "p99": 177.319,
+        "samples": 31
+      },
+      "reachableStates": 129,
+      "sourceRow": 252,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 113.012,
+        "p95": 181.25699999999998,
+        "p99": 201.225,
+        "samples": 31
+      },
+      "website": "tarafdari.com",
+      "peakRssBytes": 58261504
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 111095.91100000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1859449,
+      "countTableCells": 181050,
+      "entropyBits": 459.90515933981965,
+      "exactSpace": "2787713395205989610837629955524823124503453200403888372522242430069624310324844462210691942311163097543360011434046139177727572461392008000",
+      "maxLength": 70,
+      "minLength": 3,
+      "rankMicros": {
+        "median": 39.935,
+        "p95": 135.112,
+        "p99": 152.187,
+        "samples": 31
+      },
+      "reachableStates": 71,
+      "sourceRow": 253,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 53.702999999999996,
+        "p95": 178.005,
+        "p99": 208.755,
+        "samples": 31
+      },
+      "website": "mydiba.xyz",
+      "peakRssBytes": 10907648
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 3615.448,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 16244,
+      "countTableCells": 4641,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344922328650625",
+      "maxLength": 20,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 15.229,
+        "p95": 18.598,
+        "p99": 18.88,
+        "samples": 31
+      },
+      "reachableStates": 21,
+      "sourceRow": 254,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 19.407,
+        "p95": 23.824,
+        "p99": 24.252000000000002,
+        "samples": 31
+      },
+      "website": "blogfa.com",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 12371.561,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 89603,
+      "countTableCells": 17325,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "maxLength": 32,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 20.417,
+        "p95": 25.04,
+        "p99": 25.233,
+        "samples": 31
+      },
+      "reachableStates": 33,
+      "sourceRow": 256,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 25.545,
+        "p95": 31.674000000000003,
+        "p99": 32.138999999999996,
+        "samples": 31
+      },
+      "website": "emalls.ir",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 41079.558000000005,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 505290,
+      "countTableCells": 66555,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "maxLength": 50,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 27.967,
+        "p95": 53.529,
+        "p99": 218.838,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 257,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 37.034,
+        "p95": 103.226,
+        "p99": 128.047,
+        "samples": 31
+      },
+      "website": "moshtix.com.au",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 82692.96900000001,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 1313483,
+      "countTableCells": 138775,
+      "entropyBits": 420.486025689834,
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772656703650625",
+      "maxLength": 64,
+      "minLength": 4,
+      "rankMicros": {
+        "median": 38.779,
+        "p95": 54.324999999999996,
+        "p99": 66.496,
+        "samples": 31
+      },
+      "reachableStates": 65,
+      "sourceRow": 258,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 50.326,
+        "p95": 66.003,
+        "p99": 116.765,
+        "samples": 31
+      },
+      "website": "rent.com.au",
+      "peakRssBytes": 6905856
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 9789.242,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 73542,
+      "countTableCells": 15345,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430142017120",
+      "maxLength": 30,
+      "minLength": 1,
+      "rankMicros": {
+        "median": 19.735,
+        "p95": 25.11,
+        "p99": 25.417,
+        "samples": 31
+      },
+      "reachableStates": 31,
+      "sourceRow": 259,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 24.907,
+        "p95": 32.372,
+        "p99": 32.965,
+        "samples": 31
+      },
+      "website": "popsugar.com.au",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 41277.587999999996,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 505290,
+      "countTableCells": 66555,
+      "entropyBits": 328.5080471732007,
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "maxLength": 50,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 27.188000000000002,
+        "p95": 61.20400000000001,
+        "p99": 79.75399999999999,
+        "samples": 31
+      },
+      "reachableStates": 51,
+      "sourceRow": 263,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 35.519000000000005,
+        "p95": 84.692,
+        "p99": 135.792,
+        "samples": 31
+      },
+      "website": "abc.net.au",
+      "peakRssBytes": 110592
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 2752932.982,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 77404601,
+      "countTableCells": 4282368,
+      "entropyBits": 840.9567836752084,
+      "exactSpace": "14230394612325434394416764217602394628383543532569431812001860381714981771638646225029443899372092605674931368558835483233666247392273772669077062863244328856968006536400961880818520645292571196573883809995720648962899108290270055221405345252149744704080",
+      "maxLength": 128,
+      "minLength": 6,
+      "rankMicros": {
+        "median": 65.726,
+        "p95": 70.7,
+        "p99": 71.988,
+        "samples": 31
+      },
+      "reachableStates": 512,
+      "sourceRow": 269,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 80.232,
+        "p95": 87.523,
+        "p99": 141.94199999999998,
+        "samples": 31
+      },
+      "website": "jbhifi.com.au",
+      "peakRssBytes": 203821056
+    },
+    {
+      "alphabetSize": 95,
+      "compileMicros": 10367.918,
+      "compileStatus": "SUCCESS",
+      "countPayloadBytes": 34144,
+      "countTableCells": 12636,
+      "entropyBits": 104.86424016440606,
+      "exactSpace": "36921706188789058363017091738080",
+      "maxLength": 16,
+      "minLength": 8,
+      "rankMicros": {
+        "median": 7.923,
+        "p95": 9.008000000000001,
+        "p99": 9.143,
+        "samples": 31
+      },
+      "reachableStates": 108,
+      "sourceRow": 271,
+      "translationStatus": "translated",
+      "unrankMicros": {
+        "median": 9.744,
+        "p95": 11.103,
+        "p99": 12.081,
+        "samples": 31
+      },
+      "website": "naver.com",
+      "peakRssBytes": 110592
+    }
+  ]
+}

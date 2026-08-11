@@ -1,0 +1,10 @@
+{
+  "prototypeBackendCheck": {
+    "boundary": "empirical implementation check; the no-repeat claim follows from successful permutation execution and unrank injectivity, not from this sample",
+    "domainSize": "75391332368180453830494781440",
+    "generations": 2000,
+    "method": "EPSCD-scheme-v1-ff1-cycle-walk-unrank",
+    "observedCollisions": 0
+  },
+  "schemaVersion": 1
+}

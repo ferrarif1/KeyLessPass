@@ -1,0 +1,26 @@
+{
+  "boundary": "Structured-result key scan plus Rust journal-schema tests; this does not prove absence from process memory, swap, operating-system crash dumps, or untracked files.",
+  "forbiddenKeyFindings": [],
+  "pass": true,
+  "scannedJsonFiles": [
+    "research/aster/results/generated/BLOCKERS.json",
+    "research/aster/results/generated/EXPERIMENT_ENVIRONMENT.json",
+    "research/aster/results/generated/RESULT_PROVENANCE.json",
+    "research/aster/results/generated/rq1_summary.json",
+    "research/aster/results/generated/rq2_summary.json",
+    "research/aster/results/generated/rq3_summary.json",
+    "research/aster/results/generated/rq4_summary.json",
+    "research/aster/results/generated/rq5_summary.json",
+    "research/aster/results/generated/rq6_summary.json",
+    "research/aster/results/generated/security_scan.json",
+    "research/aster/results/generated/tla_summary.json",
+    "research/aster/results/raw/rq5_openldap.json",
+    "research/aster/results/raw/rq6_mpspdz.json",
+    "research/aster/results/raw/rq6_mpspdz_smoke.json",
+    "research/aster/results/raw/rq6_reference_vector.json",
+    "research/aster/results/raw/rq7_scalability.json",
+    "research/aster/results/raw/semantic_results.json",
+    "research/aster/results/raw/test_suite.json"
+  ],
+  "schemaVersion": 1
+}

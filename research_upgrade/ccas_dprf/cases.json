@@ -1,0 +1,112 @@
+{
+  "cases": [
+    {
+      "name": "case_1_naive_automatically_callable_network",
+      "domains": [
+        {"name": "D", "cost": 3, "capabilities": ["S_D", "ClientToken"]},
+        {"name": "U", "cost": 2, "capabilities": ["S_U"]},
+        {"name": "N", "cost": 4, "capabilities": ["S_N"]}
+      ],
+      "shares": ["S_D", "S_U", "S_N"],
+      "configured_domain_threshold": 2,
+      "nominal_qualified_sets": [["S_D", "S_U"], ["S_D", "S_N"], ["S_U", "S_N"]],
+      "rules": [
+        {"name": "client may request network share", "requires": ["ClientToken"], "produces": ["CanRequestNetworkShare"]},
+        {"name": "honest network automatically releases", "requires": ["CanRequestNetworkShare"], "produces": ["S_N"]}
+      ]
+    },
+    {
+      "name": "case_2_independent_approval",
+      "domains": [
+        {"name": "D", "cost": 3, "capabilities": ["S_D", "ClientToken"]},
+        {"name": "U", "cost": 2, "capabilities": ["S_U"]},
+        {"name": "A", "cost": 5, "capabilities": ["Approval_A"]},
+        {"name": "N", "cost": 4, "capabilities": ["S_N"]}
+      ],
+      "shares": ["S_D", "S_U", "S_N"],
+      "configured_domain_threshold": 2,
+      "nominal_qualified_sets": [["S_D", "S_U"], ["S_D", "S_N"], ["S_U", "S_N"]],
+      "rules": [
+        {"name": "client may request network share", "requires": ["ClientToken"], "produces": ["CanRequestNetworkShare"]},
+        {"name": "approved network release", "requires": ["CanRequestNetworkShare", "Approval_A"], "produces": ["S_N"]}
+      ]
+    },
+    {
+      "name": "case_3_approval_key_leaked_into_endpoint",
+      "domains": [
+        {"name": "D", "cost": 3, "capabilities": ["S_D", "ClientToken", "Approval_A"]},
+        {"name": "U", "cost": 2, "capabilities": ["S_U"]},
+        {"name": "N", "cost": 4, "capabilities": ["S_N"]}
+      ],
+      "shares": ["S_D", "S_U", "S_N"],
+      "configured_domain_threshold": 2,
+      "nominal_qualified_sets": [["S_D", "S_U"], ["S_D", "S_N"], ["S_U", "S_N"]],
+      "rules": [
+        {"name": "client may request network share", "requires": ["ClientToken"], "produces": ["CanRequestNetworkShare"]},
+        {"name": "approved network release", "requires": ["CanRequestNetworkShare", "Approval_A"], "produces": ["S_N"]}
+      ]
+    },
+    {
+      "name": "case_4_removable_medium_holds_release_credential",
+      "domains": [
+        {"name": "D", "cost": 3, "capabilities": ["S_D"]},
+        {"name": "U", "cost": 2, "capabilities": ["S_U", "NetworkReleaseCredential"]},
+        {"name": "N", "cost": 4, "capabilities": ["S_N"]}
+      ],
+      "shares": ["S_D", "S_U", "S_N"],
+      "configured_domain_threshold": 2,
+      "nominal_qualified_sets": [["S_D", "S_U"], ["S_D", "S_N"], ["S_U", "S_N"]],
+      "rules": [
+        {"name": "release credential is automatically honored", "requires": ["NetworkReleaseCredential"], "produces": ["S_N"]}
+      ]
+    },
+    {
+      "name": "case_5_three_of_five_nodes_callable_by_one_endpoint",
+      "domains": [
+        {"name": "D", "cost": 3, "capabilities": ["S_D", "AllNodeToken"]},
+        {"name": "U", "cost": 2, "capabilities": ["S_U"]},
+        {"name": "N1", "cost": 2, "capabilities": ["Fragment_1"]},
+        {"name": "N2", "cost": 2, "capabilities": ["Fragment_2"]},
+        {"name": "N3", "cost": 2, "capabilities": ["Fragment_3"]},
+        {"name": "N4", "cost": 2, "capabilities": ["Fragment_4"]},
+        {"name": "N5", "cost": 2, "capabilities": ["Fragment_5"]}
+      ],
+      "shares": ["S_D", "S_U", "S_N"],
+      "configured_domain_threshold": 2,
+      "nominal_qualified_sets": [["S_D", "S_U"], ["S_D", "S_N"], ["S_U", "S_N"]],
+      "rules": [
+        {"name": "token calls node 1", "requires": ["AllNodeToken"], "produces": ["Fragment_1"]},
+        {"name": "token calls node 2", "requires": ["AllNodeToken"], "produces": ["Fragment_2"]},
+        {"name": "token calls node 3", "requires": ["AllNodeToken"], "produces": ["Fragment_3"]},
+        {"name": "token calls node 4", "requires": ["AllNodeToken"], "produces": ["Fragment_4"]},
+        {"name": "token calls node 5", "requires": ["AllNodeToken"], "produces": ["Fragment_5"]},
+        {"name": "nodes 1 2 3 reconstruct network share", "requires": ["Fragment_1", "Fragment_2", "Fragment_3"], "produces": ["S_N"]},
+        {"name": "nodes 1 2 4 reconstruct network share", "requires": ["Fragment_1", "Fragment_2", "Fragment_4"], "produces": ["S_N"]},
+        {"name": "nodes 1 2 5 reconstruct network share", "requires": ["Fragment_1", "Fragment_2", "Fragment_5"], "produces": ["S_N"]},
+        {"name": "nodes 1 3 4 reconstruct network share", "requires": ["Fragment_1", "Fragment_3", "Fragment_4"], "produces": ["S_N"]},
+        {"name": "nodes 1 3 5 reconstruct network share", "requires": ["Fragment_1", "Fragment_3", "Fragment_5"], "produces": ["S_N"]},
+        {"name": "nodes 1 4 5 reconstruct network share", "requires": ["Fragment_1", "Fragment_4", "Fragment_5"], "produces": ["S_N"]},
+        {"name": "nodes 2 3 4 reconstruct network share", "requires": ["Fragment_2", "Fragment_3", "Fragment_4"], "produces": ["S_N"]},
+        {"name": "nodes 2 3 5 reconstruct network share", "requires": ["Fragment_2", "Fragment_3", "Fragment_5"], "produces": ["S_N"]},
+        {"name": "nodes 2 4 5 reconstruct network share", "requires": ["Fragment_2", "Fragment_4", "Fragment_5"], "produces": ["S_N"]},
+        {"name": "nodes 3 4 5 reconstruct network share", "requires": ["Fragment_3", "Fragment_4", "Fragment_5"], "produces": ["S_N"]}
+      ]
+    },
+    {
+      "name": "case_6_shared_administrative_domain",
+      "domains": [
+        {"name": "Admin", "cost": 4, "capabilities": ["S_D", "ClientToken", "Approval_A", "Fragment_1", "Fragment_2", "Fragment_3"]},
+        {"name": "U", "cost": 2, "capabilities": ["S_U"]},
+        {"name": "N4", "cost": 2, "capabilities": ["Fragment_4"]},
+        {"name": "N5", "cost": 2, "capabilities": ["Fragment_5"]}
+      ],
+      "shares": ["S_D", "S_U", "S_N"],
+      "configured_domain_threshold": 2,
+      "nominal_qualified_sets": [["S_D", "S_U"], ["S_D", "S_N"], ["S_U", "S_N"]],
+      "rules": [
+        {"name": "client may request network share", "requires": ["ClientToken"], "produces": ["CanRequestNetworkShare"]},
+        {"name": "three node fragments form network share", "requires": ["CanRequestNetworkShare", "Approval_A", "Fragment_1", "Fragment_2", "Fragment_3"], "produces": ["S_N"]}
+      ]
+    }
+  ]
+}

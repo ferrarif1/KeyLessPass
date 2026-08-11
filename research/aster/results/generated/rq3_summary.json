@@ -1,0 +1,78 @@
+{
+  "boundary": "Secret-type inventory and controlled API harness; this is not a whole-process memory-forensics proof.",
+  "rows": [
+    {
+      "baseline": "LocalRoot",
+      "captureTime": "post-use",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": true
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 32
+    },
+    {
+      "baseline": "LocalLineage",
+      "captureTime": "post-use",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": true,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 2,
+      "unauthorizedOutputsWithoutNewApproval": 2
+    },
+    {
+      "baseline": "RemoteBroadPRF",
+      "captureTime": "post-use",
+      "inventory": {
+        "capabilityPresent": true,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 32
+    },
+    {
+      "baseline": "ASTERExact",
+      "captureTime": "pre-request",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 0
+    },
+    {
+      "baseline": "ASTERExact",
+      "captureTime": "in-flight-output",
+      "inventory": {
+        "capabilityPresent": true,
+        "plaintextPasswordPresent": true,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 1
+    },
+    {
+      "baseline": "ASTERExact",
+      "captureTime": "post-use",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 0
+    }
+  ],
+  "universeSize": 32
+}

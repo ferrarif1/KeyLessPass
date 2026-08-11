@@ -1,0 +1,58 @@
+{
+  "analyticSpace": 11,
+  "boundary": "The EPSCD row uses a test-only uniformly shuffled finite-domain permutation on the enumerable domain. It validates the scheme composition and ideal-permutation marginal; it is not a security benchmark of the FF1 backend.",
+  "exactSpace": "11",
+  "policy": "enumerable mixed-length regular language {a,b0,...,b9}",
+  "proposed": [
+    {
+      "backendBoundary": "test-only Fisher-Yates permutation; validates the fixed-generation ideal-permutation marginal, not concrete PRP security",
+      "chiSquare": 3.5931400000000004,
+      "chiSquareDegreesOfFreedom": 10,
+      "expectedCountPerPassword": 9090.90909090909,
+      "maxMinFrequencyRatio": 1.0221677620585943,
+      "maximumFrequency": 9176,
+      "method": "EPSCD-scheme-v1-test-permutation",
+      "minimumNonzeroFrequency": 8977,
+      "missingOutputs": 0,
+      "observedOutputs": 11,
+      "totalVariationDistanceEmpirical": 0.0023363636363636364
+    }
+  ],
+  "publishedBaselines": [
+    {
+      "arithmetic": "exact BigUint reproduction of Algorithm 1",
+      "chiSquare": 10.2444,
+      "chiSquareDegreesOfFreedom": 10,
+      "expectedCountPerPassword": 9090.90909090909,
+      "generationRecurrenceCalls": {
+        "maximum": 2,
+        "mean": 1.90928,
+        "median": 2.0,
+        "oneWalkFraction": 0.09072,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 100000
+      },
+      "lengthPreprocessingRecurrenceCalls": 2,
+      "maxMinFrequencyRatio": 1.035949536675226,
+      "maximumFrequency": 9279,
+      "method": "oudinet-2013-dichopile-exact",
+      "minimumNonzeroFrequency": 8957,
+      "missingOutputs": 0,
+      "observedOutputs": 11,
+      "peakStackVectors": {
+        "maximum": 2,
+        "mean": 1.90928,
+        "median": 2.0,
+        "oneWalkFraction": 0.09072,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 100000
+      },
+      "publication": "Theoretical Computer Science 502 (2013), DOI 10.1016/j.tcs.2012.07.025",
+      "totalVariationDistanceEmpirical": 0.00399363636363638
+    }
+  ],
+  "samplesPerMethod": 100000,
+  "schemaVersion": 1
+}

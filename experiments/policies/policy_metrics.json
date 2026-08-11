@@ -1,0 +1,178 @@
+{
+  "corpusKind": "synthetic representative policy corpus",
+  "memoryMetricBoundary": "countPayloadBytes sums serialized BigUint payloads only; it is not process RSS or allocator usage",
+  "policies": [
+    {
+      "alphabetSize": 36,
+      "compileMicros": 1457.6470000000002,
+      "countPayloadBytes": 100,
+      "countTableCells": 81,
+      "entropyBits": 41.3594000115385,
+      "exactSpace": "2821109907456",
+      "lengthRange": [
+        8,
+        8
+      ],
+      "name": "lower-digit-8",
+      "stateCount": 9,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 66,
+      "compileMicros": 3620.08,
+      "countPayloadBytes": 2646,
+      "countTableCells": 2132,
+      "entropyBits": 71.35595264124467,
+      "exactSpace": "3021914093987578183680",
+      "lengthRange": [
+        12,
+        12
+      ],
+      "name": "mixed-classes-12",
+      "stateCount": 164,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 74,
+      "compileMicros": 7057.212,
+      "countPayloadBytes": 6254,
+      "countTableCells": 4826,
+      "entropyBits": 111.59595178974752,
+      "exactSpace": "3923998958022941748259805567385600",
+      "lengthRange": [
+        18,
+        18
+      ],
+      "name": "mixed-classes-18",
+      "stateCount": 254,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 36,
+      "compileMicros": 274.82500000000005,
+      "countPayloadBytes": 1359,
+      "countTableCells": 715,
+      "entropyBits": 62.07974197794555,
+      "exactSpace": "4873763581670522880",
+      "lengthRange": [
+        8,
+        12
+      ],
+      "name": "variable-length-8-12",
+      "stateCount": 13,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 66,
+      "compileMicros": 166947.017,
+      "countPayloadBytes": 161448,
+      "countTableCells": 128027,
+      "entropyBits": 95.6336235917608,
+      "exactSpace": "61459538548897169310091837440",
+      "lengthRange": [
+        16,
+        16
+      ],
+      "name": "non-symbol-edges-16",
+      "stateCount": 7531,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 62,
+      "compileMicros": 118442.276,
+      "countPayloadBytes": 116399,
+      "countTableCells": 93015,
+      "entropyBits": 83.22443435288343,
+      "exactSpace": "11299288888764915332330400",
+      "lengthRange": [
+        14,
+        14
+      ],
+      "name": "identical-run-at-most-2",
+      "stateCount": 6201,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 62,
+      "compileMicros": 179700.657,
+      "countPayloadBytes": 166351,
+      "countTableCells": 133335,
+      "entropyBits": 83.22101533872427,
+      "exactSpace": "11272542634958198975318128",
+      "lengthRange": [
+        14,
+        14
+      ],
+      "name": "ascii-sequential-run-at-most-2",
+      "stateCount": 8889,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 38,
+      "compileMicros": 3858.891,
+      "countPayloadBytes": 3769,
+      "countTableCells": 3377,
+      "entropyBits": 36.7354925941051,
+      "exactSpace": "114415582592",
+      "lengthRange": [
+        10,
+        10
+      ],
+      "name": "fixed-prefix-and-suffix",
+      "stateCount": 307,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 4,
+      "compileMicros": 444.988,
+      "countPayloadBytes": 2185,
+      "countTableCells": 2067,
+      "entropyBits": 21.84664999781858,
+      "exactSpace": "3771351",
+      "lengthRange": [
+        12,
+        12
+      ],
+      "name": "forbidden-substrings",
+      "stateCount": 159,
+      "status": "compiled"
+    },
+    {
+      "compileMicros": 386587.36799999996,
+      "error": "validation error: policy compiler state limit exceeded",
+      "name": "forbidden-substrings-state-stress",
+      "status": "rejected"
+    },
+    {
+      "alphabetSize": 62,
+      "compileMicros": 847.379,
+      "countPayloadBytes": 679,
+      "countTableCells": 559,
+      "entropyBits": 59.535664702822565,
+      "exactSpace": "835643207428277248",
+      "lengthRange": [
+        12,
+        12
+      ],
+      "name": "fixed-positions",
+      "stateCount": 43,
+      "status": "compiled"
+    },
+    {
+      "alphabetSize": 12,
+      "compileMicros": 704516.7949999999,
+      "countPayloadBytes": 1786564,
+      "countTableCells": 1751750,
+      "entropyBits": 34.906917596632034,
+      "exactSpace": "32212857600",
+      "lengthRange": [
+        10,
+        10
+      ],
+      "name": "per-character-total-at-most-2",
+      "stateCount": 159250,
+      "status": "compiled"
+    }
+  ],
+  "schemaVersion": 1
+}

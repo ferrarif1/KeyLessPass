@@ -1,11 +1,12 @@
 use crate::service::{
     add_credential, cancel_rotation, confirm_rotation, derive_password, enroll, get_app_status,
-    get_security_status, list_credentials, recover_local, recover_usb, reset_application_data,
-    reset_mnemonic, rotate_credential, update_credential_display, AddCredentialRequest,
-    CancelRotationRequest, ConfirmRotationRequest, DerivePasswordRequest, EnrollmentRequest,
-    GenerateMnemonicRequest, PairwiseMigrationRequest, RecoverLocalRequest, RecoverUsbRequest,
+    get_security_status, list_credentials, record_rotation_probe, recover_local, recover_usb,
+    request_old_revocation, reset_application_data, reset_mnemonic, rotate_credential,
+    update_credential_display, AddCredentialRequest, CancelRotationRequest, ConfirmRotationRequest,
+    DerivePasswordRequest, EnrollmentRequest, GenerateMnemonicRequest, PairwiseMigrationRequest,
+    RecordRotationProbeRequest, RecoverLocalRequest, RecoverUsbRequest,
     ResetApplicationDataRequest, ResetMnemonicRequest, RotateCredentialRequest,
-    UpdateCredentialDisplayRequest, UsbCdrRequest, VerifyUsbPackageRequest,
+    RotationVersionRequest, UpdateCredentialDisplayRequest, UsbCdrRequest, VerifyUsbPackageRequest,
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
@@ -96,6 +97,12 @@ fn dispatch(request: FfiRequest) -> String {
         "confirmRotation" => parse::<ConfirmRotationRequest>(request.payload)
             .and_then(confirm_rotation)
             .map(|_| Value::Null),
+        "recordRotationProbe" => parse::<RecordRotationProbeRequest>(request.payload)
+            .and_then(record_rotation_probe)
+            .map(to_value),
+        "requestOldRevocation" => parse::<RotationVersionRequest>(request.payload)
+            .and_then(request_old_revocation)
+            .map(to_value),
         "cancelRotation" => parse::<CancelRotationRequest>(request.payload)
             .and_then(cancel_rotation)
             .map(|_| Value::Null),

@@ -26,7 +26,7 @@ rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-FLUTTER_BIN=/Users/zhangyuanyi/development/flutter/bin/flutter \
+FLUTTER_BIN=/path/to/flutter/bin/flutter \
 CODESIGN_IDENTITY="-" CREATE_DMG=1 packaging/macos/build_dmg.sh
 ```
 

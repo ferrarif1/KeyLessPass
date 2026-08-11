@@ -1,0 +1,62 @@
+{
+  "allNegativeControlsDetected": true,
+  "boundary": "Bounded exhaustive checking of the abstract state machine; not a cryptographic or implementation proof.",
+  "main": {
+    "depth": 11,
+    "distinctStates": 777,
+    "generatedStates": 2426,
+    "invariantViolation": false,
+    "remainingStates": 0
+  },
+  "negativeControls": {
+    "negative_drop_candidate": {
+      "counterexampleDetected": true,
+      "distinctStates": 37,
+      "generatedStates": 37,
+      "invariant": "UnknownPreservesBoth"
+    },
+    "negative_expiry": {
+      "counterexampleDetected": true,
+      "distinctStates": 18,
+      "generatedStates": 20,
+      "invariant": "EvaluatedNotExpired"
+    },
+    "negative_freshness": {
+      "counterexampleDetected": true,
+      "distinctStates": 22,
+      "generatedStates": 24,
+      "invariant": "EvaluatedFresh"
+    },
+    "negative_generation": {
+      "counterexampleDetected": true,
+      "distinctStates": 30,
+      "generatedStates": 32,
+      "invariant": "EvaluatedGenerationBound"
+    },
+    "negative_http": {
+      "counterexampleDetected": true,
+      "distinctStates": 36,
+      "generatedStates": 36,
+      "invariant": "CommitRequiresEvidence"
+    },
+    "negative_replay": {
+      "counterexampleDetected": true,
+      "distinctStates": 35,
+      "generatedStates": 37,
+      "invariant": "ReplayLimited"
+    },
+    "negative_retirement": {
+      "counterexampleDetected": true,
+      "distinctStates": 8,
+      "generatedStates": 8,
+      "invariant": "ReferencedEpochsAvailable"
+    },
+    "negative_root": {
+      "counterexampleDetected": true,
+      "distinctStates": 26,
+      "generatedStates": 28,
+      "invariant": "EvaluatedRootBound"
+    }
+  },
+  "schemaVersion": 1
+}

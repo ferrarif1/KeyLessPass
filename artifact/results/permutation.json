@@ -1,0 +1,1865 @@
+{
+  "aggregateWalks": {
+    "maximum": 9,
+    "mean": 1.5022551546391754,
+    "median": 1.0,
+    "p95": 3.0,
+    "p99": 5.0,
+    "samples": 3104
+  },
+  "backend": {
+    "maximumDomainBits": 512,
+    "maximumWalks": 1024,
+    "minimumDomain": 1000000
+  },
+  "backendDomainLimitPolicies": 24,
+  "boundary": "Walk counts are concrete FF1 artifact observations for successfully compiled policies inside the backend's domain range. Policies outside that range remain compiler successes but have no FF1 measurement.",
+  "capHitCount": 0,
+  "generationsPerMeasuredPolicy": 32,
+  "measuredPolicies": 97,
+  "records": [
+    {
+      "capHits": 0,
+      "domainBits": 79,
+      "domainDensity": 0.9034608912689007,
+      "generations": 32,
+      "sourceRow": 9,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.1875,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "walmart.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 10,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.53125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "ebay.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 395,
+      "domainDensity": 0.5769840153934356,
+      "generations": 32,
+      "sourceRow": 14,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.84375,
+        "median": 2.0,
+        "p95": 4.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "netflix.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 355,
+      "domainDensity": 0.8630222181156001,
+      "generations": 32,
+      "sourceRow": 16,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.09375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "bestbuy.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 487,
+      "domainDensity": 0.568243732990948,
+      "generations": 32,
+      "sourceRow": 17,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 1.875,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "quora.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 23,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.5625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "usatoday.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 467,
+      "domainDensity": 0.694966310616368,
+      "generations": 32,
+      "sourceRow": 24,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "vimeo.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.5778990248076287,
+      "generations": 32,
+      "sourceRow": 25,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.9375,
+        "median": 2.0,
+        "p95": 5.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "apple.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5207432951760519,
+      "generations": 32,
+      "sourceRow": 28,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.5625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "webmd.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7046098879036926,
+      "generations": 32,
+      "sourceRow": 31,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.21875,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "usps.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704889389732911,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 32,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "zillow.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 79,
+      "domainDensity": 0.6652694593208329,
+      "generations": 32,
+      "sourceRow": 33,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.3125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "lowes.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 37,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.6875,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "buzzfeed.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 39,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "wordpress.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 47,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.4375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "legacy.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 49,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.3125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "ranker.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 105,
+      "domainDensity": 0.9113129762934531,
+      "generations": 32,
+      "sourceRow": 52,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "cnbc.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 54,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "giphy.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 230,
+      "domainDensity": 0.9529152637289899,
+      "generations": 32,
+      "sourceRow": 58,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.03125,
+        "median": 1.0,
+        "p95": 1.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "fedex.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 61,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "goodreads.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 63,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.59375,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "ikea.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 65,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.46875,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "priceline.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 69,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "spotify.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 71,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "creditkarma.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.6997226619859687,
+      "generations": 32,
+      "sourceRow": 74,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.65625,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "gamespot.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 75,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.6875,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "gfycat.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 81,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "avast.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.594869956635586,
+      "generations": 32,
+      "sourceRow": 82,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.5625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "kbb.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 83,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "imore.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 85,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.5625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "expedia.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 86,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.46875,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "wattpad.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8660398498489186,
+      "generations": 32,
+      "sourceRow": 87,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.25,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "polygon.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 89,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.5625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "spanishdict.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8660398498489186,
+      "generations": 32,
+      "sourceRow": 90,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "sbnation.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 91,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "express.co.uk"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 92,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.4375,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "sfgate.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 93,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.46875,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "thechive.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5207432951503329,
+      "generations": 32,
+      "sourceRow": 94,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 1.84375,
+        "median": 1.0,
+        "p95": 6.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "walgreens.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 98,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "discordapp.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 99,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "androidcentral.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 102,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "yellowpages.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 105,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.5625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "eventbrite.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 109,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.25,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "epicurious.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.6997226638059529,
+      "generations": 32,
+      "sourceRow": 110,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.25,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "trulia.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 474,
+      "domainDensity": 0.5157953086605879,
+      "generations": 32,
+      "sourceRow": 111,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 2.1875,
+        "median": 2.0,
+        "p95": 5.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "twitch.tv"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8726523515383323,
+      "generations": 32,
+      "sourceRow": 112,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.1875,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "pornhub.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 113,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "livejasmin.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 116,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.59375,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "intuit.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 120,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.25,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "wikidot.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.594869956635586,
+      "generations": 32,
+      "sourceRow": 122,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.75,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "nexusmods.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 124,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.40625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "seagate.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 106,
+      "domainDensity": 0.54826925886355,
+      "generations": 32,
+      "sourceRow": 126,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.40625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "dwnews.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 129,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.3125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "independent.co.uk"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 99,
+      "domainDensity": 0.738720685626682,
+      "generations": 32,
+      "sourceRow": 130,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.53125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "sugardaddyforme.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 105,
+      "domainDensity": 0.9113129762934531,
+      "generations": 32,
+      "sourceRow": 135,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "sohu.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 136,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.34375,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "jd.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 106,
+      "domainDensity": 0.54826925886355,
+      "generations": 32,
+      "sourceRow": 139,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 2.15625,
+        "median": 2.0,
+        "p95": 5.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "bilibili.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 158,
+      "domainDensity": 0.807649565399225,
+      "generations": 32,
+      "sourceRow": 140,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "babytree.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.520741807017235,
+      "generations": 32,
+      "sourceRow": 143,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.84375,
+        "median": 2.0,
+        "p95": 4.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "cnblogs.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 106,
+      "domainDensity": 0.54826925886355,
+      "generations": 32,
+      "sourceRow": 144,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 1.96875,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "panda.tv"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.5934016720220296,
+      "generations": 32,
+      "sourceRow": 145,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.5,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "zhanqi.tv"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.5934016720220296,
+      "generations": 32,
+      "sourceRow": 147,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 9,
+        "mean": 2.3125,
+        "median": 2.0,
+        "p95": 4.0,
+        "p99": 9.0,
+        "samples": 32
+      },
+      "website": "1688.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 165,
+      "domainDensity": 0.5622170823431845,
+      "generations": 32,
+      "sourceRow": 148,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.875,
+        "median": 2.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "douyu.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 151,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.40625,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "ci123.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 152,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.53125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "ifeng.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 165,
+      "domainDensity": 0.5994274118197398,
+      "generations": 32,
+      "sourceRow": 153,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.65625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "veblr.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 154,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.75,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "metacafe.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 106,
+      "domainDensity": 0.54826925886355,
+      "generations": 32,
+      "sourceRow": 155,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 8,
+        "mean": 2.09375,
+        "median": 1.0,
+        "p95": 5.0,
+        "p99": 8.0,
+        "samples": 32
+      },
+      "website": "porn555.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 99,
+      "domainDensity": 0.5881872262872443,
+      "generations": 32,
+      "sourceRow": 157,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.71875,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "irctc.co.in"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 79,
+      "domainDensity": 0.9034608912689007,
+      "generations": 32,
+      "sourceRow": 159,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.15625,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "rediff.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8762965535249293,
+      "generations": 32,
+      "sourceRow": 161,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "naukri.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 163,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.46875,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "amag.ru"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8762965535249293,
+      "generations": 32,
+      "sourceRow": 165,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.15625,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "knowyourmeme.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 166,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 1.9375,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "motorsport.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 167,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 2.21875,
+        "median": 2.0,
+        "p95": 4.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "planetminecraft.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 168,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.40625,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "socialblade.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 169,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "gta5-mods.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8762965535249293,
+      "generations": 32,
+      "sourceRow": 173,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.15625,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "mail.ru"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.5778754554058484,
+      "generations": 32,
+      "sourceRow": 176,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.8125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "rambler.ru"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.594869956635586,
+      "generations": 32,
+      "sourceRow": 179,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "fb.ru"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 181,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.40625,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "znanija.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7083253172043804,
+      "generations": 32,
+      "sourceRow": 182,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.5,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "wildberries.ru"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 230,
+      "domainDensity": 0.9727985936554566,
+      "generations": 32,
+      "sourceRow": 184,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.0625,
+        "median": 1.0,
+        "p95": 1.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "ozon.ru"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 188,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "xvideos.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.594869956635586,
+      "generations": 32,
+      "sourceRow": 189,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.46875,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "yaplakal.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 191,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.3125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "wg-gesucht.de"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 192,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "fanfiktion.de"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.5934016720220296,
+      "generations": 32,
+      "sourceRow": 193,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.75,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "thesun.co.uk"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 194,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 2.03125,
+        "median": 1.0,
+        "p95": 6.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "liveleak.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 263,
+      "domainDensity": 0.8762965535249293,
+      "generations": 32,
+      "sourceRow": 195,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "gmx.net"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 202,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "immobilienscout24.de"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 208,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "entitledto.co.uk"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 165,
+      "domainDensity": 0.5994274118197398,
+      "generations": 32,
+      "sourceRow": 209,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.8125,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "lastminute.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 66,
+      "domainDensity": 0.8200722018033149,
+      "generations": 32,
+      "sourceRow": 210,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.21875,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "wordplays.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 474,
+      "domainDensity": 0.5157953086605879,
+      "generations": 32,
+      "sourceRow": 212,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "theguardian.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.594869956635586,
+      "generations": 32,
+      "sourceRow": 213,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.59375,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "hellomagazine.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 216,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "chaturbate.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 99,
+      "domainDensity": 0.738720685626682,
+      "generations": 32,
+      "sourceRow": 221,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.3125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "globo.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 222,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.5,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "mercadolivre.com.br"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.5911414306912685,
+      "generations": 32,
+      "sourceRow": 224,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 7,
+        "mean": 1.75,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 7.0,
+        "samples": 32
+      },
+      "website": "olx.com.br"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 226,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.40625,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "reclameaqui.com.br"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 99,
+      "domainDensity": 0.738720685626682,
+      "generations": 32,
+      "sourceRow": 230,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 6,
+        "mean": 1.53125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 6.0,
+        "samples": 32
+      },
+      "website": "techtudo.com.br"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 165,
+      "domainDensity": 0.5994274118197398,
+      "generations": 32,
+      "sourceRow": 235,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.46875,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "allmusic.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 236,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "sermoncentral.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 237,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "yourtango.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 240,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "jumia.com.ng"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 99,
+      "domainDensity": 0.738720685626682,
+      "generations": 32,
+      "sourceRow": 241,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.34375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "eskimi.com"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 242,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "jiji.ng"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 243,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.75,
+        "median": 2.0,
+        "p95": 3.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "remita.net"
+    },
+    {
+      "domainBits": 658,
+      "domainDensity": 0.5002869030321332,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 246,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "windowscentral.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 251,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.28125,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "namasha.com"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704895765548759,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 252,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "tarafdari.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 460,
+      "domainDensity": 0.9363756606199445,
+      "generations": 32,
+      "sourceRow": 253,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.09375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "mydiba.xyz"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 132,
+      "domainDensity": 0.6654392749476855,
+      "generations": 32,
+      "sourceRow": 254,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "blogfa.com"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 211,
+      "domainDensity": 0.594869956635586,
+      "generations": 32,
+      "sourceRow": 256,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.78125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "emalls.ir"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 257,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.3125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "moshtix.com.au"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 421,
+      "domainDensity": 0.7002906302929782,
+      "generations": 32,
+      "sourceRow": 258,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 3,
+        "mean": 1.53125,
+        "median": 1.0,
+        "p95": 3.0,
+        "p99": 3.0,
+        "samples": 32
+      },
+      "website": "rent.com.au"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 198,
+      "domainDensity": 0.5399639539898812,
+      "generations": 32,
+      "sourceRow": 259,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 4,
+        "mean": 1.53125,
+        "median": 1.0,
+        "p95": 4.0,
+        "p99": 4.0,
+        "samples": 32
+      },
+      "website": "popsugar.com.au"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 329,
+      "domainDensity": 0.7110619551967482,
+      "generations": 32,
+      "sourceRow": 263,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 5,
+        "mean": 1.375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 5.0,
+        "samples": 32
+      },
+      "website": "abc.net.au"
+    },
+    {
+      "domainBits": 841,
+      "domainDensity": 0.9704889389732911,
+      "reason": "domain_exceeds_512_bits",
+      "sourceRow": 269,
+      "status": "BACKEND_DOMAIN_LIMIT",
+      "website": "jbhifi.com.au"
+    },
+    {
+      "capHits": 0,
+      "domainBits": 105,
+      "domainDensity": 0.9101903301997681,
+      "generations": 32,
+      "sourceRow": 271,
+      "status": "MEASURED",
+      "walks": {
+        "maximum": 2,
+        "mean": 1.09375,
+        "median": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "samples": 32
+      },
+      "website": "naver.com"
+    }
+  ],
+  "schemaVersion": 1,
+  "successfulCompiledPolicies": 121
+}

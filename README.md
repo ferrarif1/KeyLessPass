@@ -42,7 +42,7 @@
 
 KeyLessPass is a native desktop client for deriving text passwords on demand for internal systems that still depend on legacy password login. It is intended for operations consoles, vendor portals, database gateways, network appliances, and small enterprise environments where a local-only security posture is required.
 
-It is not a web app, browser extension, cloud password manager, or password vault. KeyLessPass does not store target-system plaintext passwords or maintain an encrypted service-password database. Its v3 paper recovery share is an offline encoding of a random high-entropy Shamir share; it is not a phrase users are expected to memorize and is not persisted by the application.
+It is not a web app, browser extension, cloud password manager, or password vault. KeyLessPass does not store target-system plaintext passwords or maintain an encrypted service-password database. Its v3 paper recovery share is an offline encoding of a random high-entropy Shamir share; it is not intended to be memorized and is not persisted by the application.
 
 ## Product Screenshots
 
@@ -78,12 +78,45 @@ This makes it useful when an organization must keep using legacy password-based 
 - Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
 - Selectable service derivation algorithm for new profiles: HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256.
 - Editable display metadata that does not change derived passwords.
-- Persistent staged password rotation with prepared, request-sent, unknown-outcome, reconciliation, committed, rollback-required, aborted, and superseded states.
+- Evidence-bounded password rotation with authenticated old/new probes and explicit atomic-replacement, overlap-then-revoke, and opaque-target contracts.
 - Local recovery workflows for rebuilding missing USB or local factor packages.
 - USB management for path selection, package verification, and package rebuild.
 - Redacted diagnostics export.
 - Cross-platform provider abstraction for macOS, Windows, Linux, and fallback secure storage.
 - English and Simplified Chinese UI resources.
+
+## Factor-Preserving Peer Recovery Research
+
+The optional `peer-recovery` Rust feature contains a separate research
+prototype that replaces the paper share with an encrypted network share while
+preserving the Root-Key 2-of-3 factor boundary. It Shamir-splits the canonical
+network share envelope into 3-of-5 node fragments and requires two independent
+Ed25519 approvals before session-bound X25519/AES-GCM release. It uses no View
+Key, Data Key, OPRF, or opaque-object scan. It is not enabled in the desktop
+product path and does not claim a production recovery transport or Byzantine
+node tolerance. See
+[`docs/research/FACTOR_PRESERVING_PEER_RECOVERY.zh-CN.md`](docs/research/FACTOR_PRESERVING_PEER_RECOVERY.zh-CN.md).
+
+## ASTER Research Artifact
+
+The optional `research` feature also contains ASTER's authorization-scoped
+exact-domain evaluator and failure-safe Root-Epoch migration model. The normal
+desktop product path remains local and does not enable this backend. The
+repository keeps the implementation, experiment harnesses, recorded raw
+results, TLA+ models, and reproducibility scripts under version control; paper
+manuscripts, rendered figures, and submission bundles are intentionally
+excluded through `.gitignore`.
+
+```bash
+cd rust_core
+cargo test --all-targets --all-features
+cd ..
+./research/aster/scripts/reproduce_all.sh --quick
+```
+
+See [`research/aster/README.md`](research/aster/README.md) for the evidence
+layers, full reproduction command, measured-result boundary, and expensive MPC
+steps.
 
 ## What Is Stored
 
@@ -92,11 +125,11 @@ This makes it useful when an organization must keep using legacy password-based 
 | Platform-protected managed-computer share envelope and committed recovery manifest | Target-system plaintext passwords |
 | USB share envelope, committed recovery manifest, and optional CDR replica | Encrypted service-password vault |
 | Canonical versioned CDR metadata, salts, state, replica metadata, and MAC tags | Plaintext Root Key in any persisted v3 object |
-| Legacy v2 pairwise wrappers only until an explicit verified migration archives them | Recovery-share phrase (the application displays but does not persist it) |
+| Legacy v2 pairwise wrappers only until an explicit verified migration archives them | Paper recovery share representation (the application displays but does not persist it) |
 
 ## How It Works
 
-In the selectable v3 recovery schema, enrollment or migration starts with a random 256-bit Root Key and uses the audited `vsss-rs` finite-field implementation to split it into three shares at threshold two:
+In the selectable v3 recovery schema, enrollment or migration starts with a random 256-bit Root Key and uses the external `vsss-rs` finite-field implementation to split it into three shares at threshold two. The dependency currently describes itself as under audit; KeyLessPass does not claim an independent audit result:
 
 ```text
 K_root <- Random(256 bits)
@@ -116,7 +149,7 @@ When a paired USB drive is present, KeyLessPass can write a signed CDR metadata 
 
 ```mermaid
 flowchart LR
-    M["Recovery-share phrase<br/>offline, high entropy"] --> R["Shamir 2-of-3<br/>same-set shares"]
+    M["Paper recovery share<br/>offline, high entropy"] --> R["Shamir 2-of-3<br/>same-set shares"]
     FC["Computer share<br/>platform protected"] --> R
     FU["USB share<br/>ordinary copyable file"] --> R
     R --> KM["Recovered Root Key<br/>transient memory"]
@@ -131,7 +164,7 @@ flowchart LR
 
 - No target-system plaintext password is written to disk.
 - No encrypted service-password vault is maintained.
-- The v3 recovery-share phrase is not stored by the application.
+- The v3 paper recovery share representation is not stored by the application.
 - The Root Key is not persisted in any v3 local or USB payload.
 - The USB package is an ordinary copyable factor container, not an uncopyable hardware key.
 - Any two valid shares from the committed vault/share set/generation can recover the Root Key; the recovery API rejects a single share.
@@ -165,9 +198,16 @@ KeyLessPass
 ├── flutter_app/          # Flutter Desktop UI
 ├── rust_core/            # Rust cryptography, storage, recovery, and FFI core
 ├── packaging/            # macOS, Windows, and Linux packaging scripts
-├── docs/                 # Product, security, readiness, and design documentation
+├── experiments/          # Reproducible harness inputs and recorded results
+├── artifact/             # Machine-readable EPSCD result package
+├── formal/, models/, tla/ # TLA+ specifications and checked configurations
+├── research/aster/       # ASTER implementation, adapters, results, and scripts
+├── docs/                 # Product, security, reproducibility, and design docs
 └── releases/             # Local release artifacts, ignored by git
 ```
+
+Manuscript sources, rendered paper output, and journal submission packages are
+kept outside the versioned software/artifact boundary and are ignored by git.
 
 The Rust core is intentionally independent from platform-specific secure storage details. Platform factor providers implement a common interface, with macOS Keychain, Windows DPAPI, Linux local/fallback storage, and future TPM/Secure Enclave hooks isolated behind the provider layer.
 
@@ -187,7 +227,9 @@ Each platform guide starts from Flutter installation and continues through Rust,
 
 ```bash
 cd rust_core
-cargo test
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all-targets --all-features
 ```
 
 ### Run the Desktop App
@@ -250,7 +292,3 @@ See the full bilingual documentation map: [DOCS.md](DOCS.md) / [中文](DOCS.zh-
 | Build on macOS / Windows / Linux | [macOS](docs/MACOS_INSTALL.en.md), [Windows](docs/WINDOWS_INSTALL.en.md), [Linux](docs/LINUX_INSTALL.en.md) |
 | Prepare a release | [RELEASE.md](RELEASE.md) |
 | Review security and privacy | [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md) |
-
-## License
-
-See [LICENSE](LICENSE) and [NOTICE](NOTICE).

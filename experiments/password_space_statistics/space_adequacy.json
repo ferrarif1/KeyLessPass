@@ -1,0 +1,1461 @@
+{
+  "schemaVersion": 1,
+  "source": "experiments/real_policy_corpus/policy_metrics.json",
+  "method": "reclassification of existing exact counts; no policy compilation",
+  "backendRule": "N >= 1,000,000 and bit_length(N) <= 512",
+  "configuredSecurityFloorsBits": [
+    40.0,
+    60.0,
+    80.0
+  ],
+  "completedPolicies": 120,
+  "backendEligiblePolicies": 96,
+  "securityFloorEligibleCounts": {
+    "40Bits": 120,
+    "60Bits": 120,
+    "80Bits": 116
+  },
+  "records": [
+    {
+      "sourceRow": 9,
+      "website": "walmart.com",
+      "exactSpace": "546108599233508259390625",
+      "credentialSpaceBits": 78.85353405662467,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": false
+      }
+    },
+    {
+      "sourceRow": 10,
+      "website": "ebay.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 14,
+      "website": "netflix.com",
+      "exactSpace": "46559903231494119157640432265266889890124185118452993594258718344515893556311773225022109647610743698525301953578650625",
+      "credentialSpaceBits": 394.20660325651016,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 16,
+      "website": "bestbuy.com",
+      "exactSpace": "63338888410137831749584786497612425473931455286829288838964626341018402601578520474543032090984867937500000",
+      "credentialSpaceBits": 354.7874696065245,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 17,
+      "website": "quora.com",
+      "exactSpace": "227060998360399857546231733396219046505259077831146960372169472330689693591152534474849740383708178771842637531310204314862896856713168164434700000",
+      "credentialSpaceBits": 486.18458177314346,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 23,
+      "website": "usatoday.com",
+      "exactSpace": "216922155048713498504350916418738969077524590365430059700000",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 24,
+      "website": "vimeo.com",
+      "exactSpace": "264832772544569013029574845774858196827828054038369395389613030856614309480860223910015734519560494266619201086234383221884119313255600000000",
+      "credentialSpaceBits": 466.4750149481506,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 25,
+      "website": "apple.com",
+      "exactSpace": "1901870957984869150459942501569779432166776028829488714075794720",
+      "credentialSpaceBits": 210.20888934051086,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 28,
+      "website": "webmd.com",
+      "exactSpace": "209200553077795564392598035510286167558439957221015746093750",
+      "credentialSpaceBits": 197.05864426409573,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 32,
+      "website": "zillow.com",
+      "exactSpace": "14230394612325434394416764217602394628383543532569431812001860381714981771638646225029443899372092605674931368558835483233666247392273772669077062863244328856968006536400961880818520645292571196573883809995720648962899108290270055221405345214250011611040",
+      "credentialSpaceBits": 840.9567836752084,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 33,
+      "website": "lowes.com",
+      "exactSpace": "402130713187009132990560",
+      "credentialSpaceBits": 78.41201071021744,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": false
+      }
+    },
+    {
+      "sourceRow": 37,
+      "website": "buzzfeed.com",
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 39,
+      "website": "wordpress.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 47,
+      "website": "legacy.com",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 49,
+      "website": "ranker.com",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 52,
+      "website": "cnbc.com",
+      "exactSpace": "36967246124613593730165567647200",
+      "credentialSpaceBits": 104.86601851545416,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 54,
+      "website": "giphy.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 58,
+      "website": "fedex.com",
+      "exactSpace": "1644194860060635440259129733258210695906314086869028898586813602514000",
+      "credentialSpaceBits": 229.9304198358972,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 61,
+      "website": "goodreads.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 63,
+      "website": "ikea.com",
+      "exactSpace": "3622996024341650240846169344179417500000",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 65,
+      "website": "priceline.com",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268273369125390625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 69,
+      "website": "spotify.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258984828650625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 71,
+      "website": "creditkarma.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006188408187890625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 74,
+      "website": "gamespot.com",
+      "exactSpace": "3789257459332188704226350957816873339467927512148352739029463429559146795357196870462319655099456905247253436618988016116817200",
+      "credentialSpaceBits": 420.4848551222267,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 75,
+      "website": "gfycat.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772656703650625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 81,
+      "website": "avast.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006188408187890625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 82,
+      "website": "kbb.com",
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "credentialSpaceBits": 210.25064622324365,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 83,
+      "website": "imore.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 85,
+      "website": "expedia.com",
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 86,
+      "website": "wattpad.com",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 87,
+      "website": "polygon.com",
+      "exactSpace": "12835912137827693040284421885441412013483600128215973021213600326939456010846320",
+      "credentialSpaceBits": 262.79250531558046,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 89,
+      "website": "spanishdict.com",
+      "exactSpace": "3622996024341650240846169344179417500000",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 90,
+      "website": "sbnation.com",
+      "exactSpace": "12835912137827693040284421885441412013483600128215973021213600326939456010846320",
+      "credentialSpaceBits": 262.79250531558046,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 91,
+      "website": "express.co.uk",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 92,
+      "website": "sfgate.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432702080062890625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 93,
+      "website": "thechive.com",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 94,
+      "website": "walgreens.com",
+      "exactSpace": "209200553067465165229115354217012372839883214189190209984800",
+      "credentialSpaceBits": 197.05864426402448,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 98,
+      "website": "discordapp.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 99,
+      "website": "androidcentral.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 102,
+      "website": "yellowpages.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 105,
+      "website": "eventbrite.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432702080062890625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 109,
+      "website": "epicurious.com",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 110,
+      "website": "trulia.com",
+      "exactSpace": "3789257469188005312355258456553709710328495201499491780909425995131916649156568730087926262356079925250354569521025841293964960",
+      "credentialSpaceBits": 420.48485512597915,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 111,
+      "website": "twitch.tv",
+      "exactSpace": "25159113391734056237809610348611528698643665133645092562013237931378359400681721271451494779358246955328824103192266406078991341393486312890625",
+      "credentialSpaceBits": 473.04487055648156,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 112,
+      "website": "pornhub.com",
+      "exactSpace": "12933918587197586810390973765123418786880625111169664167779621176404036249372900",
+      "credentialSpaceBits": 262.8034789305566,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 113,
+      "website": "livejasmin.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 116,
+      "website": "intuit.com",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268273369125390625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 120,
+      "website": "wikidot.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 122,
+      "website": "nexusmods.com",
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "credentialSpaceBits": 210.25064622324365,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 124,
+      "website": "seagate.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697421795818466025390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 126,
+      "website": "dwnews.com",
+      "exactSpace": "44480886725444405624211384390625",
+      "credentialSpaceBits": 105.13295648994847,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 129,
+      "website": "independent.co.uk",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 130,
+      "website": "sugardaddyforme.com",
+      "exactSpace": "468219860267835848675909309375",
+      "credentialSpaceBits": 98.56310088161753,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 135,
+      "website": "sohu.com",
+      "exactSpace": "36967246124613593730165567647200",
+      "credentialSpaceBits": 104.86601851545416,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 136,
+      "website": "jd.com",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 139,
+      "website": "bilibili.com",
+      "exactSpace": "44480886725444405624211384390625",
+      "credentialSpaceBits": 105.13295648994847,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 140,
+      "website": "babytree.com",
+      "exactSpace": "295095290555142625648321021999764315617634390625",
+      "credentialSpaceBits": 157.69180135659605,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 143,
+      "website": "cnblogs.com",
+      "exactSpace": "209199955233042401278880606516418111471250411958352067679520",
+      "credentialSpaceBits": 197.05864014121516,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 144,
+      "website": "panda.tv",
+      "exactSpace": "44480886725444405624211384390625",
+      "credentialSpaceBits": 105.13295648994847,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 145,
+      "website": "zhanqi.tv",
+      "exactSpace": "3230786007847978725323620233044714393920",
+      "credentialSpaceBits": 131.2470808970041,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 147,
+      "website": "1688.com",
+      "exactSpace": "3230786007847978725323620233044714393920",
+      "credentialSpaceBits": 131.2470808970041,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 148,
+      "website": "douyu.com",
+      "exactSpace": "26293797964159047976352732177092727522315330673200",
+      "credentialSpaceBits": 164.16919919418734,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 151,
+      "website": "ci123.com",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 152,
+      "website": "ifeng.com",
+      "exactSpace": "3622996024341650240846169274345687890625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 153,
+      "website": "veblr.com",
+      "exactSpace": "28034052602738549436590497089977609984418096809375",
+      "credentialSpaceBits": 164.261656964927,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 154,
+      "website": "metacafe.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772656622200000",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 155,
+      "website": "porn555.com",
+      "exactSpace": "44480886725444405624211384390625",
+      "credentialSpaceBits": 105.13295648994847,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 157,
+      "website": "irctc.co.in",
+      "exactSpace": "372807945224800631065027716000",
+      "credentialSpaceBits": 98.23434735854511,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 159,
+      "website": "rediff.com",
+      "exactSpace": "546108599233508259390625",
+      "credentialSpaceBits": 78.85353405662467,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": false
+      }
+    },
+    {
+      "sourceRow": 161,
+      "website": "naukri.com",
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456698430134390625",
+      "credentialSpaceBits": 262.80949108989125,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 163,
+      "website": "amag.ru",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 165,
+      "website": "knowyourmeme.com",
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456698437953650625",
+      "credentialSpaceBits": 262.80949108989125,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 166,
+      "website": "motorsport.com",
+      "exactSpace": "216922155048713498504350916418738969077524590365430059700000",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 167,
+      "website": "planetminecraft.com",
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 168,
+      "website": "socialblade.com",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 169,
+      "website": "gta5-mods.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202233330062890625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 173,
+      "website": "mail.ru",
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456698430134390625",
+      "credentialSpaceBits": 262.80949108989125,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 176,
+      "website": "rambler.ru",
+      "exactSpace": "1901793390868775616473017978775254981057412308440661152696154080",
+      "credentialSpaceBits": 210.20883049951783,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 179,
+      "website": "fb.ru",
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "credentialSpaceBits": 210.25064622324365,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 181,
+      "website": "znanija.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 182,
+      "website": "wildberries.ru",
+      "exactSpace": "774642531718728338652028455938445488438117455593107420467238377849581988923168358872370928988412400",
+      "credentialSpaceBits": 328.5024840136187,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 184,
+      "website": "ozon.ru",
+      "exactSpace": "1678502284981138890416014999354759820605904877122660028807652546500000",
+      "credentialSpaceBits": 229.96021304823648,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 188,
+      "website": "xvideos.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202233330062890625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 189,
+      "website": "yaplakal.com",
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "credentialSpaceBits": 210.25064622324365,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 191,
+      "website": "wg-gesucht.de",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432702080062890625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 192,
+      "website": "fanfiktion.de",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 193,
+      "website": "thesun.co.uk",
+      "exactSpace": "3230786007847978725323620195144981300880",
+      "credentialSpaceBits": 131.2470808970041,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 194,
+      "website": "liveleak.com",
+      "exactSpace": "216922155048713498504350916418738969077524590365430141150625",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 195,
+      "website": "gmx.net",
+      "exactSpace": "12987930716685978204438138512147879490757688938557941795845684456627861312890625",
+      "credentialSpaceBits": 262.80949108989125,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 202,
+      "website": "immobilienscout24.de",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006188408187890625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 208,
+      "website": "entitledto.co.uk",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 209,
+      "website": "lastminute.com",
+      "exactSpace": "28034052602738549436590497089977609913841537500000",
+      "credentialSpaceBits": 164.261656964927,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 210,
+      "website": "wordplays.com",
+      "exactSpace": "60510648114517017120",
+      "credentialSpaceBits": 65.71382283996279,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": false
+      }
+    },
+    {
+      "sourceRow": 212,
+      "website": "theguardian.com",
+      "exactSpace": "25159113391734056237809610348611528698643665133645092562013237931378359400681721271451494779358246955328824103192266406078991341464055134390625",
+      "credentialSpaceBits": 473.04487055648156,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 213,
+      "website": "hellomagazine.com",
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "credentialSpaceBits": 210.25064622324365,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 216,
+      "website": "chaturbate.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117160565349716025390625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 221,
+      "website": "globo.com",
+      "exactSpace": "468219860267835778099350000000",
+      "credentialSpaceBits": 98.56310088161753,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 222,
+      "website": "mercadolivre.com.br",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 224,
+      "website": "olx.com.br",
+      "exactSpace": "3218480083530512814050256457464586897680",
+      "credentialSpaceBits": 131.24157524185472,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 226,
+      "website": "reclameaqui.com.br",
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 230,
+      "website": "techtudo.com.br",
+      "exactSpace": "468219860267835778099350000000",
+      "credentialSpaceBits": 98.56310088161753,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 235,
+      "website": "allmusic.com",
+      "exactSpace": "28034052602738549436590497089977609984418096809375",
+      "credentialSpaceBits": 164.261656964927,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 236,
+      "website": "sermoncentral.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 237,
+      "website": "yourtango.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303906704517120",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 240,
+      "website": "jumia.com.ng",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 241,
+      "website": "eskimi.com",
+      "exactSpace": "468219860267835848668171500000",
+      "credentialSpaceBits": 98.56310088161753,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 242,
+      "website": "jiji.ng",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 243,
+      "website": "remita.net",
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 246,
+      "website": "windowscentral.com",
+      "exactSpace": "598351357374183426465820918966277833792831151602221831961903311927039329512387758629575019633200474225590371059986240972155566335759382453956543412850668250328099108658454710205254006258977009390625",
+      "credentialSpaceBits": 657.000827589748,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 251,
+      "website": "namasha.com",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772648884390625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 252,
+      "website": "tarafdari.com",
+      "exactSpace": "14230403961260236220506443581651184908680564041500367167417706820898712988823451461562368878931231194600886509223121419278253305282049735850746952255698801345684544325410185351468196806123506094389266334625827336505452737613188432117161202303898884390625",
+      "credentialSpaceBits": 840.9567846230146,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 253,
+      "website": "mydiba.xyz",
+      "exactSpace": "2787713395205989610837629955524823124503453200403888372522242430069624310324844462210691942311163097543360011434046139177727572461392008000",
+      "credentialSpaceBits": 459.90515933981965,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 254,
+      "website": "blogfa.com",
+      "exactSpace": "3622996024341650240846169344922328650625",
+      "credentialSpaceBits": 131.41237892327226,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 256,
+      "website": "emalls.ir",
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "credentialSpaceBits": 210.25064622324365,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 257,
+      "website": "moshtix.com.au",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 258,
+      "website": "rent.com.au",
+      "exactSpace": "3792333218144715689214286733276153973356796205513695361373369020859784852595066624036316469616424830959697422432772656703650625",
+      "credentialSpaceBits": 420.486025689834,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 259,
+      "website": "popsugar.com.au",
+      "exactSpace": "216922155048713498504350916418738969077524590365430142017120",
+      "credentialSpaceBits": 197.11093500658174,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 263,
+      "website": "abc.net.au",
+      "exactSpace": "777635388434868753304038937670673803594895131704996601793597364550835584153940138268343937946890625",
+      "credentialSpaceBits": 328.5080471732007,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 269,
+      "website": "jbhifi.com.au",
+      "exactSpace": "14230394612325434394416764217602394628383543532569431812001860381714981771638646225029443899372092605674931368558835483233666247392273772669077062863244328856968006536400961880818520645292571196573883809995720648962899108290270055221405345252149744704080",
+      "credentialSpaceBits": 840.9567836752084,
+      "backendDomainEligible": false,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    },
+    {
+      "sourceRow": 271,
+      "website": "naver.com",
+      "exactSpace": "36921706188789058363017091738080",
+      "credentialSpaceBits": 104.86424016440606,
+      "backendDomainEligible": true,
+      "securityFloorEligible": {
+        "40Bits": true,
+        "60Bits": true,
+        "80Bits": true
+      }
+    }
+  ],
+  "boundary": "backend eligibility is not credential guessing strength"
+}

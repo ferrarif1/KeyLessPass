@@ -1,0 +1,2137 @@
+{
+  "claimBoundary": "Historical public website-policy corpus. Translation is exact only for accepted PCP fields; unsupported semantics are rejected, not approximated.",
+  "records": [
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 2,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "google.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 3,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "amazon.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 4,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "facebook.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 5,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "reddit.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 6,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "wikipedia.org"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 7,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "yahoo.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 8,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "twitter.com"
+    },
+    {
+      "compileMicros": 18301.714,
+      "countTableCells": 910,
+      "entropyBits": 78.85353405662467,
+      "exactSpace": "546108599233508259390625",
+      "sourceRow": 9,
+      "stateCount": 13,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "walmart.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 10,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "ebay.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 11,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "linkedin.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 12,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "target.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 13,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "nytimes.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 14,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "netflix.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 15,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "paypal.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 16,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "bestbuy.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 17,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "quora.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 18,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "imdb.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 19,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "homedepot.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 20,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "live.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 21,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "espn.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 22,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "craigslist.org"
+    },
+    {
+      "compileMicros": 298349.551,
+      "countTableCells": 14911,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430059700000",
+      "sourceRow": 23,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "usatoday.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 24,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "vimeo.com"
+    },
+    {
+      "compileMicros": 266655421.61,
+      "countTableCells": 12194175,
+      "entropyBits": 210.20888934051086,
+      "exactSpace": "1901870957984869150459942501569779432166776028829488714075794720",
+      "sourceRow": 25,
+      "stateCount": 23227,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "apple.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 26,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "yelp.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 27,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "etsy.com"
+    },
+    {
+      "compileMicros": 711506.748,
+      "countTableCells": 28060,
+      "entropyBits": 197.05864426409573,
+      "exactSpace": "209200553077795564392598035510286167558439957221015746093750",
+      "sourceRow": 28,
+      "stateCount": 61,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "webmd.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 29,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "allrecipes.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 30,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bing.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 31,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "usps.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 32,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "zillow.com"
+    },
+    {
+      "compileMicros": 10623879.372,
+      "countTableCells": 432685,
+      "entropyBits": 78.41201071021744,
+      "exactSpace": "402130713187009132990560",
+      "sourceRow": 33,
+      "stateCount": 7867,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "lowes.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 34,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "macys.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 35,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "cnet.com"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 36,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "adobe.com"
+    },
+    {
+      "compileMicros": 358093.64999999997,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "sourceRow": 37,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "buzzfeed.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 38,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "indeed.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 39,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "wordpress.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 40,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "tripadvisor.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 41,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "aol.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 42,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "pinterest.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 43,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "quizlet.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 44,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "instagram.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 45,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "imgur.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 46,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "foodnetwork.com"
+    },
+    {
+      "compileMicros": 103798.44,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 47,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "legacy.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 48,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "ups.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 49,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "ranker.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 50,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "glassdoor.com"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 51,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bedbathandbeyond.com"
+    },
+    {
+      "compileMicros": 183900.19,
+      "countTableCells": 7488,
+      "entropyBits": 104.86601851545416,
+      "exactSpace": "36967246124613593730165567647200",
+      "sourceRow": 52,
+      "stateCount": 64,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "cnbc.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 53,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "wikihow.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 54,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "giphy.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 55,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "people.com"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 56,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "jcpenney.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 57,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "medicalnewstoday.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 58,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "fedex.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 59,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "nfl.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 60,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "hulu.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 61,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "goodreads.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 62,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "costco.com"
+    },
+    {
+      "compileMicros": 106294.427,
+      "countTableCells": 4263,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344179417500000",
+      "sourceRow": 63,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "ikea.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 64,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "groupon.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 65,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "priceline.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 66,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "cbsnews.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 67,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "politico.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 68,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "office.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 69,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "spotify.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 70,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "mapquest.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 71,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "creditkarma.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 72,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "cbssports.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 73,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "theverge.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 74,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "gamespot.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 75,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "gfycat.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 76,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "slate.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 77,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bleacherreport.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 78,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "roblox.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 79,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "deviantart.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 80,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "narvar.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 81,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "avast.com"
+    },
+    {
+      "compileMicros": 481200.944,
+      "countTableCells": 17820,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "sourceRow": 82,
+      "stateCount": 33,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "kbb.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 83,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "imore.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 84,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "hgtv.com"
+    },
+    {
+      "compileMicros": 363186.695,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "sourceRow": 85,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "expedia.com"
+    },
+    {
+      "compileMicros": 101463.241,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 86,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "wattpad.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 87,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "polygon.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 88,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "newegg.com"
+    },
+    {
+      "compileMicros": 99640.289,
+      "countTableCells": 4263,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344179417500000",
+      "sourceRow": 89,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "spanishdict.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 90,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "sbnation.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 91,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "express.co.uk"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 92,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "sfgate.com"
+    },
+    {
+      "compileMicros": 103810.881,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 93,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "thechive.com"
+    },
+    {
+      "compileMicros": 1345401.538,
+      "countTableCells": 55200,
+      "entropyBits": 197.05864426402448,
+      "exactSpace": "209200553067465165229115354217012372839883214189190209984800",
+      "sourceRow": 94,
+      "stateCount": 120,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "walgreens.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 95,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "stackoverflow.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 96,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "newyorker.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 97,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "vox.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 98,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "discordapp.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 99,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "androidcentral.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 100,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "cargurus.com"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 101,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "airbnb.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 102,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "yellowpages.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 103,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "comicbook.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 104,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "southwest.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 105,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "eventbrite.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 106,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "nordstrom.com"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 107,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "gamestop.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 108,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "ajc.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 109,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "epicurious.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 110,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "trulia.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 111,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "twitch.tv"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 112,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "pornhub.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 113,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "livejasmin.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 114,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "github.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 115,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "tumblr.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 116,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "intuit.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 117,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "dropbox.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 118,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "amazonaws.com"
+    },
+    {
+      "reason": "per_charset_location_or_run_constraint",
+      "sourceRow": 119,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "investing.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 120,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "wikidot.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 121,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "sinovision.net"
+    },
+    {
+      "compileMicros": 436806.06,
+      "countTableCells": 17325,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "sourceRow": 122,
+      "stateCount": 33,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "nexusmods.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 123,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "flightaware.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 124,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "seagate.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 125,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "javlibrary.com"
+    },
+    {
+      "compileMicros": 53060.872,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "sourceRow": 126,
+      "stateCount": 17,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "dwnews.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 127,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "askubuntu.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 128,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "superuser.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 129,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "independent.co.uk"
+    },
+    {
+      "compileMicros": 43400.528,
+      "countTableCells": 1936,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835848675909309375",
+      "sourceRow": 130,
+      "stateCount": 16,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "sugardaddyforme.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 131,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "snapchatfriends.io"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 132,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "baidu.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 133,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "qq.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 134,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "tmall.com"
+    },
+    {
+      "compileMicros": 173828.599,
+      "countTableCells": 7488,
+      "entropyBits": 104.86601851545416,
+      "exactSpace": "36967246124613593730165567647200",
+      "sourceRow": 135,
+      "stateCount": 64,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "sohu.com"
+    },
+    {
+      "compileMicros": 101912.666,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 136,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "jd.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 137,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "weibo.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 138,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "360.cn"
+    },
+    {
+      "compileMicros": 52765.578,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "sourceRow": 139,
+      "stateCount": 17,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "bilibili.com"
+    },
+    {
+      "compileMicros": 180281.408,
+      "countTableCells": 7600,
+      "entropyBits": 157.69180135659605,
+      "exactSpace": "295095290555142625648321021999764315617634390625",
+      "sourceRow": 140,
+      "stateCount": 25,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "babytree.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 141,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "tianya.cn"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 142,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "so.com"
+    },
+    {
+      "compileMicros": 2400645.358,
+      "countTableCells": 94760,
+      "entropyBits": 197.05864014121516,
+      "exactSpace": "209199955233042401278880606516418111471250411958352067679520",
+      "sourceRow": 143,
+      "stateCount": 206,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "cnblogs.com"
+    },
+    {
+      "compileMicros": 51449.02,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "sourceRow": 144,
+      "stateCount": 17,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "panda.tv"
+    },
+    {
+      "compileMicros": 389839.757,
+      "countTableCells": 16800,
+      "entropyBits": 131.2470808970041,
+      "exactSpace": "3230786007847978725323620233044714393920",
+      "sourceRow": 145,
+      "stateCount": 80,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "zhanqi.tv"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 146,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "douban.com"
+    },
+    {
+      "compileMicros": 392653.423,
+      "countTableCells": 16800,
+      "entropyBits": 131.2470808970041,
+      "exactSpace": "3230786007847978725323620233044714393920",
+      "sourceRow": 147,
+      "stateCount": 80,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "1688.com"
+    },
+    {
+      "compileMicros": 781108.606,
+      "countTableCells": 33000,
+      "entropyBits": 164.16919919418734,
+      "exactSpace": "26293797964159047976352732177092727522315330673200",
+      "sourceRow": 148,
+      "stateCount": 100,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "douyu.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 149,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "yy.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 150,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "youku.com"
+    },
+    {
+      "compileMicros": 101591.598,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 151,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "ci123.com"
+    },
+    {
+      "compileMicros": 94595.092,
+      "countTableCells": 4095,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169274345687890625",
+      "sourceRow": 152,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "ifeng.com"
+    },
+    {
+      "compileMicros": 206027.325,
+      "countTableCells": 8736,
+      "entropyBits": 164.261656964927,
+      "exactSpace": "28034052602738549436590497089977609984418096809375",
+      "sourceRow": 153,
+      "stateCount": 26,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "veblr.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 154,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "metacafe.com"
+    },
+    {
+      "compileMicros": 51366.021,
+      "countTableCells": 2244,
+      "entropyBits": 105.13295648994847,
+      "exactSpace": "44480886725444405624211384390625",
+      "sourceRow": 155,
+      "stateCount": 17,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "porn555.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 156,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "hotstar.com"
+    },
+    {
+      "compileMicros": 276043.593,
+      "countTableCells": 11600,
+      "entropyBits": 98.23434735854511,
+      "exactSpace": "372807945224800631065027716000",
+      "sourceRow": 157,
+      "stateCount": 116,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "irctc.co.in"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 158,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "primevideo.com\n"
+    },
+    {
+      "compileMicros": 20706.79,
+      "countTableCells": 910,
+      "entropyBits": 78.85353405662467,
+      "exactSpace": "546108599233508259390625",
+      "sourceRow": 159,
+      "stateCount": 13,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "rediff.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 160,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "softonic.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 161,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "naukri.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 162,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "streamable.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 163,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "amag.ru"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 164,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "soundclick.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 165,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "knowyourmeme.com"
+    },
+    {
+      "compileMicros": 361627.907,
+      "countTableCells": 14911,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430059700000",
+      "sourceRow": 166,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "motorsport.com"
+    },
+    {
+      "compileMicros": 356305.655,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "sourceRow": 167,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "planetminecraft.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 168,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "socialblade.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 169,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "gta5-mods.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 170,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "serverfault.com"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 171,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "yandex.ru"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 172,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "vk.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 173,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "mail.ru"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 174,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "aliexpress.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 175,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "kinopoisk.ru"
+    },
+    {
+      "compileMicros": 3276883.62,
+      "countTableCells": 132300,
+      "entropyBits": 210.20883049951783,
+      "exactSpace": "1901793390868775616473017978775254981057412308440661152696154080",
+      "sourceRow": 176,
+      "stateCount": 252,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "rambler.ru"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 177,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "livejournal.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 178,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "pikabu.ru"
+    },
+    {
+      "compileMicros": 433671.754,
+      "countTableCells": 17820,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "sourceRow": 179,
+      "stateCount": 33,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "fb.ru"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 180,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "ria.ru"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 181,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "znanija.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 182,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "wildberries.ru"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 183,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "yadi.sk"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 184,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "ozon.ru"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 185,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "dns-shop.ru"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 186,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "ivi.ru"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 187,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "hdlava.me"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 188,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "xvideos.com"
+    },
+    {
+      "compileMicros": 423594.45499999996,
+      "countTableCells": 17325,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "sourceRow": 189,
+      "stateCount": 33,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "yaplakal.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 190,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "eurosport.de"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 191,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "wg-gesucht.de"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 192,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "fanfiktion.de"
+    },
+    {
+      "compileMicros": 368506.03599999996,
+      "countTableCells": 15600,
+      "entropyBits": 131.2470808970041,
+      "exactSpace": "3230786007847978725323620195144981300880",
+      "sourceRow": 193,
+      "stateCount": 80,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "thesun.co.uk"
+    },
+    {
+      "compileMicros": 365874.84599999996,
+      "countTableCells": 15066,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430141150625",
+      "sourceRow": 194,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "liveleak.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 195,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "gmx.net"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 196,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "spiegel.de"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 197,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bild.de"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 198,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "t-online.de"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 199,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "shop-apotheke.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 200,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "otto.de"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 201,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "idealo.de"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 202,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "immobilienscout24.de"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 203,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "focus.de"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 204,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "welt.de"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 205,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "heise.de"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 206,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "zdf.de"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 207,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "booking.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 208,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "entitledto.co.uk"
+    },
+    {
+      "compileMicros": 196641.674,
+      "countTableCells": 8190,
+      "entropyBits": 164.261656964927,
+      "exactSpace": "28034052602738549436590497089977609913841537500000",
+      "sourceRow": 209,
+      "stateCount": 26,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "lastminute.com"
+    },
+    {
+      "compileMicros": 51602.182,
+      "countTableCells": 715,
+      "entropyBits": 65.71382283996279,
+      "exactSpace": "60510648114517017120",
+      "sourceRow": 210,
+      "stateCount": 11,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "wordplays.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 211,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "planningfinder.co.uk"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 212,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "theguardian.com"
+    },
+    {
+      "compileMicros": 472050.692,
+      "countTableCells": 17820,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428048007023884390625",
+      "sourceRow": 213,
+      "stateCount": 33,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "hellomagazine.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 214,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bbc.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 215,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "rightmove.co.uk"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 216,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "chaturbate.com"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 217,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bt.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 218,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "ig.com.br"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 219,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "lovemondays.com.br"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 220,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "spiritfanfiction.com"
+    },
+    {
+      "compileMicros": 39815.199,
+      "countTableCells": 1600,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835778099350000000",
+      "sourceRow": 221,
+      "stateCount": 16,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "globo.com"
+    },
+    {
+      "compileMicros": 106998.042,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 222,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "mercadolivre.com.br"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 223,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "uol.com.br"
+    },
+    {
+      "compileMicros": 1388654.645,
+      "countTableCells": 55380,
+      "entropyBits": 131.24157524185472,
+      "exactSpace": "3218480083530512814050256457464586897680",
+      "sourceRow": 224,
+      "stateCount": 284,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "olx.com.br"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 225,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "americanas.com.br"
+    },
+    {
+      "compileMicros": 111495.58499999999,
+      "countTableCells": 4410,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344914509390625",
+      "sourceRow": 226,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "reclameaqui.com.br"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 227,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bet365.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 228,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "popads.net"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 229,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bol.uol.com.br"
+    },
+    {
+      "compileMicros": 38853.369999999995,
+      "countTableCells": 1600,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835778099350000000",
+      "sourceRow": 230,
+      "stateCount": 16,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "techtudo.com.br"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 231,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "noticias.uol.com.br"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 232,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "dugout.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 233,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "auctionexport.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 234,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "allafrica.com"
+    },
+    {
+      "compileMicros": 222804.189,
+      "countTableCells": 8736,
+      "entropyBits": 164.261656964927,
+      "exactSpace": "28034052602738549436590497089977609984418096809375",
+      "sourceRow": 235,
+      "stateCount": 26,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "allmusic.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 236,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "sermoncentral.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 237,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "yourtango.com"
+    },
+    {
+      "reason": "context_dependent_policy_exclusions",
+      "sourceRow": 238,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bet9ja.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 239,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "nnu.ng"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 240,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "jumia.com.ng"
+    },
+    {
+      "compileMicros": 41745.691,
+      "countTableCells": 1840,
+      "entropyBits": 98.56310088161753,
+      "exactSpace": "468219860267835848668171500000",
+      "sourceRow": 241,
+      "stateCount": 16,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "eskimi.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 242,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "jiji.ng"
+    },
+    {
+      "compileMicros": 363751.371,
+      "countTableCells": 14725,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365422321890625",
+      "sourceRow": 243,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "remita.net"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 244,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "researchgate.net"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 245,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "shmoop.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 246,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "windowscentral.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 247,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "aparat.com"
+    },
+    {
+      "reason": "protocol_max_length_128",
+      "sourceRow": 248,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "digikala.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 249,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "varzesh3.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 250,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "telewebion.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 251,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "namasha.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 252,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "tarafdari.com"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 253,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "mydiba.xyz"
+    },
+    {
+      "compileMicros": 106312.219,
+      "countTableCells": 4641,
+      "entropyBits": 131.41237892327226,
+      "exactSpace": "3622996024341650240846169344922328650625",
+      "sourceRow": 254,
+      "stateCount": 21,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "blogfa.com"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 255,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "soft98.ir"
+    },
+    {
+      "compileMicros": 421048.712,
+      "countTableCells": 17325,
+      "entropyBits": 210.25064622324365,
+      "exactSpace": "1957722449314639324001767020679119195924659428047936455062890625",
+      "sourceRow": 256,
+      "stateCount": 33,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "emalls.ir"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 257,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "moshtix.com.au"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 258,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "rent.com.au"
+    },
+    {
+      "compileMicros": 361465.05,
+      "countTableCells": 15345,
+      "entropyBits": 197.11093500658174,
+      "exactSpace": "216922155048713498504350916418738969077524590365430142017120",
+      "sourceRow": 259,
+      "stateCount": 31,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "popsugar.com.au"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 260,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "standard.co.uk"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 261,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "gumtree.com.au"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 262,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "news.com.au"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 263,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "abc.net.au"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 264,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "realestate.com.au"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 265,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "seek.com.au"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 266,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "smh.com.au"
+    },
+    {
+      "reason": "disjunctive_rules",
+      "sourceRow": 267,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "my.gov.au"
+    },
+    {
+      "reason": "unbounded_max_length",
+      "sourceRow": 268,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "bunnings.com.au"
+    },
+    {
+      "reason": "evaluation_max_length_32",
+      "sourceRow": 269,
+      "status": "resource-skipped",
+      "translationStatus": "translated",
+      "website": "jbhifi.com.au"
+    },
+    {
+      "reason": "subset_of_classes_constraint",
+      "sourceRow": 270,
+      "status": "rejected",
+      "translationStatus": "rejected",
+      "website": "tribunnews.com"
+    },
+    {
+      "compileMicros": 286322.183,
+      "countTableCells": 12636,
+      "entropyBits": 104.86424016440606,
+      "exactSpace": "36921706188789058363017091738080",
+      "sourceRow": 271,
+      "stateCount": 108,
+      "status": "compiled",
+      "translationStatus": "translated",
+      "website": "naver.com"
+    }
+  ],
+  "schemaVersion": 1,
+  "source": {
+    "archiveUrl": "https://userlab.utk.edu/files/data/ruoti/2022/gautam2022improving.zip",
+    "authors": "Gautam, Lalani, and Ruoti",
+    "datasetScope": "historical website policies collected by the source authors; not current live policies",
+    "title": "Improving Password Generation Through the Design of a Password Composition Policy Description Language",
+    "venue": "SOUPS 2022",
+    "workbookPath": "pcp dataset/clean_data.xlsx",
+    "workbookSha256": "2d424c30fa1e4d2e5f0b82a5c67b4214fc2a96574d8b70052994d6f92712a77a"
+  },
+  "summary": {
+    "compileRejected": 0,
+    "compiled": 55,
+    "resourceSkipped": 66,
+    "semanticRejected": 149
+  },
+  "totalRecords": 270,
+  "translation": {
+    "evaluationMaxLength": 32,
+    "tool": "experiments/scripts/import_soups2022_pcp.py",
+    "unsupportedSemanticsAreRejected": true
+  }
+}

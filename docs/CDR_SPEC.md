@@ -4,6 +4,12 @@
 
 CDR v3 uses RFC 8785 JSON Canonicalization Scheme through `serde_json_canonicalizer 0.3.2`. The HMAC input is the canonical object with `macTag` set to the empty string. `K_cdr_authentication` is derived from the Root Key with `vaultID`, `rootGeneration`, and `cryptoSuiteVersion`. Ordinary JSON member order is never security-significant.
 
+Pending rotation records additionally authenticate `rotationContract` and
+`rotationEvidence`. The latter contains the remaining ordered set of possible
+remote states and endpoint-labelled authentication probes. These fields are
+excluded from password derivation but included in the CDR MAC. Initial stable
+records omit them, preserving the published stable-record vector.
+
 ## Fields
 
 | Field | Meaning | Password-changing? |

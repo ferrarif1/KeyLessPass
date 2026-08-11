@@ -77,8 +77,6 @@ $env:KEYLESSPASS_APP_VERSION = $AppVersion
 $env:KEYLESSPASS_RELEASE_DIR = $Output
 $env:KEYLESSPASS_OUTPUT_DIR = $InstallerOutput
 $env:KEYLESSPASS_ICON_FILE = "$Root\flutter_app\windows\runner\resources\app_icon.ico"
-$env:KEYLESSPASS_LICENSE_FILE = "$Root\LICENSE"
-
 $IssFile = "$Root\packaging\windows\KeyLessPass.iss"
 & $Iscc $IssFile
 $IsccExitCode = $LASTEXITCODE

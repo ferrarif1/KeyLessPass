@@ -35,13 +35,26 @@ English: [DOCS.md](DOCS.md)
 | 上架准备清单 | [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md) | [docs/STORE_READINESS_CHECKLIST.zh-CN.md](docs/STORE_READINESS_CHECKLIST.zh-CN.md) |
 | 2-of-3 恢复实现说明 | [docs/security/2-of-3-recovery-implementation-notes.md](docs/security/2-of-3-recovery-implementation-notes.md) | [docs/security/2-of-3-recovery-implementation-notes.zh-CN.md](docs/security/2-of-3-recovery-implementation-notes.zh-CN.md) |
 
+## 研究与复现
+
+| 主题 | 文档 |
+| --- | --- |
+| 复现命令和证据边界 | [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) |
+| ASTER 实现与实验制品 | [research/aster/README.md](research/aster/README.md) |
+| 因素不坍缩网络恢复原型 | [docs/research/FACTOR_PRESERVING_PEER_RECOVERY.zh-CN.md](docs/research/FACTOR_PRESERVING_PEER_RECOVERY.zh-CN.md) |
+| TLA+ 轮换与恢复模型 | [models/README.md](models/README.md) |
+
+论文正文、渲染图件和投稿包由 git 忽略；代码、实验输入与结果、形式化模型及其说明属于版本化制品边界。
+
 ## 本地常用命令
 
 测试 Rust Core：
 
 ```bash
 cd rust_core
-cargo test
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all-targets --all-features
 ```
 
 测试 Flutter：

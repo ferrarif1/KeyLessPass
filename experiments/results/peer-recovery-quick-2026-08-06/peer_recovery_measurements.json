@@ -1,0 +1,12 @@
+{
+  "fullRun": false,
+  "objectCount": 10000,
+  "matchingObjects": 1,
+  "scanTotalMs": 106.97348299999999,
+  "scanMeanUs": 10.6973483,
+  "thresholdOprfIterations": 100,
+  "thresholdOprfMeanUs": 638.09299,
+  "erasureCombinationsChecked": 10,
+  "opaqueObjectBytes": 1024,
+  "fragmentBytes": 342
+}

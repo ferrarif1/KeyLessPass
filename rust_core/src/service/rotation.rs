@@ -1,7 +1,8 @@
 use crate::crypto::encoder;
 use crate::domain::{
-    transition_rotation, CredentialDescriptionRecord, CredentialState, EncodingDescriptor,
-    RotationEvent, RotationState,
+    apply_authentication_probe, transition_rotation, AuthenticationProbe,
+    CredentialDescriptionRecord, CredentialState, EncodingDescriptor, ProbeVerdict,
+    ProbedCredential, RotationContract, RotationEvent, RotationState,
 };
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
@@ -15,6 +16,8 @@ use uuid::Uuid;
 pub struct RotateCredentialRequest {
     pub record_id: Uuid,
     pub encoding_descriptor: Option<EncodingDescriptor>,
+    #[serde(default)]
+    pub rotation_contract: RotationContract,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -27,6 +30,23 @@ pub struct ConfirmRotationRequest {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CancelRotationRequest {
+    pub record_id: Uuid,
+    pub version: u32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecordRotationProbeRequest {
+    pub record_id: Uuid,
+    pub version: u32,
+    pub credential: ProbedCredential,
+    pub verdict: ProbeVerdict,
+    pub endpoint_id: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RotationVersionRequest {
     pub record_id: Uuid,
     pub version: u32,
 }
@@ -49,6 +69,22 @@ pub fn cancel_rotation(request: CancelRotationRequest) -> std::result::Result<()
     let paths = StoragePaths::default().map_err(String::from)?;
     let provider = current_platform_provider(&paths.app_dir);
     cancel_rotation_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
+}
+
+pub fn record_rotation_probe(
+    request: RecordRotationProbeRequest,
+) -> std::result::Result<CredentialDescriptionRecord, String> {
+    let paths = StoragePaths::default().map_err(String::from)?;
+    let provider = current_platform_provider(&paths.app_dir);
+    record_rotation_probe_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
+}
+
+pub fn request_old_revocation(
+    request: RotationVersionRequest,
+) -> std::result::Result<CredentialDescriptionRecord, String> {
+    let paths = StoragePaths::default().map_err(String::from)?;
+    let provider = current_platform_provider(&paths.app_dir);
+    request_old_revocation_with_provider(&paths, provider.as_ref(), request).map_err(String::from)
 }
 
 pub fn rotate_credential_with_provider(
@@ -79,7 +115,11 @@ pub fn rotate_credential_with_provider(
         previous.version,
         previous.version + 1,
     )?;
-    let mut next = CredentialDescriptionRecord::rotation_from(&previous, descriptor);
+    let mut next = CredentialDescriptionRecord::rotation_from_with_contract(
+        &previous,
+        descriptor,
+        request.rotation_contract,
+    );
     next.set_mac(&master_key)?;
     store.insert(&next)?;
     Ok(next)
@@ -100,19 +140,10 @@ pub fn confirm_rotation_with_provider(
     }
     new_record.verify_mac(&master_key)?;
 
-    if new_record.rotation_state == RotationState::Prepared {
-        transition_rotation(&mut new_record, RotationEvent::RequestSent)?;
-        new_record.set_mac(&master_key)?;
-        store.update(&new_record)?;
-    }
-    if new_record.rotation_state == RotationState::UpdateSent {
-        transition_rotation(&mut new_record, RotationEvent::RemoteNewPasswordVerified)?;
-        new_record.set_mac(&master_key)?;
-        store.update(&new_record)?;
-    }
     if new_record.rotation_state != RotationState::RemoteConfirmed {
         return Err(KeylessPassError::Validation(
-            "rotation must have remote-success evidence before local commit".to_string(),
+            "rotation requires persisted new-only authentication evidence before local commit"
+                .to_string(),
         ));
     }
 
@@ -134,6 +165,39 @@ pub fn confirm_rotation_with_provider(
     new_record.set_mac(&master_key)?;
     store.update(&new_record)?;
     Ok(())
+}
+
+pub fn record_rotation_probe_with_provider(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    request: RecordRotationProbeRequest,
+) -> Result<CredentialDescriptionRecord> {
+    let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
+    let store = CdrStore::new(&config.cdr_store_path);
+    let mut record = store.get(request.record_id, Some(request.version))?;
+    record.verify_mac(&master_key)?;
+    apply_authentication_probe(
+        &mut record,
+        AuthenticationProbe::now(request.credential, request.verdict, request.endpoint_id),
+    )?;
+    record.set_mac(&master_key)?;
+    store.update(&record)?;
+    Ok(record)
+}
+
+pub fn request_old_revocation_with_provider(
+    paths: &StoragePaths,
+    provider: &dyn PlatformFactorProvider,
+    request: RotationVersionRequest,
+) -> Result<CredentialDescriptionRecord> {
+    let (config, master_key) = cached_master_key_with_local_factor(paths, provider)?;
+    let store = CdrStore::new(&config.cdr_store_path);
+    let mut record = store.get(request.record_id, Some(request.version))?;
+    record.verify_mac(&master_key)?;
+    transition_rotation(&mut record, RotationEvent::RequestOldRevocation)?;
+    record.set_mac(&master_key)?;
+    store.update(&record)?;
+    Ok(record)
 }
 
 pub fn cancel_rotation_with_provider(
@@ -195,16 +259,30 @@ pub fn reconcile_rotation_with_provider(
     let store = CdrStore::new(&config.cdr_store_path);
     let mut record = store.get(record_id, Some(version))?;
     record.verify_mac(&master_key)?;
-    if record.rotation_state == RotationState::UnknownOutcome {
-        transition_rotation(&mut record, RotationEvent::BeginReconciliation)?;
-    }
-    let event = match result {
-        ReconciliationResult::NewPasswordWorks => RotationEvent::NewPasswordAuthenticated,
-        ReconciliationResult::OldPasswordWorks => RotationEvent::OldPasswordAuthenticated,
-        ReconciliationResult::BothPasswordsWork => RotationEvent::BothPasswordsAuthenticated,
-        ReconciliationResult::NeitherWorks => RotationEvent::NeitherPasswordAuthenticated,
+    let probes = match result {
+        ReconciliationResult::NewPasswordWorks => [
+            (ProbedCredential::New, ProbeVerdict::Success),
+            (ProbedCredential::Old, ProbeVerdict::ConclusiveFailure),
+        ],
+        ReconciliationResult::OldPasswordWorks => [
+            (ProbedCredential::Old, ProbeVerdict::Success),
+            (ProbedCredential::New, ProbeVerdict::ConclusiveFailure),
+        ],
+        ReconciliationResult::BothPasswordsWork => [
+            (ProbedCredential::New, ProbeVerdict::Success),
+            (ProbedCredential::Old, ProbeVerdict::Success),
+        ],
+        ReconciliationResult::NeitherWorks => [
+            (ProbedCredential::New, ProbeVerdict::ConclusiveFailure),
+            (ProbedCredential::Old, ProbeVerdict::ConclusiveFailure),
+        ],
     };
-    transition_rotation(&mut record, event)?;
+    for (credential, verdict) in probes {
+        apply_authentication_probe(
+            &mut record,
+            AuthenticationProbe::now(credential, verdict, "legacy-reconciliation"),
+        )?;
+    }
     record.set_mac(&master_key)?;
     store.update(&record)?;
     Ok(record)

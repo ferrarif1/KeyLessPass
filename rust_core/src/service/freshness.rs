@@ -1,19 +1,35 @@
 use crate::error::{KeylessPassError, Result};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+pub struct CredentialFreshness {
+    pub policy_epoch: u64,
+    pub credential_generation: u64,
+    pub credential_lineage: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct FreshnessAnchor {
     pub vault_id: Uuid,
     pub root_generation: u64,
+    #[serde(default = "default_share_set_generation")]
+    pub share_set_generation: u64,
     pub cdr_epoch: u64,
+    #[serde(default)]
+    pub credentials: BTreeMap<Uuid, CredentialFreshness>,
     pub operation_log_digest: String,
     pub updated_at: DateTime<Utc>,
+}
+
+fn default_share_set_generation() -> u64 {
+    1
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -60,8 +76,7 @@ impl FreshnessService for InMemoryFreshnessService {
             ));
         }
         if let Some(current) = current {
-            if next.root_generation < current.root_generation || next.cdr_epoch <= current.cdr_epoch
-            {
+            if !anchor_advances(current, &next) {
                 return Err(KeylessPassError::Integrity(
                     "freshness anchor update is not monotonic".to_string(),
                 ));
@@ -164,13 +179,28 @@ fn validate_compare_and_set(
         ));
     }
     if let Some(current) = current {
-        if next.root_generation < current.root_generation || next.cdr_epoch <= current.cdr_epoch {
+        if !anchor_advances(current, next) {
             return Err(KeylessPassError::Integrity(
                 "freshness anchor update is not monotonic".to_string(),
             ));
         }
     }
     Ok(())
+}
+
+fn anchor_advances(current: &FreshnessAnchor, next: &FreshnessAnchor) -> bool {
+    next.cdr_epoch > current.cdr_epoch
+        && next.root_generation >= current.root_generation
+        && next.share_set_generation >= current.share_set_generation
+        && current.credentials.iter().all(|(record_id, old)| {
+            next.credentials
+                .get(record_id)
+                .is_some_and(|new| credential_order(new) >= credential_order(old))
+        })
+}
+
+fn credential_order(state: &CredentialFreshness) -> (u64, u64) {
+    (state.policy_epoch, state.credential_generation)
 }
 
 pub fn evaluate_freshness(
@@ -191,11 +221,30 @@ pub fn evaluate_freshness(
     if local.vault_id != anchored.vault_id {
         return FreshnessStatus::ForkDetected;
     }
-    if local.root_generation < anchored.root_generation || local.cdr_epoch < anchored.cdr_epoch {
+    if local.root_generation < anchored.root_generation
+        || local.share_set_generation < anchored.share_set_generation
+        || local.cdr_epoch < anchored.cdr_epoch
+        || anchored.credentials.iter().any(|(record_id, remote)| {
+            local.credentials.get(record_id).map_or(true, |state| {
+                credential_order(state) < credential_order(remote)
+            })
+        })
+    {
         return FreshnessStatus::RollbackDetected;
     }
-    if local.root_generation > anchored.root_generation || local.cdr_epoch > anchored.cdr_epoch {
+    if local.root_generation > anchored.root_generation
+        || local.share_set_generation > anchored.share_set_generation
+        || local.cdr_epoch > anchored.cdr_epoch
+        || local.credentials.iter().any(|(record_id, state)| {
+            anchored.credentials.get(record_id).map_or(true, |remote| {
+                credential_order(state) > credential_order(remote)
+            })
+        })
+    {
         return FreshnessStatus::NeedsPublish;
+    }
+    if local.credentials != anchored.credentials {
+        return FreshnessStatus::ForkDetected;
     }
     if local.operation_log_digest != anchored.operation_log_digest {
         return FreshnessStatus::ForkDetected;
@@ -211,7 +260,9 @@ mod tests {
         FreshnessAnchor {
             vault_id,
             root_generation: root,
+            share_set_generation: root,
             cdr_epoch: epoch,
+            credentials: BTreeMap::new(),
             operation_log_digest: digest.to_string(),
             updated_at: Utc::now(),
         }
@@ -277,5 +328,61 @@ mod tests {
             .compare_and_set(Some(1), anchor(vault, 1, 2, "two"))
             .unwrap();
         assert_eq!(reopened.read(vault).unwrap().unwrap().cdr_epoch, 2);
+    }
+
+    #[test]
+    fn detects_credential_policy_share_set_and_lineage_rollback() {
+        let vault = Uuid::new_v4();
+        let record = Uuid::new_v4();
+        let mut remote = anchor(vault, 2, 10, "current");
+        remote.share_set_generation = 5;
+        remote.credentials.insert(
+            record,
+            CredentialFreshness {
+                policy_epoch: 3,
+                credential_generation: 8,
+                credential_lineage: "salt-hash-new".to_string(),
+            },
+        );
+
+        let mut generation_rollback = remote.clone();
+        generation_rollback
+            .credentials
+            .get_mut(&record)
+            .unwrap()
+            .credential_generation = 5;
+        assert_eq!(
+            evaluate_freshness(&generation_rollback, Some(&remote), true, true),
+            FreshnessStatus::RollbackDetected
+        );
+
+        let mut policy_rollback = remote.clone();
+        policy_rollback
+            .credentials
+            .get_mut(&record)
+            .unwrap()
+            .policy_epoch = 2;
+        assert_eq!(
+            evaluate_freshness(&policy_rollback, Some(&remote), true, true),
+            FreshnessStatus::RollbackDetected
+        );
+
+        let mut share_rollback = remote.clone();
+        share_rollback.share_set_generation = 4;
+        assert_eq!(
+            evaluate_freshness(&share_rollback, Some(&remote), true, true),
+            FreshnessStatus::RollbackDetected
+        );
+
+        let mut lineage_fork = remote.clone();
+        lineage_fork
+            .credentials
+            .get_mut(&record)
+            .unwrap()
+            .credential_lineage = "salt-hash-old".to_string();
+        assert_eq!(
+            evaluate_freshness(&lineage_fork, Some(&remote), true, true),
+            FreshnessStatus::ForkDetected
+        );
     }
 }

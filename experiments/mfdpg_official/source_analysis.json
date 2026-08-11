@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "classification": "SOURCE_DERIVED_STRUCTURAL_RESULT",
+  "officialCommit": "6c26096dd22ff2b18aa5d8e4c3d5b0caf7b45bb7",
+  "artifactPath": "upstream/index.js",
+  "policy": "a|b[0-9]",
+  "acceptedLanguage": ["a", "b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9"],
+  "sourceObservations": {
+    "alternativeSelection": "randexp 0.5.3 _randSelect chooses an option with randInt(0, options.length-1)",
+    "characterSelection": "randexp 0.5.3 chooses an index uniformly from the expanded character range",
+    "repetitionSelection": "randexp 0.5.3 chooses an integer uniformly between the repetition minimum and maximum",
+    "artifactRng": "MFDPG index.js seeds random-seed 0.3.0 with the Argon2id preimage and assigns intBetween to RandExp.randInt",
+    "paperArtifactDifference": "The preprint describes HMAC-DRBG, whereas the released index.js uses random-seed 0.3.0"
+  },
+  "analyticDistribution": {
+    "probabilityA": 0.5,
+    "probabilityEachBDigit": 0.05,
+    "uniformTarget": 0.09090909090909091,
+    "totalVariationDistanceToUniform": 0.4090909090909091,
+    "minEntropyBits": 1.0
+  },
+  "boundary": "This result describes the pinned artifact on one enumerable regular expression. It is not a statement that all DFA traversals or all MFDPG policies have this distribution."
+}

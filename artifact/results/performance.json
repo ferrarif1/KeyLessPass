@@ -1,0 +1,103 @@
+{
+  "boundary": "Cold EPSCD begins from PolicySpec and constructs its DFA and full count table. Cold Dichopile begins from the same PolicySpec, constructs only the shared DFA, initializes exact Dichopile length weights, and generates once. Warm rows reuse their respective compiled structures. The algorithms serve different purposes; these measurements are operational costs of this artifact, not a speedup claim against Oudinet et al.'s optimized configuration. Storage, network, approval, and user delay are excluded.",
+  "compileMicros": 5786.6230000000005,
+  "cycleWalking": {
+    "maximum": 6,
+    "mean": 1.378,
+    "median": 1.0,
+    "oneWalkFraction": 0.732,
+    "p95": 3.0,
+    "p99": 4.0,
+    "samples": 500
+  },
+  "cycleWalkingTheory": {
+    "binarySupersetBits": 112,
+    "deterministicWorstCaseWalks": "M-N+1 for M=2^ceil(log2 N); the configured backend instead fails closed after 1024",
+    "idealPermutationTailBound": "Pr[W>k] = (M-N)_k/(M)_k <= ((M-N)/M)^k < 2^-k for a non-power-of-two N; for N=M, W=1"
+  },
+  "epscd": {
+    "coldCompileAndDerive": {
+      "meanMicros": 5713.169268000003,
+      "medianMicros": 5531.707,
+      "p95Micros": 6465.287,
+      "p99Micros": 7002.707,
+      "samples": 500,
+      "standardDeviationMicros": 409.4162095120956
+    },
+    "warmDeriveFromCachedCompiledPolicy": {
+      "meanMicros": 151.81735800000004,
+      "medianMicros": 128.89800000000002,
+      "p95Micros": 242.544,
+      "p99Micros": 354.33,
+      "samples": 500,
+      "standardDeviationMicros": 48.28553430709694
+    }
+  },
+  "policySpace": "3923998958022941748259805567385600",
+  "publishedDichopileExact": {
+    "arithmetic": "exact BigUint reproduction",
+    "coldDfaCompileInitializeAndGenerate": {
+      "meanMicros": 10347.520819999998,
+      "medianMicros": 10110.44,
+      "p95Micros": 11587.221,
+      "p99Micros": 12342.682,
+      "samples": 500,
+      "standardDeviationMicros": 605.7609257674314
+    },
+    "generationRecurrenceCalls": {
+      "maximum": 34,
+      "mean": 34.0,
+      "median": 34.0,
+      "oneWalkFraction": 0.0,
+      "p95": 34.0,
+      "p99": 34.0,
+      "samples": 500
+    },
+    "lengthPreprocessingMicros": 1842.671,
+    "lengthPreprocessingRecurrenceCalls": 18,
+    "peakStackPayloadBytes": {
+      "maximum": 2090,
+      "mean": 2090.0,
+      "median": 2090.0,
+      "p95": 2090.0,
+      "p99": 2090.0,
+      "samples": 500
+    },
+    "peakStackVectors": {
+      "maximum": 6,
+      "mean": 6.0,
+      "median": 6.0,
+      "oneWalkFraction": 0.0,
+      "p95": 6.0,
+      "p99": 6.0,
+      "samples": 500
+    },
+    "publication": "Oudinet, Denise, and Gaudel, TCS 2013",
+    "warmGenerateFromCachedDfaAndGenerator": {
+      "meanMicros": 4321.776970000003,
+      "medianMicros": 4162.512,
+      "p95Micros": 5017.878,
+      "p99Micros": 5710.085999999999,
+      "samples": 500,
+      "standardDeviationMicros": 372.72959658488764
+    }
+  },
+  "rank": {
+    "meanMicros": 1.7940900000000004,
+    "medianMicros": 1.743,
+    "p95Micros": 2.154,
+    "p99Micros": 2.306,
+    "samples": 500,
+    "standardDeviationMicros": 0.1955370499419484
+  },
+  "schemaVersion": 1,
+  "stateCount": 254,
+  "unrank": {
+    "meanMicros": 3.08664,
+    "medianMicros": 2.768,
+    "p95Micros": 4.164000000000001,
+    "p99Micros": 5.793,
+    "samples": 500,
+    "standardDeviationMicros": 1.9911896379802705
+  }
+}
