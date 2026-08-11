@@ -1,0 +1,28 @@
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=8mm and 8mm,
+  box/.style={draw, rounded corners, align=center, minimum height=11mm,
+              text width=31mm, fill=blue!4},
+  resultbox/.style={draw, rounded corners, align=center, minimum height=11mm,
+              text width=31mm, fill=green!7},
+  arr/.style={-Latex, thick}
+]
+\node[box] (domains) {Compromised\\domains $X$};
+\node[box, below=of domains] (tickets) {Observed approvals\\$T$, $|T|\le q$};
+\node[box, right=of domains, yshift=-9.5mm, text width=39mm] (closure)
+  {One least fixed point\\$\operatorname{Cl}_{R}(X,T)$};
+\node[resultbox, right=of closure, yshift=8mm] (root)
+  {UDC reachability\\$M_R(X,T)$};
+\node[resultbox, right=of closure, yshift=-8mm] (exposure)
+  {Credential outputs\\$E_R(X,T)$};
+\node[resultbox, right=of root, yshift=-9.5mm, text width=37mm] (spectrum)
+  {CETS and witnesses\\$\tau_E(k,q),\rho_E(k,q)$};
+
+\draw[arr] (domains) -- (closure);
+\draw[arr] (tickets) -- (closure);
+\draw[arr] (closure) -- (root);
+\draw[arr] (closure) -- (exposure);
+\draw[arr] (root) -- (spectrum);
+\draw[arr] (exposure) -- (spectrum);
+\end{tikzpicture}
+}

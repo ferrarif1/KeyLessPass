@@ -1,0 +1,795 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{placeins}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\journal{Journal of Information Security and Applications}
+
+\newcommand{\Lang}{\mathcal{L}}
+\newcommand{\Rank}{\mathsf{Rank}}
+\newcommand{\Unrank}{\mathsf{Unrank}}
+\newcommand{\Perm}{\Pi}
+\newcommand{\CommitEvidence}{\mathsf{CommitEvidence}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\input{epscd_metrics.tex}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Exact Policy-Space Credential Derivation for Failure-Safe Legacy Password Rotation}
+
+\author{Yuanyi Zhang}
+\address{Independent Researcher}
+
+\begin{abstract}
+Enterprise networks still contain applications, appliances, and directories
+whose only modifiable authentication secret is a policy-constrained password.
+Replacing these systems is preferable, but during migration a manager must
+generate reconstructible credentials and rotate them through remote interfaces
+whose success is not always observable. We present Exact Policy-Space
+Credential Derivation (EPSCD), a construction that compiles a bounded password
+policy into a finite accepted language, computes its exact cardinality, and
+builds inverse ranking functions. A context-separated key controls a
+permutation of the exact rank domain; generation $g$ is unranked to the
+credential at that position. The construction specializes established
+finite-language and rank-then-encipher techniques, giving exact compliance,
+deterministic reconstruction, exact $\log_2|\Lang_P|$, and strict
+non-repetition within one credential lineage. We then couple the sequence to an
+evidence-bounded rotation protocol. Candidate metadata is durably prepared
+before submission, and the committed generation advances only when an
+adapter-specific predicate establishes acceptance of that candidate. Timeouts,
+lost responses, unsafe verification, and contradictory observations preserve
+both old and new reconstructability in an unknown-outcome state. In a clean run
+over the published \CorpusTotal-policy SOUPS corpus, \CorpusCompiled\ of
+\CorpusTranslated\ exactly translated policies compile under a fixed budget.
+A \SequenceCount-generation run has no policy
+violation, duplicate, or replay mismatch. \RotationCases\ fault scenarios across HTTP
+form and LDAP-style adapter models preserve the two rotation invariants. A
+bounded TLA+ model explores \TlaDistinctStates\ distinct states without invariant violations,
+while two negative controls are detected. The artifact is a research prototype:
+its FF1 backend uses bounded cycle walking, its adapter experiments are local
+semantic models, and it does not make weak legacy policies strong.
+\end{abstract}
+
+\begin{keyword}
+deterministic password generation \sep password policy \sep regular language
+\sep format-preserving encryption \sep credential rotation \sep fault recovery
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+
+Modern authentication should use phishing-resistant mechanisms when the
+relying system can be changed. In practice, enterprise networks continue to
+contain vendor applications, appliances, directories, and internally developed
+services whose available interface is a password field. Passwords therefore
+remain a migration and compatibility problem even when an organization has a
+passwordless target architecture~\cite{herley2012persistence}. A management
+client for these targets must answer two different questions. Which password
+does generation $g$ denote under the target policy? When a remote change is
+attempted, what evidence justifies changing the locally committed generation?
+
+Published deterministic generators demonstrate site-specific derivation
+without changing the target verifier. PwdHash and Password Multiplier derive a
+site credential from a master secret and site context
+\cite{ross2005pwdhash,halderman2005multiplier}; PALPAS separates a high-entropy
+secret from non-secret per-service state and policy information~\cite{palpas}.
+Published policy languages and verified generators separately establish that
+machine-readable constraints and uniform compliant generation are feasible
+\cite{gautam2022pcp,grilo2022verified}. These are essential precedents, but they
+do not define a generation-indexed, without-replacement credential sequence
+coupled to a failure-aware remote password-change journal.
+
+Naively hashing $(K,\mathit{service},g)$ and reducing modulo a legal-space size
+has two avoidable defects. Reduction can bias the marginal distribution, and
+independent evaluations can collide at two generations. Constructing required
+character classes and shuffling with unbiased indices also does not generally
+make the final distribution uniform over the complete accepted set. The
+correct abstraction is the finite language accepted by the entire policy.
+Counting and ranking finite languages, arbitrary-domain ciphers, and
+rank-then-encipher format-preserving encryption are established results
+\cite{goldberg1985ranking,black2002finite,bellare2009fpe,oudinet2013uniform}.
+Our method does not rename these results as new mathematics; it binds them to a
+credential lineage and generation contract.
+
+Remote rotation presents a separate systems failure. An HTTP success page, a
+completed TCP exchange, or a submitted LDAP request need not prove that the
+new credential is the durable remote state. Conversely, a server may commit an
+update whose response is lost. Advancing local generation on a transport event
+can make the manager reconstruct a credential that the target rejects. Rolling
+back after every timeout can lose a credential that the target accepted. The
+safe result is sometimes explicitly unknown.
+
+This paper makes exactly two technical contributions:
+
+\begin{enumerate}
+\item \textbf{Exact Policy-Space Credential Sequence.} We specify a bounded
+  policy compiler with exact arbitrary-precision suffix counts, inverse
+  $\Rank/\Unrank$ functions, an explicit credential lineage, and an audited
+  keyed permutation over $[0,N_P)$. The sequence provides exact compliance,
+  deterministic reconstruction, exact effective bits, and strict same-lineage
+  non-repetition. Cross-lineage equality is quantified rather than hidden by a
+  password-history mechanism.
+\item \textbf{Evidence-Bounded Failure-Safe Legacy Rotation.} We define a
+  durable prepare--submit--verify protocol and an adapter capability contract.
+  Local generation advances only after adapter-defined evidence supports the
+  candidate credential; uncertain outcomes retain both deterministic
+  reconstruction paths and permit later reconciliation.
+\end{enumerate}
+
+The contributions are a credential construction and a lifecycle protocol, not
+a new finite-language algorithm, cryptographic primitive, distributed
+transaction primitive, or authentication mechanism. EPSCD is intended for
+legacy compatibility while a target is migrated to modern authentication.
+
+\section{Related work and novelty boundary}
+
+\subsection{Deterministic and policy-aware credential generation}
+
+PwdHash derives site-separated passwords inside a browser extension without
+server modification~\cite{ross2005pwdhash}. Password Multiplier uses a similar
+master-secret/site-name model and its evaluation discusses changing the site
+argument for rotation~\cite{halderman2005multiplier}. PALPAS derives passwords
+from a high-entropy secret and per-service salts while synchronizing non-secret
+parameters~\cite{palpas}. These works establish deterministic legacy-verifier
+compatibility and service separation as prior art.
+
+Horsch et al. define a password-requirements markup language
+\cite{horsch2016prml}. Gautam et al. design a composition-policy description
+language and release the 270-policy workbook used in our evaluation
+\cite{gautam2022pcp}. Grilo et al. verify policy compliance and uniform random
+generation in EasyCrypt and integrate the generator into Bitwarden
+\cite{grilo2022verified}. EPSCD neither claims that policy representation nor
+uniform compliant random generation is new. Its different object is a keyed,
+deterministic, injective sequence indexed by credential generation.
+
+\subsection{Finite-language counting and exact-domain permutations}
+
+Uniform generation from formal languages and language ranking have a long
+literature~\cite{hickey1983uniform,goldwurm1995random,denise1999uniform,
+bernardi2012linear,oudinet2013uniform,goldberg1985ranking}. We use exact suffix
+counts and lexicographic unranking, standard dynamic-programming techniques.
+Dichopile~\cite{oudinet2013uniform} is the published algorithmic comparison in
+our distribution and cost experiments. The algorithms answer different
+questions: Dichopile draws independent random words, whereas EPSCD assigns a
+stable permutation position to each credential generation.
+
+Black and Rogaway study ciphers on arbitrary finite domains
+\cite{black2002finite}. Bellare et al. formalize FPE, analyze cycle walking, and
+describe rank-then-encipher for complex formats including regular languages
+\cite{bellare2009fpe}. Consequently, the mapping
+$\Unrank(\Perm(\Rank(x)))$ is not our invention. EPSCD specializes the approach
+to credential metadata and rotation. The prototype reuses FF1 and follows the
+one-million-element minimum-domain direction in the NIST revision draft
+\cite{nist38g}; it does not propose a cipher.
+
+\subsection{Key recovery and operational secret handling}
+
+Threshold recovery and multi-factor key derivation are established topics
+\cite{shamir1979share,nair2023mfkdf,scarlata2024mfkdf}. They are operational
+dependencies rather than EPSCD contributions. In the intended profile, a
+complete Root Key is not persistently stored. A managed endpoint retains one
+Shamir share and removable media retains a second share under password-based
+authenticated encryption; the password protects the share envelope and does
+not generate the share. A required operation reconstructs the Root Key
+transiently, derives the credential key and output, and clears temporary
+material on a best-effort basis. A third network-resident share is reserved for
+alternative recovery. This profile stores neither service-password values nor
+a complete Root Key, but it cannot protect plaintext during a legitimate
+operation on an already compromised endpoint.
+
+\subsection{Published-property comparison}
+
+Table~\ref{tab:prior-art} reports only properties specified by published work.
+``Not specified'' is not a claim that an implementation cannot be extended.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Published work and the two EPSCD research properties.}
+\label{tab:prior-art}
+\begin{tabularx}{\textwidth}{L{2.8cm}XXXX}
+\toprule
+Work & Deterministic service credential & Exact accepted-space cardinality & Same-lineage permuted sequence & Evidence-bounded remote rotation \\
+\midrule
+PwdHash~\cite{ross2005pwdhash} & Yes & Not specified & Not specified & Not specified \\
+Password Multiplier~\cite{halderman2005multiplier} & Yes & Not specified & Not specified & Not specified \\
+PALPAS~\cite{palpas} & Yes & Not specified & Not specified & Not specified \\
+Verified password generation~\cite{grilo2022verified} & Random generation & Policy semantics verified & No & No \\
+Dichopile~\cite{oudinet2013uniform} & No & Exact counting in our reproduction & No & No \\
+EPSCD & Yes & Yes & Yes & Yes \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\section{System and threat model}
+
+\subsection{Entities and persistent state}
+
+The client manages a legacy target, a service/account identity, an authenticated
+policy description, and Root Key material. The target exposes a password-change
+adapter and possibly a separate verification or version-readback interface. It
+does not participate in EPSCD and need not store EPSCD metadata.
+
+The baseline persists identifiers, a random credential salt, an explicit
+lineage identifier, policy identity/version/epoch/hash, root generation,
+committed credential generation, adapter metadata, and a pending operation
+journal. It does not persist the current or previous service-password values.
+During display, submission, and verification, a derived password necessarily
+exists transiently.
+
+\subsection{Adversary and assumptions}
+
+The adversary may read public policy and generation metadata; observe known
+$(g,\mathit{pwd}_g)$ pairs; steal the metadata database; drop, delay, duplicate,
+or reorder network traffic; replay a stale local snapshot; and crash the client
+at a persistence or network boundary. An adapter can be unavailable or return
+ambiguous observations. We separately discuss adapter compromise.
+
+The authenticated journal is assumed to preserve integrity on the current
+device. Detecting rollback of the journal itself requires an external or
+non-rollbackable freshness checkpoint. The selected permutation is assumed to
+meet its stated PRP security goal on the used domains. Policy and generation
+metadata are not secret. A fully compromised endpoint during a legitimate
+derivation can capture the Root Key, credential key, or plaintext password.
+
+\subsection{Goals and non-goals}
+
+The goals are exact policy membership, deterministic reconstruction,
+same-lineage non-repetition, exact domain measurement, and safe local progress
+under remote ambiguity. Non-goals include forward secrecy after credential-key
+compromise, global non-repetition across independent lineages, availability
+against a malicious operator, complete constant-time behavior, and making a
+small accepted language resistant to exhaustive search.
+
+\input{figures/epscd_pipeline.tex}
+
+\section{Exact Policy-Space Credential Sequence}
+
+\subsection{Bounded policy language}
+
+Let $P$ be a canonical bounded policy over alphabet $\Sigma$, with lengths in
+$[L_{\min},L_{\max}]$. The implemented fragment supports allowed and forbidden
+characters; minimum and maximum class counts; fixed positions, prefix, and
+suffix; forbidden first/last sets; a per-character maximum; identical and
+sequential run limits; and finite forbidden substrings. Their product state is
+a finite deterministic transition system
+
+\[
+ A_P=(Q,\Sigma,\delta,q_0,F).
+\]
+
+The exact accepted language is
+
+\[
+ \Lang_P=\{w\in\Sigma^*:L_{\min}\le |w|\le L_{\max},
+                         \delta^*(q_0,w)\in F\}.
+\]
+
+Unsupported source semantics are rejected, not approximated. The compiler also
+enforces a state budget because the product of class counters, substring state,
+run state, and position constraints can be exponential in the policy
+description.
+
+\subsection{Exact suffix counts}
+
+For position $i$, target length $\ell$, and automaton state $q$, define
+
+\[
+C_\ell(i,q)=
+\begin{cases}
+1,& i=\ell\ \land\ q\in F,\\
+0,& i=\ell\ \land\ q\notin F,\\
+\sum_{c\in\Sigma:\delta(q,c)\downarrow}
+  C_\ell(i+1,\delta(q,c)),& i<\ell.
+\end{cases}
+\]
+
+All counts use arbitrary-precision integers. The exact domain size is
+
+\[
+ N_P=|\Lang_P|=\sum_{\ell=L_{\min}}^{L_{\max}}C_\ell(0,q_0),
+ \qquad H_{\mathrm{eff}}=\log_2 N_P.
+\]
+
+For $Q=|Q|$, maximum length $L$, and alphabet size $s$, a dense suffix table
+uses $O(LQ)$ big integers and $O(LQs)$ transition/count operations after the
+automaton is constructed. Big-integer bit complexity depends on $\log N_P$.
+The prototype reports state count, count payload, process RSS, compile time,
+and online rank/unrank latency rather than hiding these costs in one average.
+
+\subsection{Ranking and unranking}
+
+Fix a canonical order on lengths and on $\Sigma$. Unranking first selects the
+length interval containing rank $r$. At each position, it considers outgoing
+characters in canonical order; the completion count following each edge is an
+interval width. It selects the interval containing $r$ and subtracts preceding
+widths. Ranking applies the inverse accumulation to an accepted word.
+
+\begin{theorem}[Bijection]
+For a successfully compiled non-empty policy, $\Rank_P:\Lang_P\rightarrow
+[0,N_P)$ and $\Unrank_P:[0,N_P)\rightarrow\Lang_P$ are mutual inverses.
+\end{theorem}
+
+\begin{proof}
+At each prefix, outgoing edge intervals are disjoint, adjacent, and their widths
+sum to the suffix count of the current state by the recurrence. Therefore every
+rank selects exactly one edge and every accepted prefix contributes exactly the
+sum of intervals preceding its edge. Induction over remaining positions gives
+$\Rank_P(\Unrank_P(r))=r$. Applying the same argument to the unique path of an
+accepted word gives $\Unrank_P(\Rank_P(w))=w$.
+\end{proof}
+
+The decoder performs no random candidate rejection. This statement does not
+apply to the concrete permutation layer.
+
+\subsection{Context-separated exact-domain sequence}
+
+Scheme v2 persists a public random $\mathit{lineageID}$. A credential key is
+derived using canonical length-delimited metadata:
+
+\begin{align*}
+K_{\mathrm{cred}}={}&\mathrm{HKDF}(K_{\mathrm{root}},
+  \texttt{EPSCD/credential-key/scheme-v2}\parallel\\
+ &\mathit{vaultID}\parallel\mathit{serviceID}\parallel\mathit{accountID}
+ \parallel\mathit{lineageID}\parallel\mathit{credentialSalt}\parallel\\
+ &\mathit{rootGeneration}\parallel\mathit{policyVersion}
+ \parallel\mathit{policyEpoch}).
+\end{align*}
+
+The tweak additionally binds the policy identifier and canonical policy hash.
+Generation is deliberately the permutation input, not part of the tweak:
+
+\[
+ r_g=\Perm_{K_{\mathrm{cred}},T}(g),\qquad
+ \mathit{pwd}_g=\Unrank_P(r_g),\qquad 0\le g<N_P.
+\]
+
+The concrete backend applies AES-256 FF1 to the smallest binary domain
+$[0,M)$ containing $[0,N_P)$ and cycle-walks until the result is below $N_P$.
+It fails closed after 1,024 walks, supports domains of at least one million
+elements and at most 512 bits, and never falls back to modulo reduction. Since
+$M<2N_P$, the accepted density is greater than one half for this selected
+superset. The implementation is not claimed to be constant time.
+
+\begin{theorem}[Exact compliance and deterministic reconstruction]
+Every successful derivation returns an element of $\Lang_P$. Identical root,
+canonical context, policy, generation, and backend produce the same password.
+\end{theorem}
+
+\begin{proof}
+The backend returns $r_g\in[0,N_P)$ and Theorem~1 establishes that
+$\Unrank_P(r_g)\in\Lang_P$. All transformations are deterministic for fixed
+inputs.
+\end{proof}
+
+\begin{theorem}[Same-lineage non-repetition]
+For fixed key, tweak, and policy, successful derivations at $g_1\ne g_2$ return
+different passwords until the domain is exhausted.
+\end{theorem}
+
+\begin{proof}
+$\Perm_{K,T}$ is injective and $\Unrank_P$ is injective. Their composition is
+injective.
+\end{proof}
+
+\begin{theorem}[Ideal-permutation marginal]
+For a fixed generation and a uniformly selected ideal random permutation key,
+each $w\in\Lang_P$ occurs with probability $1/N_P$.
+\end{theorem}
+
+\begin{proof}
+The image of a fixed input under an ideal random permutation is uniform on
+$[0,N_P)$. Bijection under $\Unrank_P$ preserves the mass of every element.
+\end{proof}
+
+For the concrete backend, Theorem~4 is replaced by the applicable computational
+PRP claim. Known $(g,\mathit{pwd}_g)$ pairs are known input/output pairs after
+ranking and do not provide forward secrecy.
+
+\subsection{Lineage change and collision bound}
+
+Rekeying, root replacement, or a semantically changed policy starts a new
+lineage. Strict non-repetition is intentionally scoped to one lineage. Let
+$H$ be historical passwords, $\Lang_{\mathrm{new}}$ the new language,
+$h=|H\cap\Lang_{\mathrm{new}}|$, and $N=|\Lang_{\mathrm{new}}|$. Under an
+independent ideal permutation, the next output collides with this relevant
+history with probability $h/N$. For $m$ future outputs, a simple union bound is
+
+\[
+ \Pr[\mathrm{collision}]\le \min\left(1,\frac{hm}{N}\right).
+\]
+
+The prototype returns this bound as an exact rational. It stores no password
+history in the baseline. A deployment can configure a minimum
+$H_{\mathrm{eff}}$ and reject or warn on a weak legacy policy.
+
+\section{Evidence-Bounded Failure-Safe Rotation}
+
+\subsection{Why remote success is an evidence question}
+
+A remote password-change operation crosses independent persistence and network
+boundaries. The request may never arrive; the server may commit and lose its
+response; a proxy may return a success page before durable update; replicated
+authentication nodes may temporarily disagree; or verification may be unsafe
+because failed attempts consume a lockout budget. Therefore no universal
+mapping from transport status to committed credential exists.
+
+\input{figures/rotation_lifecycle.tex}
+
+\subsection{Adapter capability and evidence contract}
+
+Each adapter declares whether it can verify the new credential, safely verify
+the old credential, obtain atomic success evidence, read an authoritative
+remote version, and attach an idempotency key. Its evidence requirement is one
+of:
+
+\begin{itemize}
+\item \textsc{NewAcceptance}: a conclusive candidate probe is sufficient;
+\item \textsc{NewOnly}: the candidate succeeds and a safe old probe
+  conclusively fails;
+\item \textsc{AuthoritativeVersion}: an expected remote version/readback is
+  observed;
+\item \textsc{UnknownOnly}: automatic commit evidence cannot be established.
+\end{itemize}
+
+An adapter-specific predicate
+$\CommitEvidence(A,O)$ evaluates declared capabilities $A$ and persisted
+observations $O$. A generic update success flag is recorded but ignored by the
+predicate. The old probe is omitted when unsafe; this can narrow the conclusion
+to new acceptance or force an unknown outcome rather than spending the lockout
+budget.
+
+LDAP provides a standardized password-modify operation~\cite{rfc3062}, but an
+adapter must still define what a successful operation and subsequent readback
+mean in its deployment. The protocol does not treat the existence of a standard
+operation as universal evidence of replicated authentication state.
+
+\subsection{Durable transition system}
+
+Let $g$ be the committed generation. Before any possible network send, the
+client persists
+
+\[
+\textsc{Prepared}(g,g+1,opID,\mathit{lineage},\mathit{policy},A).
+\]
+
+The record contains metadata sufficient to reconstruct both candidates, not
+their password values. Submission enters \textsc{Submitted}; observations enter
+\textsc{Verifying}. The only terminal decisions are:
+
+\begin{align*}
+\textsc{Committed}(g+1)&\quad\text{if }\CommitEvidence(A,O),\\
+\textsc{Aborted}(g)&\quad\text{if evidence conclusively retains the old state},\\
+\textsc{UnknownOutcome}&\quad\text{otherwise}.
+\end{align*}
+
+\textsc{UnknownOutcome} neither increments nor automatically rolls back. It
+retains the base generation, candidate generation, operation identity, and
+context needed to reconstruct both. Later reconciliation adds observations to
+the journal. A stale operation identifier cannot commit a different candidate.
+
+\begin{theorem}[Commit safety]
+Assuming authenticated journal writes and correct adapter classification, the
+committed generation cannot advance from $g$ to $g+1$ without persisted evidence
+that satisfies the declared adapter predicate for the corresponding candidate.
+\end{theorem}
+
+\begin{proof}
+The prepare, submit, verify, crash, unknown, and abort transitions do not modify
+the committed generation. The only transition that does is commit. Its guard
+requires the persisted candidate identity and a true value of the adapter
+evidence predicate. Induction over a transition trace establishes the invariant.
+\end{proof}
+
+\begin{theorem}[Uncertainty preservation]
+Every reachable \textnormal{\textsc{UnknownOutcome}} record retains sufficient authenticated
+metadata to reconstruct both $\mathit{pwd}_g$ and $\mathit{pwd}_{g+1}$.
+\end{theorem}
+
+\begin{proof}
+Preparation persists both generation contexts before submission. Every
+transition into \textsc{UnknownOutcome} preserves that record; deletion of
+either path is permitted only by a terminal commit or abort transition.
+\end{proof}
+
+These are safety results under the stated model, not claims of liveness or a new
+distributed transaction primitive.
+
+\section{Implementation}
+
+The Rust prototype uses a canonical JSON policy IR, a reachable-state compiler,
+and a dense arbitrary-precision suffix-count table. The implementation caps
+reachable states at 250,000 and policy-domain length at the documented bound.
+Rank and unrank scan canonical outgoing characters; policy acceptance reuses the
+compiled transitions. HKDF-SHA-256 derives scheme-v2 credential keys. The
+permutation dependency implements FF1 with AES-256; EPSCD supplies range,
+domain, and cycle-walk guards.
+
+Rotation metadata is held in authenticated credential-description records and a
+SQLite store. The adapter contract is a typed structure and the evidence
+classifier returns sufficient-new-acceptance, sufficient-new-only,
+sufficient-atomic, sufficient-version, insufficient, or contradictory. The
+local semantic adapters reopen an on-disk SQLite journal during crash cases and
+contain no password column.
+
+The artifact command runs Rust unit/property tests, the public-corpus compiler,
+controlled-density and sequence experiments, rotation faults, and TLA+, then
+generates JSON, CSV, and LaTeX tables. Paper numbers in this section are inputs
+from those generated tables.
+
+\section{Evaluation}
+
+We ask six questions. RQ1 measures realistic policy coverage and compiler cost;
+RQ2 checks exactness; RQ3 studies the cost of whole-candidate rejection as
+acceptance density falls; RQ4 exercises a long deterministic sequence; RQ5
+tests failure safety; and RQ6 checks whether different adapter capabilities fit
+one lifecycle.
+
+\subsection{Setup and measurement boundaries}
+
+The policy corpus is the public historical workbook published with Gautam et
+al.~\cite{gautam2022pcp}. It is a reproducibility corpus, not a claim about
+current enterprise prevalence. Translation rejects unsupported semantics
+instead of weakening them. Each translated policy receives fixed bounds of
+250,000 states, 4~GiB RSS, and 60 seconds. Timing values are single-host
+prototype measurements. The published Dichopile algorithm is reproduced with
+exact BigUint arithmetic; we do not claim performance against the authors'
+optimized experimental configuration.
+
+\subsection{RQ1: policy coverage and exact-space cost}
+
+\begin{table}[t]
+\centering
+\caption{Public policy corpus clean run.}
+\label{tab:corpus}
+\input{tables/epscd_policy_corpus.tex}
+\end{table}
+
+Table~\ref{tab:corpus} shows all \CorpusTotal\ source records. Of these,
+\CorpusTranslated\ can be translated exactly into the implemented bounded IR
+and \CorpusUnsupported\ are rejected for unsupported source semantics. Of the
+attempted exact translations, \CorpusCompiled\ compile, with \CorpusTimeout\
+reaching the fixed time limit. Among successful policies, median/P95 reachable
+states are \CorpusMedianStates/\CorpusNinetyFifthStates\ and maximum is
+\CorpusMaxStates. Median/P95 count payload is
+\CorpusMedianPayloadMiB/\CorpusNinetyFifthPayloadMiB~MiB; maximum is
+\CorpusMaxPayloadMiB~MiB. Sampled process RSS remains in the machine-readable
+record, with the stated warning that short-lived peaks can be missed. These
+tails justify reporting resource
+limits rather than only a success percentage.
+
+Median policy-level rank and unrank latencies are \CorpusMedianRankUs\ and
+\CorpusMedianUnrankUs~$\mu$s.
+On the separate 18-character performance policy, cached full derivation is
+\WarmMedianUs~$\mu$s median and \WarmNinetyFifthUs~$\mu$s P95; cold compile-and-derive
+is \ColdMedianMs~ms
+median. Compiler cost is therefore paid at policy enrollment or change, not on
+each routine credential reconstruction.
+
+\subsection{RQ2: exactness and distribution checks}
+
+Small-language tests enumerate every rank and verify acceptance. They check
+\[
+\Rank(\Unrank(r))=r
+\quad\text{and}\quad
+\Unrank(\Rank(w))=w.
+\]
+Property tests vary length and
+class requirements. A count exceeding $2^{128}$ verifies that cardinality is
+not truncated to a machine integer. Permutation tests check inversion and
+injection on sampled inputs.
+
+For the enumerable language $\{a,b0,\ldots,b9\}$, \DistributionSamples\ independent samples
+from the exact Dichopile reproduction have empirical total-variation distance
+\DichopileTvd\ from uniform; the test-only ideal-permutation EPSCD composition has
+distance \EpscdTvd. These are finite-sample sanity checks, not proofs and not a
+concrete FF1 security experiment.
+
+\subsection{RQ3: controlled rejection density}
+
+For independent whole-candidate rejection with acceptance density $\alpha$,
+the retry count $R$ is geometric:
+
+\[
+ \mathbb{E}[R]=1/\alpha,\qquad
+ \Pr[R>t]=(1-\alpha)^t.
+\]
+
+\begin{table}[t]
+\centering
+\caption{Whole-candidate rejection retries, 2,000 accepted outputs per density.}
+\label{tab:density}
+\input{tables/epscd_rejection_density.tex}
+\end{table}
+
+Table~\ref{tab:density} demonstrates the increasingly long online tail. At
+$\alpha=10^{-4}$, the observed median is \SparseMedianRetries\ attempts and
+P99.9 is \SparseNinetyNinthNineRetries.
+EPSCD's language decoder follows one count-selected path and therefore has no
+candidate-retry tail. This comparison isolates the mechanism; the selected FF1
+backend has its own bounded cycle walks and must not be described as wholly
+rejection-free.
+
+Across the \CorpusCompiled\ compiled corpus policies, \PermutationEligible\
+satisfy the FF1 backend's domain bounds and \PermutationIneligible\ are rejected
+by that backend while remaining compiler successes. For \PermutationSamples\
+measured generations, cycle walks have median \PermutationMedianWalks, P95
+\PermutationNinetyFifthWalks, maximum \PermutationMaxWalks, and
+\PermutationCapHits\ cap failures. Because the smallest binary superset has density above
+one half, these observations are not the same experiment as the synthetic
+$10^{-4}$ whole-candidate density.
+
+\subsection{RQ4: sequence behavior}
+
+\begin{table}[t]
+\centering
+\caption{Scheme-v2 long-sequence implementation check.}
+\label{tab:sequence}
+\input{tables/epscd_sequence.tex}
+\end{table}
+
+The run derives and replays \SequenceCount\ consecutive generations in a domain
+of \SequenceDomain\ elements (\SequenceBits\ effective bits).
+Table~\ref{tab:sequence} reports no policy violation, duplicate, or replay
+mismatch. The run takes \SequenceSeconds\ seconds for \SequenceCalls\
+derivations on the test host.
+This validates the implementation path at scale; non-repetition itself follows
+from Theorem~3 rather than empirical collision absence.
+
+\subsection{RQ5--RQ6: faults and adapter diversity}
+
+\begin{table}[t]
+\centering
+\caption{Fault matrix across two adapter semantics.}
+\label{tab:rotation}
+\input{tables/epscd_rotation.tex}
+\end{table}
+
+The matrix covers request drop, remote success plus response loss, timeout,
+duplicate submission, crashes before and after submission, crash after remote
+commit, old/new/both/neither acceptance, policy change, lockout risk, unavailable
+old verification, and absent authoritative readback. The HTTP form adapter uses
+new-acceptance evidence and never probes the old password. The LDAP-style
+directory adapter uses expected-version evidence and idempotent operation
+identity. They share one lifecycle but reach different safe terminal states.
+
+All \RotationCases\ scenarios satisfy the commit-evidence and uncertainty-preservation
+checks. \RotationCommitted\ reach committed because the configured adapter
+predicate is satisfied; \RotationUnknown\ remain unknown,
+\RotationPrepared\ remain prepared after a pre-submit crash, and
+\RotationAborted\ abort after the directory model conclusively observes the base version.
+The experiment uses high-fidelity local semantic models and real durable SQLite
+reopen, but not a production HTTP application or OpenLDAP deployment.
+
+\subsection{Bounded model checking}
+
+The dedicated model represents four adapter evidence requirements, four remote
+credential states, persistent preparation, crashes, unknown outcomes, and
+sequential generations.
+
+\begin{table}[t]
+\centering
+\caption{TLC results for the EPSCD rotation abstraction.}
+\label{tab:tla}
+\input{tables/epscd_tla.tex}
+\end{table}
+
+TLC exhaustively explores the configured finite state graph. Invariants cover
+commit evidence, remote candidate acceptance, uncertainty reconstruction,
+prepare-before-submit, no advance in unknown state, and sequential generation
+uniqueness. The two negative controls enable a transition that commits on a
+generic successful response and a transition that drops the candidate on
+unknown outcome; the expected invariants are violated. The result validates
+the abstract transition relation within its bounds and assumptions, not the
+complete Rust implementation or an unbounded network.
+
+\section{Security analysis}
+
+\paragraph{Known credential pairs.}
+Generation is public. Given $(g_i,\mathit{pwd}_{g_i})$, an observer can compute
+$(g_i,\Rank_P(\mathit{pwd}_{g_i}))$, a known input/output pair for the
+permutation. Security of unseen generations is the selected PRP's computational
+claim, not information-theoretic secrecy or forward secrecy.
+
+\paragraph{Credential-key and Root-Key compromise.}
+Compromise of $K_{\mathrm{cred}}$ exposes its complete lineage. Replacing only
+the policy epoch does not recover from that exposure because the epoch is public
+context; a new credential salt and lineage identifier are required. Root-Key
+compromise affects every derived credential context. Shamir resharing of the
+same root changes share material but does not recover from root compromise.
+
+\paragraph{Metadata theft.}
+Policy, salt, generation, lineage, and adapter metadata are non-secret. Database
+theft reveals account relationships and enables rollback attempts, but does not
+alone yield the credential key under the root-secret assumption. Metadata
+integrity and freshness remain necessary because changing generation or policy
+context changes the reconstructed password.
+
+\paragraph{Low-entropy accepted language.}
+Uniformity cannot repair a small verifier domain. EPSCD reports exact effective
+bits and can enforce a deployment threshold. The one-million-element FF1 floor
+is an implementation/backend limit, not a sufficient password-strength rule.
+
+\paragraph{Endpoint and adapter compromise.}
+An endpoint compromised during legitimate reconstruction can observe plaintext
+and key material. A compromised adapter can forge observations within its trust
+boundary and defeat commit classification. Deployment must authenticate adapter
+code and evidence sources; the state machine prevents accidental inference, not
+malicious evidence by a trusted component.
+
+\paragraph{Rollback and stale state.}
+The journal prevents ordinary crash loss when the latest authenticated record is
+available. A complete rollback of both local state and its freshness anchor is
+outside that guarantee. An independent checkpoint can detect stale generation
+and pending-operation metadata, but such a service is not required for the two
+core constructions and is not evaluated as a contribution here.
+
+\paragraph{Remote ambiguity and availability.}
+Unknown outcome is a deliberate safety state. It may require operator action or
+a later authoritative observation, and a target that exposes no safe evidence
+may remain unresolved indefinitely. This sacrifices automatic liveness rather
+than guessing a credential state.
+
+\section{Limitations and deployment guidance}
+
+The policy compiler supports a substantial bounded fragment, not arbitrary
+natural-language policies or breach-list membership. Product-specific semantic
+translation remains a trusted step. State construction can grow exponentially,
+so fixed state, memory, and time budgets remain necessary even when all exact
+translations complete within the final evaluation budget.
+
+The FF1 dependency and cycle-walking wrapper are a prototype backend. The
+1,024-walk cap creates explicit failure for rare inputs rather than total
+derivation for every possible key/tweak/input. Timing varies with walk count and
+the complete implementation is not constant time. A production deployment
+would require independent cryptographic review and side-channel analysis.
+
+The adapter evaluation does not include a real enterprise application,
+OpenLDAP cluster, replication lag, CAPTCHA/MFA workflow, or measured human
+reconciliation. The capability model is designed to express these differences,
+but production evidence predicates must be validated per target. The formal
+model is bounded and checks safety, not liveness.
+
+Frequent forced password rotation is not itself recommended. EPSCD supports
+necessary compromise response, inherited policy, and migration workflows; it
+should not be used to justify needless rotation or to delay replacement of
+password-only authentication.
+
+\section{Conclusion}
+
+EPSCD treats the complete bounded policy as the credential domain and treats
+remote change success as an evidence decision. Exact counting and inverse
+ranking expose the true domain; a context-separated exact-domain permutation
+turns generation into a deterministic, same-lineage non-repeating sequence.
+Durable preparation and adapter-specific evidence prevent local generation from
+advancing on ambiguous transport outcomes while retaining both recovery paths.
+The implementation, public-corpus run, fault matrix, and bounded model checking
+support these scoped claims. The method composes established mathematical and
+cryptographic tools into a legacy credential lifecycle; it does not claim new
+primitives or remove the need to migrate legacy targets.
+
+\section*{Artifact availability}
+
+The artifact contains source, tests, the public-corpus translation provenance,
+machine-readable results, generated tables, and a one-command reproduction
+script. Identifying repository information can be replaced with an anonymous
+artifact URL during double-blind review.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+
+\end{document}

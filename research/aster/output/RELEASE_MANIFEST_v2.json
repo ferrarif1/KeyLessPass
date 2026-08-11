@@ -1,0 +1,171 @@
+{
+  "allBlockersResolved": true,
+  "boundaries": {
+    "adapter": "Real loopback HTTP and durable LDAP-style fault targets plus a pinned single-server OpenLDAP modify/bind smoke test; no replication or production-performance claim.",
+    "mpc": "Three repetitions per configuration on single-host loopback; no LAN/WAN, DKG, share-refresh, or history-window MPC timing claim.",
+    "secretScan": "Structured-result key scan plus Rust journal-schema tests; this does not prove absence from process memory, swap, operating-system crash dumps, or untracked files."
+  },
+  "generatedEvidence": [
+    {
+      "bytes": 510,
+      "path": "results/generated/BLOCKERS.json",
+      "sha256": "4b970ddbc69cdf692b5ea6773844af3cbb6ec2c8dfa5c401bdb48f03e63e363d"
+    },
+    {
+      "bytes": 446,
+      "path": "results/generated/EXPERIMENT_ENVIRONMENT.json",
+      "sha256": "5de7b6c6b2361885b560caecf95d7c0dd7e18e3f02b1dde477b2f1f60779287d"
+    },
+    {
+      "bytes": 1386,
+      "path": "results/generated/RESULTS_SUMMARY.md",
+      "sha256": "9f241f92d2dc6ff5b538f2c48a74814ffb8b24b06dda250147948455ce85b721"
+    },
+    {
+      "bytes": 2123,
+      "path": "results/generated/RESULT_PROVENANCE.json",
+      "sha256": "c696ee7dd63b82319bab4447aabc4fb0f42c14413cde5ea0cecf9d80cb770da9"
+    },
+    {
+      "bytes": 1296,
+      "path": "results/generated/rq1_summary.json",
+      "sha256": "512e7422490cb3d516e5faef55986a191e85b4cc417a6b03b0acb26be860583f"
+    },
+    {
+      "bytes": 3918,
+      "path": "results/generated/rq2_summary.json",
+      "sha256": "15da60213650767fc85f67f37778bd0a7f4c4b1ff1790e708e465b6140fb3e81"
+    },
+    {
+      "bytes": 2404,
+      "path": "results/generated/rq3_summary.json",
+      "sha256": "8f2d68856348d7417d6219c54b85ac74a58bb797d393ed679ac60b7c2a7ab425"
+    },
+    {
+      "bytes": 1611,
+      "path": "results/generated/rq4_summary.json",
+      "sha256": "9440181bdc5e33b57e2f4d48f083cf156eb07a6538a59a55f06c19cf5b04efaa"
+    },
+    {
+      "bytes": 952,
+      "path": "results/generated/rq5_summary.json",
+      "sha256": "2436aff0bfbd2d1f81b2bb84aabf0e2b14a3b22d974e092ce046f95453d36f35"
+    },
+    {
+      "bytes": 1839,
+      "path": "results/generated/rq6_summary.json",
+      "sha256": "75b811a9e2817cfa970f2060cf221d8aff952844e8d32521f726559bfba9db11"
+    },
+    {
+      "bytes": 1302,
+      "path": "results/generated/security_scan.json",
+      "sha256": "2c1e519fab64e49438b4359535a637ddb3a026004a8d73bf089de9f436908559"
+    },
+    {
+      "bytes": 1721,
+      "path": "results/generated/tla_summary.json",
+      "sha256": "247543421e15ed9de9ccfd4815eaba5f64ef359fe1d72ad122b819352947debe"
+    }
+  ],
+  "manuscripts": [
+    {
+      "bytes": 85344,
+      "path": "output/ASTER_manuscript_final_v2.md",
+      "sha256": "6f165ac8ebb13013497e4b6362a8e0c20f15685f6b2c2669943bfbe9a87e7136"
+    },
+    {
+      "bytes": 426501,
+      "path": "output/ASTER_manuscript_final_v2.docx",
+      "sha256": "504c553dd1a01c1eb4f2a0c61ef2be415aed46b517abeb8224afa6017341a3cf"
+    },
+    {
+      "bytes": 727039,
+      "path": "output/ASTER_manuscript_final_v2.pdf",
+      "sha256": "0a8346ed0a9c38422f919dce9612422c311a5167cfeac4a7db32623717df5350"
+    }
+  ],
+  "paperAudit": {
+    "references": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "unresolvedMarkers": [],
+    "wordCountApprox": 11502
+  },
+  "pdfPages": 29,
+  "rawEvidence": [
+    {
+      "bytes": 60628,
+      "path": "results/raw/rq1_policy_results.jsonl",
+      "sha256": "5f37bc40021681fcb8e587fbc78cbfe7c10454924747f80d1eab4e086c22df1a"
+    },
+    {
+      "bytes": 48942,
+      "path": "results/raw/rq5_fault_traces.jsonl",
+      "sha256": "0ba805f9f1c0c02209a1eec1213e9ee436127656f8d0667b603ed097063e846c"
+    },
+    {
+      "bytes": 622,
+      "path": "results/raw/rq5_openldap.json",
+      "sha256": "6827ec6ee5e38057237d334cd077c6b5541740ed98ff2c4fe29e00d32806767c"
+    },
+    {
+      "bytes": 11732,
+      "path": "results/raw/rq6_mpspdz.json",
+      "sha256": "ec54f3f6192b69796da0a97536bf8d61f2e5e38283f748eb72688dc048d597b1"
+    },
+    {
+      "bytes": 6358,
+      "path": "results/raw/rq6_mpspdz_smoke.json",
+      "sha256": "cff794c95f59b353dbf7f5334b13fcaaf8f07c0b22257ebe570ea040fd5e86f3"
+    },
+    {
+      "bytes": 765,
+      "path": "results/raw/rq6_reference_vector.json",
+      "sha256": "370180226395b5f17f34df4727c1618f200d61bc9050b895ebe00d666093195a"
+    },
+    {
+      "bytes": 1289,
+      "path": "results/raw/rq7_scalability.json",
+      "sha256": "402f03689b04665376be4d4efeb4520a0dfe1ed1dfa379acf4c47cef95cc5588"
+    },
+    {
+      "bytes": 8875,
+      "path": "results/raw/semantic_results.json",
+      "sha256": "69788383f2c4813c48fdb87094a966fea0c7d4daff3018b104e05a9f938ee49d"
+    },
+    {
+      "bytes": 9882,
+      "path": "results/raw/test_suite.json",
+      "sha256": "a03900f10d3dfba54ef4373b4efeec3c1ea05f68f22f59e2f7cc59e5d5661a38"
+    }
+  ],
+  "release": "ASTER-2026-08-11_v2",
+  "schemaVersion": 1,
+  "structuredSecurityScanPass": true,
+  "tests": {
+    "cargoFailed": 0,
+    "cargoPassed": 99,
+    "pass": true,
+    "pythonSemanticRun": 9
+  }
+}

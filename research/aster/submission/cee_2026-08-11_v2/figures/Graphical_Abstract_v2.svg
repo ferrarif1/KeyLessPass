@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2656" height="1062" viewBox="0 0 2656 1062">
+<title>ASTER graphical abstract</title>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#41566B"/></marker>
+<marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4C956C"/></marker>
+<marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C94C4C"/></marker>
+</defs>
+<rect width="2656" height="1062" fill="#FFFFFF"/>
+<text x="1328" y="82" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="48" font-weight="700" font-style="normal" fill="#173A5E">
+<tspan x="1328" dy="0">ASTER: exact-scope credentials with Root-Epoch healing</tspan>
+</text>
+<line x1="150" y1="120" x2="2506" y2="120" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<rect x="72" y="188" width="178" height="286" rx="22" fill="#EAF2F8" stroke="#2F6B9A" stroke-width="2"/>
+<text x="161.0" y="300" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="27" font-weight="700" font-style="normal" fill="#173A5E">
+<tspan x="161.0" dy="0">NORMAL</tspan>
+<tspan x="161.0" dy="33.75">DERIVATION</tspan>
+</text>
+<text x="161.0" y="395" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="600" font-style="normal" fill="#667085">
+<tspan x="161.0" dy="0">one output</tspan>
+</text>
+<rect x="72" y="594" width="178" height="286" rx="22" fill="#FBECEC" stroke="#C94C4C" stroke-width="2"/>
+<text x="161.0" y="680" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="700" font-style="normal" fill="#8B2F2F">
+<tspan x="161.0" dy="0">POST</tspan>
+<tspan x="161.0" dy="25.299999999999997">COMPROMISE</tspan>
+<tspan x="161.0" dy="25.299999999999997">HEALING</tspan>
+</text>
+<text x="161.0" y="820" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="600" font-style="normal" fill="#667085">
+<tspan x="161.0" dy="0">replace root</tspan>
+</text>
+<rect x="300" y="230" width="430" height="190" rx="22" fill="#EEF5FB" stroke="#2F6B9A" stroke-width="3"/>
+<rect x="333" y="297.0" width="44" height="56" rx="5" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="2"/>
+<line x1="343" y1="315.0" x2="368" y2="315.0" stroke="#2F6B9A" stroke-width="2" stroke-linecap="round"/>
+<line x1="343" y1="326.0" x2="368" y2="326.0" stroke="#2F6B9A" stroke-width="2" stroke-linecap="round"/>
+<line x1="343" y1="337.0" x2="360" y2="337.0" stroke="#2F6B9A" stroke-width="2" stroke-linecap="round"/>
+<text x="400" y="319.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="400" dy="0">Exact policy space</tspan>
+</text>
+<text x="400" y="357.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="400" dy="0">Count + Rank/Unrank</tspan>
+</text>
+<line x1="750" y1="325" x2="850" y2="325" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="870" y="230" width="430" height="190" rx="22" fill="#FFF6DE" stroke="#D89B2B" stroke-width="3"/>
+<path d="M 897 305.0 H 953 V 345.0 H 897 Z" stroke="#D89B2B" stroke-width="2" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="897" cy="325.0" r="7" fill="#FFF6DE" stroke="#D89B2B" stroke-width="2"/>
+<circle cx="953" cy="325.0" r="7" fill="#FFF6DE" stroke="#D89B2B" stroke-width="2"/>
+<line x1="919" y1="315.0" x2="919" y2="335.0" stroke="#D89B2B" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4"/>
+<text x="970" y="319.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="970" dy="0">Exact-scope capability</tspan>
+</text>
+<text x="970" y="357.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="970" dy="0">context + generation</tspan>
+</text>
+<line x1="1320" y1="325" x2="1420" y2="325" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="1440" y="230" width="430" height="190" rx="22" fill="#EAF6F2" stroke="#2A9D8F" stroke-width="3"/>
+<circle cx="1475" cy="337.0" r="14" fill="#FFFFFF" stroke="#2A9D8F" stroke-width="2"/>
+<circle cx="1515" cy="337.0" r="14" fill="#FFFFFF" stroke="#2A9D8F" stroke-width="2"/>
+<circle cx="1495" cy="303.0" r="14" fill="#FFFFFF" stroke="#2A9D8F" stroke-width="2"/>
+<line x1="1495" y1="317.0" x2="1482" y2="327.0" stroke="#2A9D8F" stroke-width="2" stroke-linecap="round"/>
+<line x1="1495" y1="317.0" x2="1508" y2="327.0" stroke="#2A9D8F" stroke-width="2" stroke-linecap="round"/>
+<text x="1540" y="319.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1540" dy="0">Threshold evaluation</tspan>
+</text>
+<text x="1540" y="357.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1540" dy="0">Root-Epoch stays shared</tspan>
+</text>
+<line x1="1890" y1="325" x2="1990" y2="325" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="2010" y="230" width="500" height="190" rx="22" fill="#ECF6EE" stroke="#4C956C" stroke-width="3"/>
+<rect x="2035" y="307.0" width="60" height="42" rx="6" fill="#FFFFFF" stroke="#4C956C" stroke-width="2"/>
+<circle cx="2048" cy="328.0" r="4" fill="#4C956C" stroke="#4C956C" stroke-width="1"/>
+<circle cx="2065" cy="328.0" r="4" fill="#4C956C" stroke="#4C956C" stroke-width="1"/>
+<circle cx="2082" cy="328.0" r="4" fill="#4C956C" stroke="#4C956C" stroke-width="1"/>
+<text x="2110" y="319.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="2110" dy="0">One compliant password</tspan>
+</text>
+<text x="2110" y="357.0" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="2110" dy="0">no reusable endpoint key</tspan>
+</text>
+<text x="1328" y="505" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="26" font-weight="700" font-style="normal" fill="#173A5E">
+<tspan x="1328" dy="0">ONE AUTHORIZED OUTPUT - NO DERIVATION AMPLIFICATION</tspan>
+</text>
+<rect x="300" y="635" width="430" height="190" rx="22" fill="#FBECEC" stroke="#C94C4C" stroke-width="3"/>
+<text x="515.0" y="724.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="515.0" dy="0">Old root disclosed</tspan>
+</text>
+<text x="515.0" y="762.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="515.0" dy="0">exposure remains</tspan>
+</text>
+<line x1="750" y1="730" x2="850" y2="730" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="870" y="635" width="430" height="190" rx="22" fill="#F2ECF8" stroke="#7657A5" stroke-width="3"/>
+<text x="1085.0" y="724.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1085.0" dy="0">Independent new Root-Epoch</tspan>
+</text>
+<text x="1085.0" y="762.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1085.0" dy="0">replace, not refresh</tspan>
+</text>
+<line x1="1320" y1="730" x2="1420" y2="730" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="1440" y="635" width="430" height="190" rx="22" fill="#FFF6DE" stroke="#D89B2B" stroke-width="3"/>
+<text x="1655.0" y="724.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1655.0" dy="0">Evidence-bounded migration</tspan>
+</text>
+<text x="1655.0" y="762.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1655.0" dy="0">retain both if ambiguous</tspan>
+</text>
+<line x1="1890" y1="730" x2="1990" y2="730" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="2010" y="635" width="500" height="190" rx="22" fill="#ECF6EE" stroke="#4C956C" stroke-width="3"/>
+<text x="2260.0" y="724.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="2260.0" dy="0">Progressive healing</tspan>
+</text>
+<text x="2260.0" y="762.0" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="2260.0" dy="0">old-root exposure falls to 0</tspan>
+</text>
+<text x="1328" y="936" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="26" font-weight="700" font-style="normal" fill="#7A3F16">
+<tspan x="1328" dy="0">INDEPENDENT ROOT REPLACEMENT + CONCLUSIVE REMOTE EVIDENCE</tspan>
+</text>
+</svg>

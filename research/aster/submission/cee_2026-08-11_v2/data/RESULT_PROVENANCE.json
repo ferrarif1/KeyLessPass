@@ -1,0 +1,44 @@
+{
+  "claims": {
+    "RQ1 policy table and quantitative paragraph": [
+      "results/raw/rq1_policy_results.jsonl:*",
+      "results/generated/rq1_summary.json:sourcePolicies,exactlyTranslated,successfullyCompiled,permutationEligible,permutationFailClosed,generatedCredentials,policyViolations,sameLineageDuplicates,replayMismatches,rankUnrankFailures,compileMillis,maxAutomatonStates,largestDomainBits"
+    ],
+    "RQ2 capability table, paragraph, and spill figure": [
+      "results/raw/semantic_results.json:rq2",
+      "results/generated/rq2_summary.json:rows,universeSize"
+    ],
+    "RQ3 compromise paragraph and figure": [
+      "results/raw/semantic_results.json:rq3",
+      "results/generated/rq3_summary.json:rows,secretInventory"
+    ],
+    "RQ4 healing paragraph, table, and figure": [
+      "results/raw/semantic_results.json:rq4",
+      "results/generated/rq4_summary.json:exposureCurve,shareRefreshPreservedOutputs,historyTimingsMicros"
+    ],
+    "RQ5 fault paragraph": [
+      "results/raw/rq5_fault_traces.jsonl:*",
+      "results/raw/rq5_openldap.json:*",
+      "results/generated/rq5_summary.json:scenarioCount,traceCount,repetitionsPerScenario,commitInvariantViolations,uncertaintyInvariantViolations,passwordColumns"
+    ],
+    "RQ6 threshold feasibility table and paragraph": [
+      "results/raw/rq6_reference_vector.json:configurations",
+      "results/raw/rq6_mpspdz.json:rows",
+      "results/generated/rq6_summary.json:backend,topology,rows,constructionBoundary,sampleBoundary"
+    ],
+    "RQ7 scale paragraph": [
+      "results/raw/rq7_scalability.json:rows"
+    ],
+    "Section 9.2 test counts": [
+      "results/raw/test_suite.json:cargo.totalPassed",
+      "results/raw/test_suite.json:pythonSemantic.totalRun"
+    ],
+    "TLA+ paragraph and table": [
+      "tla/main.log",
+      "tla/negative_*.log",
+      "results/generated/tla_summary.json:main,negativeControls,allNegativeControlsDetected"
+    ]
+  },
+  "rule": "Every quantitative manuscript cell is copied from, or deterministically aggregated by this script from, the listed machine-readable source and field.",
+  "schemaVersion": 1
+}

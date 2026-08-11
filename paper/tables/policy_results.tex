@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Selected synthetic policy compilation results (release build).}
+\label{tab:policy}
+\begin{tabular}{lrrr}
+\toprule
+Policy & States & Compile ($\mu$s) & $\log_2 N_P$ \\
+\midrule
+Lower/digit, length 8 & 9 & 1,703 & 41.36 \\
+Four classes, length 12 & 164 & 8,891 & 71.36 \\
+Four classes, length 18 & 254 & 15,912 & 111.60 \\
+No symbol at edges, length 16 & 7,531 & 434,273 & 95.63 \\
+Per-character total $\le2$ & 159,250 & 1,690,696 & 34.91 \\
+Forbidden-substring stress & rejected & 880,798 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}

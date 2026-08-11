@@ -1,0 +1,22 @@
+\begin{figure*}[t]
+\centering
+\small
+\begin{tabular}{R{0.46\textwidth}R{0.46\textwidth}}
+\toprule
+Naive deployment & Factor-preserving deployment \\
+\midrule
+D stores $S_D$ and an automatically honoured network-release credential.
+Honest nodes release $S_N$, so both $S_D,S_N\in\mathsf{Closure}(D)$ and one
+endpoint compromise reconstructs $K_{root}$. &
+D stores $S_D$ and request capability only. A signs the complete ticket from an
+independently administered domain; three N nodes release fragments only to the
+ticket-bound ephemeral public key. Thus compromise of D alone yields one
+top-level share. \\
+\bottomrule
+\end{tabular}
+\caption{Logical threshold versus deployment threshold. Threshold storage of
+$S_N$ is insufficient when one endpoint can automatically invoke enough honest
+nodes; independent release authorization removes that authority from
+$\mathsf{Closure}(D)$.}
+\label{fig:factor-collapse}
+\end{figure*}

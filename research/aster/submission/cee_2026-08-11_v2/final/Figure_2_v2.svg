@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="980" viewBox="0 0 2100 980">
+<title>Authorization amplification by capability scope</title>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#41566B"/></marker>
+<marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4C956C"/></marker>
+<marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C94C4C"/></marker>
+</defs>
+<rect width="2100" height="980" fill="#FFFFFF"/>
+<text x="1050" y="70" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="43" font-weight="700" font-style="normal" fill="#173A5E">
+<tspan x="1050" dy="0">Authorization amplification by capability scope</tspan>
+</text>
+<rect x="170" y="144" width="44" height="44" rx="8" fill="#173A5E" stroke="#173A5E" stroke-width="1"/>
+<text x="192" y="176" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="25" font-weight="700" font-style="normal" fill="#FFFFFF">
+<tspan x="192" dy="0">A</tspan>
+</text>
+<text x="232" y="176" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="30" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="232" dy="0">Accepted outputs versus capability budget q</tspan>
+</text>
+<line x1="170" y1="790.0" x2="930" y2="790.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="148" y="798.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="148" dy="0">0</tspan>
+</text>
+<line x1="170" y1="650.0" x2="930" y2="650.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="148" y="658.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="148" dy="0">8</tspan>
+</text>
+<line x1="170" y1="510.0" x2="930" y2="510.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="148" y="518.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="148" dy="0">16</tspan>
+</text>
+<line x1="170" y1="370.0" x2="930" y2="370.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="148" y="378.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="148" dy="0">24</tspan>
+</text>
+<line x1="170" y1="230.0" x2="930" y2="230.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="148" y="238.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="148" dy="0">32</tspan>
+</text>
+<line x1="170" y1="230" x2="170" y2="790" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+<line x1="170" y1="790" x2="930" y2="790" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+<text x="90" y="510.0" transform="rotate(-90 90 510.0)" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="24" font-weight="600" fill="#1F2937">Accepted outputs</text>
+<rect x="1190" y="144" width="44" height="44" rx="8" fill="#173A5E" stroke="#173A5E" stroke-width="1"/>
+<text x="1212" y="176" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="25" font-weight="700" font-style="normal" fill="#FFFFFF">
+<tspan x="1212" dy="0">B</tspan>
+</text>
+<text x="1252" y="176" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="30" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1252" dy="0">Unauthorized spill versus capability budget q</tspan>
+</text>
+<line x1="1190" y1="790.0" x2="1950" y2="790.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="1168" y="798.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1168" dy="0">0</tspan>
+</text>
+<line x1="1190" y1="650.0" x2="1950" y2="650.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="1168" y="658.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1168" dy="0">8</tspan>
+</text>
+<line x1="1190" y1="510.0" x2="1950" y2="510.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="1168" y="518.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1168" dy="0">16</tspan>
+</text>
+<line x1="1190" y1="370.0" x2="1950" y2="370.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="1168" y="378.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1168" dy="0">24</tspan>
+</text>
+<line x1="1190" y1="230.0" x2="1950" y2="230.0" stroke="#DDE4EC" stroke-width="2" stroke-linecap="round"/>
+<text x="1168" y="238.0" text-anchor="end" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1168" dy="0">32</tspan>
+</text>
+<line x1="1190" y1="230" x2="1190" y2="790" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+<line x1="1190" y1="790" x2="1950" y2="790" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+<text x="1110" y="510.0" transform="rotate(-90 1110 510.0)" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="24" font-weight="600" fill="#1F2937">Unauthorized spill</text>
+<path d="M 170.0 772.5 L 322.0 755.0 L 474.0 720.0 L 626.0 650.0 L 778.0 510.0 L 930.0 230.0" stroke="#2F6B9A" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="170.0" cy="772.5" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="322.0" cy="755.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="474.0" cy="720.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="626.0" cy="650.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="778.0" cy="510.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="930.0" cy="230.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<path d="M 1190.0 790.0 L 1342.0 790.0 L 1494.0 790.0 L 1646.0 790.0 L 1798.0 790.0 L 1950.0 790.0" stroke="#2F6B9A" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1190.0" cy="790.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="1342.0" cy="790.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="1494.0" cy="790.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="1646.0" cy="790.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="1798.0" cy="790.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<circle cx="1950.0" cy="790.0" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<path d="M 170.0 650.0 L 322.0 510.0 L 474.0 230.0 L 626.0 230.0 L 778.0 230.0 L 930.0 230.0" stroke="#D89B2B" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 8"/>
+<rect x="162.0" y="642.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="314.0" y="502.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="466.0" y="222.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="618.0" y="222.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="770.0" y="222.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="922.0" y="222.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<path d="M 1190.0 667.5 L 1342.0 545.0 L 1494.0 300.0 L 1646.0 370.0 L 1798.0 510.0 L 1950.0 790.0" stroke="#D89B2B" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 8"/>
+<rect x="1182.0" y="659.5" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="1334.0" y="537.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="1486.0" y="292.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="1638.0" y="362.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="1790.0" y="502.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<rect x="1942.0" y="782.0" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<path d="M 170.0 230.0 L 322.0 230.0 L 474.0 230.0 L 626.0 230.0 L 778.0 230.0 L 930.0 230.0" stroke="#C94C4C" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 7"/>
+<path d="M 170.0 220.0 L 180.0 238.0 L 160.0 238.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 322.0 220.0 L 332.0 238.0 L 312.0 238.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 474.0 220.0 L 484.0 238.0 L 464.0 238.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 626.0 220.0 L 636.0 238.0 L 616.0 238.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 778.0 220.0 L 788.0 238.0 L 768.0 238.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 930.0 220.0 L 940.0 238.0 L 920.0 238.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 1190.0 247.5 L 1342.0 265.0 L 1494.0 300.0 L 1646.0 370.0 L 1798.0 510.0 L 1950.0 790.0" stroke="#C94C4C" stroke-width="4" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 7"/>
+<path d="M 1190.0 237.5 L 1200.0 255.5 L 1180.0 255.5 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 1342.0 255.0 L 1352.0 273.0 L 1332.0 273.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 1494.0 290.0 L 1504.0 308.0 L 1484.0 308.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 1646.0 360.0 L 1656.0 378.0 L 1636.0 378.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 1798.0 500.0 L 1808.0 518.0 L 1788.0 518.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 1950.0 780.0 L 1960.0 798.0 L 1940.0 798.0 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="170.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="170.0" dy="0">1</tspan>
+</text>
+<text x="322.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="322.0" dy="0">2</tspan>
+</text>
+<text x="474.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="474.0" dy="0">4</tspan>
+</text>
+<text x="626.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="626.0" dy="0">8</tspan>
+</text>
+<text x="778.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="778.0" dy="0">16</tspan>
+</text>
+<text x="930.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="930.0" dy="0">32</tspan>
+</text>
+<text x="550.0" y="872" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="25" font-weight="600" font-style="normal" fill="#1F2937">
+<tspan x="550.0" dy="0">Capability budget q</tspan>
+</text>
+<text x="1190.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1190.0" dy="0">1</tspan>
+</text>
+<text x="1342.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1342.0" dy="0">2</tspan>
+</text>
+<text x="1494.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1494.0" dy="0">4</tspan>
+</text>
+<text x="1646.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1646.0" dy="0">8</tspan>
+</text>
+<text x="1798.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1798.0" dy="0">16</tspan>
+</text>
+<text x="1950.0" y="828" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1950.0" dy="0">32</tspan>
+</text>
+<text x="1570.0" y="872" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="25" font-weight="600" font-style="normal" fill="#1F2937">
+<tspan x="1570.0" dy="0">Capability budget q</tspan>
+</text>
+<line x1="620" y1="885" x2="690" y2="885" stroke="#2F6B9A" stroke-width="4" stroke-linecap="round"/>
+<circle cx="655" cy="885" r="8" fill="#FFFFFF" stroke="#2F6B9A" stroke-width="4"/>
+<text x="708" y="894" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="600" font-style="normal" fill="#1F2937">
+<tspan x="708" dy="0">Exact</tspan>
+</text>
+<line x1="1010" y1="885" x2="1080" y2="885" stroke="#D89B2B" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 8"/>
+<rect x="1037" y="877" width="16" height="16" rx="2" fill="#FFFFFF" stroke="#D89B2B" stroke-width="4"/>
+<text x="1098" y="894" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="600" font-style="normal" fill="#1F2937">
+<tspan x="1098" dy="0">Projected service/account</tspan>
+</text>
+<line x1="1400" y1="885" x2="1470" y2="885" stroke="#C94C4C" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 7"/>
+<path d="M 1435 875 L 1445 893 L 1425 893 Z" stroke="#C94C4C" stroke-width="4" fill="#FFFFFF" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1488" y="894" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="600" font-style="normal" fill="#1F2937">
+<tspan x="1488" dy="0">Wildcard</tspan>
+</text>
+</svg>

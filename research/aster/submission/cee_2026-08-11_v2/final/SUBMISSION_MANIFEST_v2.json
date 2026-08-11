@@ -1,0 +1,142 @@
+{
+  "package": "ASTER_CEE CEE submission v2",
+  "prepared": "2026-08-11",
+  "file_count": 27,
+  "files": [
+    {
+      "file": "ASTER_CEE_Cover_Letter.docx",
+      "bytes": 12488,
+      "sha256": "375bb29e0ffc25dd76e2c6c6993b6b4b09b48da20581111f4caa1de9ab64f7c7"
+    },
+    {
+      "file": "ASTER_CEE_Declarations.docx",
+      "bytes": 12280,
+      "sha256": "b42143842a417c9f745f90332f18dc0e8c3e453474a2228414a76a70c10c133f"
+    },
+    {
+      "file": "ASTER_CEE_Highlights.docx",
+      "bytes": 11882,
+      "sha256": "49b0f23b545c6fd5a65cd706045424bcbb2e711e20ff41ad84e4e73db0732400"
+    },
+    {
+      "file": "ASTER_CEE_Main_Manuscript_v2.docx",
+      "bytes": 764291,
+      "sha256": "fba766a7ec1317e69a8ce2647873603fb58c1a360fe2667f25f4c4e743fabc16"
+    },
+    {
+      "file": "ASTER_CEE_Main_Manuscript_v2.pdf",
+      "bytes": 1359890,
+      "sha256": "f41b6f609e7170dead79776aceaa6f8ad03667e9b02a2072697ca52e09f91df6"
+    },
+    {
+      "file": "ASTER_CEE_Supplementary_Artifact.zip",
+      "bytes": 1050002,
+      "sha256": "a935910be8616bb131662f38077ea92e38534370a3c13db048ea8117cd6b103c"
+    },
+    {
+      "file": "ASTER_CEE_Title_Page.docx",
+      "bytes": 11794,
+      "sha256": "3f96f9ff7a5f7f95761ddc65a4994cbc06ac63badea83a2c9be620932c9159d6"
+    },
+    {
+      "file": "CEE_Submission_Readiness_Checklist_v2.docx",
+      "bytes": 14387,
+      "sha256": "b3f697e58957590eff51569917935807df39cec398fd6adc52d681f1535bdfb9"
+    },
+    {
+      "file": "CEE_Submission_Readiness_Checklist_v2.md",
+      "bytes": 3296,
+      "sha256": "478834425beccc2a53ddd953f8e3d0e37045762f5ef8eaa09fbb06ba16f44396"
+    },
+    {
+      "file": "DELIVERY_SUMMARY.md",
+      "bytes": 1995,
+      "sha256": "59665f7c061b2ce04d7891788e2172dd4737cdcb6bed1d91917edb5c7dc9ae3e"
+    },
+    {
+      "file": "Figure_1_v2.pdf",
+      "bytes": 124657,
+      "sha256": "34dfe983c76cefaa5c95895f45116306a327dce9f33e7f001e661c2e9770ec9e"
+    },
+    {
+      "file": "Figure_1_v2.png",
+      "bytes": 268219,
+      "sha256": "4542f4fb8b29f4452cb62c92fe44f93458fb17369218f8c9883b1b6123352201"
+    },
+    {
+      "file": "Figure_1_v2.svg",
+      "bytes": 13967,
+      "sha256": "a9027aa726c0ffc783694a61fdc1348b489d2d4634139e60ff72d59b33925e50"
+    },
+    {
+      "file": "Figure_2_v2.pdf",
+      "bytes": 74544,
+      "sha256": "a531be0394c3ee25c83b6d17badbd79dabf15fe767518705a8f721c547a4d334"
+    },
+    {
+      "file": "Figure_2_v2.png",
+      "bytes": 134895,
+      "sha256": "8c74a5291e4ae9ab4641f950a55e03b4f9c094ebb7967de27d849ff70ec13bd3"
+    },
+    {
+      "file": "Figure_2_v2.svg",
+      "bytes": 16042,
+      "sha256": "a8743f71ad1717282f6a14a63b354917826d55865e7f9b2d322b286e0caa6928"
+    },
+    {
+      "file": "Figure_3_v2.pdf",
+      "bytes": 70838,
+      "sha256": "f90f59a13d096465a49eef2830573a245934c55a6b8d5263ca8acf6f9e9de69e"
+    },
+    {
+      "file": "Figure_3_v2.png",
+      "bytes": 128675,
+      "sha256": "51592c309cd99b853a4c964c8deca9d90b1bcdc5eb8010d2695610bddeda3bd3"
+    },
+    {
+      "file": "Figure_3_v2.svg",
+      "bytes": 8935,
+      "sha256": "a3e96e7a3707cc22936816d52aa319d0d53388d57c12362f3117ec0a3720653c"
+    },
+    {
+      "file": "Figure_4_v2.pdf",
+      "bytes": 100503,
+      "sha256": "42ee01f27727a66e2d46f41fdf25ff9e7102a762e5ba2ba7810f28db7c10a62e"
+    },
+    {
+      "file": "Figure_4_v2.png",
+      "bytes": 215752,
+      "sha256": "ff550c47beb7fe2a2146ea02807cabe3bfc70415e321d6360857bbcb848f36d6"
+    },
+    {
+      "file": "Figure_4_v2.svg",
+      "bytes": 9133,
+      "sha256": "60dec1396cc1a6b74500c1314bc304e5b72337cdf6edb15682255a1662a81883"
+    },
+    {
+      "file": "Graphical_Abstract_v2.pdf",
+      "bytes": 83634,
+      "sha256": "758e63b0c1870ce191aaf438f94b4ba3ee67ee3a97a83a43d67402054955ec5f"
+    },
+    {
+      "file": "Graphical_Abstract_v2.png",
+      "bytes": 200715,
+      "sha256": "05e701c414efff3cf41eb2c9d921ef6d18d210aaeac39d0f0f92891ef9af65f7"
+    },
+    {
+      "file": "Graphical_Abstract_v2.svg",
+      "bytes": 10020,
+      "sha256": "47b7c4dcb4fa2891bbfb61cf98da6c6779197aa3b359afb13ba4c3deff05750b"
+    },
+    {
+      "file": "Graphical_Abstract_v2.tif",
+      "bytes": 326170,
+      "sha256": "69ff1adbc448190ff7c87b2a9151a51e6bbc0ec76387350b989ffcc7fda9fceb"
+    },
+    {
+      "file": "REVISION_LOG.md",
+      "bytes": 4631,
+      "sha256": "fd7e1cda44a0bfb82ab642b98f9506c9442d95d34e0a1cfde361e27e598b61dc"
+    }
+  ]
+}

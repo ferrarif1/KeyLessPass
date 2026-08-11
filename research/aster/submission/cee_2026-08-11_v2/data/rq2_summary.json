@@ -1,0 +1,182 @@
+{
+  "exactZeroSpill": true,
+  "qValues": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "rows": [
+    {
+      "acceptedSet": 1,
+      "intendedSet": 1,
+      "mode": "exact",
+      "q": 1,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 8,
+      "intendedSet": 1,
+      "mode": "projected_service_account",
+      "q": 1,
+      "unauthorizedSpill": 7
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 1,
+      "mode": "wildcard",
+      "q": 1,
+      "unauthorizedSpill": 31
+    },
+    {
+      "acceptedSet": 2,
+      "intendedSet": 2,
+      "mode": "exact",
+      "q": 2,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 16,
+      "intendedSet": 2,
+      "mode": "projected_service_account",
+      "q": 2,
+      "unauthorizedSpill": 14
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 2,
+      "mode": "wildcard",
+      "q": 2,
+      "unauthorizedSpill": 30
+    },
+    {
+      "acceptedSet": 4,
+      "intendedSet": 4,
+      "mode": "exact",
+      "q": 4,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 4,
+      "mode": "projected_service_account",
+      "q": 4,
+      "unauthorizedSpill": 28
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 4,
+      "mode": "wildcard",
+      "q": 4,
+      "unauthorizedSpill": 28
+    },
+    {
+      "acceptedSet": 8,
+      "intendedSet": 8,
+      "mode": "exact",
+      "q": 8,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 8,
+      "mode": "projected_service_account",
+      "q": 8,
+      "unauthorizedSpill": 24
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 8,
+      "mode": "wildcard",
+      "q": 8,
+      "unauthorizedSpill": 24
+    },
+    {
+      "acceptedSet": 16,
+      "intendedSet": 16,
+      "mode": "exact",
+      "q": 16,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 16,
+      "mode": "projected_service_account",
+      "q": 16,
+      "unauthorizedSpill": 16
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 16,
+      "mode": "wildcard",
+      "q": 16,
+      "unauthorizedSpill": 16
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 32,
+      "mode": "exact",
+      "q": 32,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 32,
+      "mode": "projected_service_account",
+      "q": 32,
+      "unauthorizedSpill": 0
+    },
+    {
+      "acceptedSet": 32,
+      "intendedSet": 32,
+      "mode": "wildcard",
+      "q": 32,
+      "unauthorizedSpill": 0
+    }
+  ],
+  "singleFaultWitnesses": [
+    {
+      "accepted": true,
+      "disabledCheck": "expiry",
+      "witness": "mutated request accepted with only expiry validation disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "revocation",
+      "witness": "mutated request accepted with only revocation validation disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "nonce_budget",
+      "witness": "replay accepted when durable nonce/use accounting is disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "freshness_generation",
+      "witness": "mutated request accepted with only freshness_generation validation disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "root_epoch",
+      "witness": "mutated request accepted with only root_epoch validation disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "generation",
+      "witness": "mutated request accepted with only generation validation disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "lineage",
+      "witness": "mutated request accepted with only lineage validation disabled"
+    },
+    {
+      "accepted": true,
+      "disabledCheck": "policy_hash_and_epoch",
+      "witness": "mutated request accepted with only policy_hash_and_epoch validation disabled"
+    }
+  ],
+  "universeSize": 32
+}

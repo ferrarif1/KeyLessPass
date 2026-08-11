@@ -1,0 +1,59 @@
+digraph ASTER {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    pad="0.25",
+    nodesep="0.45",
+    ranksep="0.65",
+    fontname="Helvetica",
+    fontsize=18,
+    labelloc="t",
+    label="ASTER authorization-scoped derivation and Root-Epoch healing"
+  ];
+  node [shape=box, style="rounded,filled", fillcolor="#F7FAFC", color="#355C7D", penwidth=1.6, fontname="Helvetica", fontsize=12, margin="0.16,0.10"];
+  edge [color="#4A5568", penwidth=1.4, arrowsize=0.8, fontname="Helvetica", fontsize=10];
+
+  client [label="Client endpoint\n(public metadata + durable journal)", fillcolor="#EAF2F8"];
+  approval [label="Approval Authority\nexact, short-lived, single-use capability", fillcolor="#FFF4D6"];
+  target [label="Legacy target\npassword verifier / change interface", fillcolor="#FDEDEC"];
+  freshness [label="Freshness service\nCAS / append-only checkpoint", fillcolor="#E8F8F5"];
+
+  subgraph cluster_eval {
+    label="Independent evaluator domains";
+    color="#6C8EBF";
+    penwidth=1.8;
+    style="rounded";
+    e1 [label="E1\nRoot-Epoch share"];
+    e2 [label="E2\nRoot-Epoch share"];
+    e3 [label="E3 ... En\nRoot-Epoch share"];
+    mpc [label="Threshold exact-domain evaluation\nvalidate scope + replay budget\nPRP rank / history exclusion", fillcolor="#D6EAF8"];
+    e1 -> mpc [arrowhead=none];
+    e2 -> mpc [arrowhead=none];
+    e3 -> mpc [arrowhead=none];
+  }
+
+  approval -> client [label=" signed capability"];
+  client -> approval [label=" exact request", dir=back, arrowtail=normal, arrowhead=none];
+  client -> mpc [label=" canonical request + capability"];
+  mpc -> client [label=" one authorized password only", color="#1B7F5A", fontcolor="#1B7F5A", penwidth=2.0];
+  client -> target [label=" submit / verify / reconcile"];
+  mpc -> freshness [label=" freshness + durable use state", style=dashed];
+  client -> freshness [label=" authenticated checkpoint", style=dashed];
+
+  subgraph cluster_heal {
+    label="Root-Epoch replacement after disclosure";
+    color="#B56576";
+    penwidth=1.6;
+    style="rounded,dashed";
+    old [label="Compromised Ke\nold credentials exposed", fillcolor="#FADBD8"];
+    new [label="Independent Ke+1\n(DKG or equivalent)", fillcolor="#D5F5E3"];
+    migrate [label="Per-credential migration\nprepare candidate descriptor\nremote evidence classification", fillcolor="#FCF3CF"];
+    state [label="NewOnly: commit\nAmbiguous: preserve old + candidate\nRetire Ke only when unreferenced", fillcolor="#E8DAEF"];
+    old -> new [label=" never reshare as healing", style=dashed, color="#A93226", fontcolor="#A93226"];
+    new -> migrate;
+    migrate -> state;
+  }
+
+  mpc -> new [label=" evaluator-controlled", style=dashed];
+  target -> state [label=" adapter-defined evidence", style=dashed];
+}

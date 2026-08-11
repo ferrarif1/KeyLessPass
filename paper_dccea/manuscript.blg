@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2022)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: manuscript.aux
+The style file: elsarticle-num.bst
+Database file #1: references.bib
+Warning--empty pages in ou2005mulval
+Warning--empty pages in birgisson2014macaroons
+You've used 20 entries,
+            2952 wiz_defined-function locations,
+            811 strings with 9739 characters,
+and the built_in function-call counts, 8905 in all, are:
+= -- 860
+> -- 230
+< -- 17
++ -- 90
+- -- 70
+* -- 629
+:= -- 1068
+add.period$ -- 29
+call.type$ -- 20
+change.case$ -- 19
+chr.to.int$ -- 0
+cite$ -- 22
+duplicate$ -- 368
+empty$ -- 1053
+format.name$ -- 88
+if$ -- 2371
+int.to.chr$ -- 0
+int.to.str$ -- 20
+missing$ -- 20
+newline$ -- 88
+num.names$ -- 20
+pop$ -- 212
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 588
+stack$ -- 0
+substring$ -- 537
+swap$ -- 167
+text.length$ -- 17
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 65
+width$ -- 22
+write$ -- 212
+(There were 2 warnings)

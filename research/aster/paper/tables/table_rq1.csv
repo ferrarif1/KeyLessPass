@@ -1,0 +1,14 @@
+Metric,Result
+Source policies,270
+Exactly translated,121
+Successfully compiled,121
+FF1-eligible policies,97
+Fail-closed policies,24
+Generated credential instances,9700000
+Policy violations,0
+Same-lineage duplicates,0
+Replay mismatches,0
+Rank/Unrank failures,0
+Median compile time (ms),80
+P95 compile time (ms),1812
+Maximum automaton states,49401

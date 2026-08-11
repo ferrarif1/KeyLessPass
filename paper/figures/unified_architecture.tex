@@ -1,0 +1,17 @@
+\begin{figure*}[t]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{ccccc}
+\fbox{D: managed endpoint $S_D$} & & \fbox{U: removable/offline $S_U$} & &
+\fbox{N: 3-of-5 fragments of $S_N$} \\
+& \multicolumn{3}{c}{$\searrow\qquad \text{Shamir 2-of-3}\qquad\swarrow$} & \\
+& \multicolumn{3}{c}{\fbox{$K_{root}$}} & \\
+& \multicolumn{3}{c}{$\downarrow\ \mathsf{HKDF}(\text{credential identity and lineage})$} & \\
+& \multicolumn{3}{c}{\fbox{$K_{cred}$ $\rightarrow$ EPSCD $\rightarrow$ service passwords}} & \\
+\multicolumn{5}{c}{A: independent approval signs a session-bound release ticket; A holds no Root-Key share.}
+\end{tabular}}
+\caption{Unified derivation and recovery architecture. Recovery reconstructs
+only the random Root Key; service-password values are never recovery objects.}
+\label{fig:unified-architecture}
+\end{figure*}

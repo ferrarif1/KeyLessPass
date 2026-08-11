@@ -1,0 +1,7 @@
+Exact-translation rejection reason,Policies
+context_dependent_policy_exclusions,10
+disjunctive_rules,11
+per_charset_location_or_run_constraint,1
+protocol_max_length_128,22
+subset_of_classes_constraint,35
+unbounded_max_length,70

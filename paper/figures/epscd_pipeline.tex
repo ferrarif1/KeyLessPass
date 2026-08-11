@@ -1,0 +1,14 @@
+\begin{figure*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{ccccccccc}
+\fbox{Policy $P$} & $\rightarrow$ & \fbox{Canonical IR} & $\rightarrow$ & \fbox{Finite automaton} & $\rightarrow$ & \fbox{Exact counts} & $\rightarrow$ & $N_P,\Rank_P,\Unrank_P$ \\
+&&&&&&&& $\downarrow$ \\
+\fbox{$K_{root}$ + context $C$} & $\rightarrow$ & \fbox{$K_{cred}$ + tweak $T$} & $\rightarrow$ & \fbox{generation $g$} & $\rightarrow$ & \fbox{$r=\Perm_{K,T}(g)$} & $\rightarrow$ & \fbox{$\Unrank_P(r)$} \\
+\end{tabular}
+}
+\caption{EPSCD data flow. Policy compilation defines one exact finite domain; credential generation is the input to one context-bound permutation, not part of its tweak.}
+\label{fig:pipeline}
+\end{figure*}

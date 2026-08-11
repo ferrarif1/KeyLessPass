@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1230" viewBox="0 0 1900 1230">
+<title>Failure-safe migration state machine</title>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#41566B"/></marker>
+<marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4C956C"/></marker>
+<marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C94C4C"/></marker>
+</defs>
+<rect width="1900" height="1230" fill="#FFFFFF"/>
+<text x="950" y="72" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="44" font-weight="700" font-style="normal" fill="#173A5E">
+<tspan x="950" dy="0">Failure-safe migration state machine</tspan>
+</text>
+<rect x="90" y="235" width="300" height="135" rx="22" fill="#EEF5FB" stroke="#2F6B9A" stroke-width="3"/>
+<text x="240.0" y="296.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="240.0" dy="0">Committed(e,g)</tspan>
+</text>
+<text x="240.0" y="334.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="240.0" dy="0">current descriptor</tspan>
+</text>
+<rect x="500" y="235" width="300" height="135" rx="22" fill="#FFF6DE" stroke="#D89B2B" stroke-width="3"/>
+<text x="650.0" y="296.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="650.0" dy="0">Prepared</tspan>
+</text>
+<text x="650.0" y="334.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="650.0" dy="0">candidate persisted</tspan>
+</text>
+<rect x="910" y="235" width="360" height="135" rx="22" fill="#F2ECF8" stroke="#7657A5" stroke-width="3"/>
+<text x="1090.0" y="296.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1090.0" dy="0">Submitted / Verifying</tspan>
+</text>
+<text x="1090.0" y="334.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1090.0" dy="0">await remote evidence</tspan>
+</text>
+<rect x="1460" y="125" width="350" height="135" rx="22" fill="#ECF6EE" stroke="#4C956C" stroke-width="3"/>
+<text x="1635.0" y="186.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1635.0" dy="0">Committed(e+1,j)</tspan>
+</text>
+<text x="1635.0" y="224.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1635.0" dy="0">candidate authoritative</tspan>
+</text>
+<rect x="1460" y="350" width="350" height="135" rx="22" fill="#EEF5FB" stroke="#2F6B9A" stroke-width="3"/>
+<text x="1635.0" y="411.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1635.0" dy="0">Committed(e,g)</tspan>
+</text>
+<text x="1635.0" y="449.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1635.0" dy="0">candidate aborted</tspan>
+</text>
+<rect x="890" y="665" width="400" height="155" rx="22" fill="#FBECEC" stroke="#C94C4C" stroke-width="3"/>
+<text x="1090.0" y="736.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="1090.0" dy="0">UnknownOutcome</tspan>
+</text>
+<text x="1090.0" y="774.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="1090.0" dy="0">preserve both descriptors</tspan>
+</text>
+<rect x="380" y="680" width="300" height="125" rx="22" fill="#F4F6F8" stroke="#6B7280" stroke-width="3"/>
+<text x="530.0" y="736.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#1F2937">
+<tspan x="530.0" dy="0">Reconcile</tspan>
+</text>
+<text x="530.0" y="774.5" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="400" font-style="normal" fill="#667085">
+<tspan x="530.0" dy="0">adapter-authorized</tspan>
+</text>
+<line x1="390" y1="302" x2="480" y2="302" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="435" y="180" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="21" font-weight="600" font-style="normal" fill="#667085">
+<tspan x="435" dy="0">persist candidate</tspan>
+<tspan x="435" dy="23.1">descriptor</tspan>
+</text>
+<line x1="800" y1="302" x2="890" y2="302" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="845" y="205" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="21" font-weight="600" font-style="normal" fill="#667085">
+<tspan x="845" dy="0">submit candidate</tspan>
+</text>
+<path d="M 1270 270 C 1360 245, 1380 205, 1440 195" stroke="#4C956C" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrowGreen)"/>
+<text x="1370" y="170" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="700" font-style="normal" fill="#4C956C">
+<tspan x="1370" dy="0">NewOnly</tspan>
+</text>
+<path d="M 1270 335 C 1360 360, 1380 415, 1440 418" stroke="#41566B" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="1370" y="390" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="23" font-weight="700" font-style="normal" fill="#2F6B9A">
+<tspan x="1370" dy="0">OldOnly</tspan>
+</text>
+<path d="M 1090 370 V 640" stroke="#C94C4C" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrowRed)"/>
+<text x="1115" y="510" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="700" font-style="normal" fill="#C94C4C">
+<tspan x="1115" dy="0">Both / Neither /</tspan>
+<tspan x="1115" dy="25.299999999999997">Contradictory / Unknown</tspan>
+</text>
+<line x1="890" y1="742" x2="700" y2="742" stroke="#41566B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="795" y="710" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="21" font-weight="600" font-style="normal" fill="#667085">
+<tspan x="795" dy="0">later reconciliation</tspan>
+</text>
+<path d="M 530 680 C 520 545, 700 480, 910 355" stroke="#41566B" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="12 8"/>
+<text x="600" y="540" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="22" font-weight="600" font-style="normal" fill="#667085">
+<tspan x="600" dy="0">re-enter evidence</tspan>
+<tspan x="600" dy="25.299999999999997">classification</tspan>
+</text>
+<rect x="160" y="940" width="1580" height="190" rx="22" fill="#FFF8F1" stroke="#D97745" stroke-width="3"/>
+<circle cx="245" cy="1035" r="42" fill="#FFFFFF" stroke="#D97745" stroke-width="3"/>
+<text x="245" y="1048" text-anchor="middle" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="38" font-weight="700" font-style="normal" fill="#D97745">
+<tspan x="245" dy="0">!</tspan>
+</text>
+<text x="325" y="1005" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="29" font-weight="700" font-style="normal" fill="#8A451F">
+<tspan x="325" dy="0">UnknownOutcome is a safety state, not an error state.</tspan>
+</text>
+<text x="325" y="1055" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="25" font-weight="400" font-style="normal" fill="#1F2937">
+<tspan x="325" dy="0">It retains both reconstruction paths and may only leave through adapter-authorized reconciliation.</tspan>
+</text>
+<text x="325" y="1095" text-anchor="start" font-family="Arial, Helvetica, Liberation Sans, sans-serif" font-size="25" font-weight="400" font-style="normal" fill="#1F2937">
+<tspan x="325" dy="0">It is never cleared solely because a timeout expires or a transport retry succeeds.</tspan>
+</text>
+</svg>
