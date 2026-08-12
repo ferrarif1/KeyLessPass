@@ -1,7 +1,7 @@
 use keylesspass_core::crypto::{encoder, kdf, recovery};
 use keylesspass_core::domain::{
-    compare_replicas, transition_rotation, CredentialDescriptionRecord, EncodingDescriptor,
-    ReplicaRelation, RotationEvent,
+    apply_authentication_probe, compare_replicas, AuthenticationProbe, CredentialDescriptionRecord,
+    EncodingDescriptor, ProbeVerdict, ProbedCredential, ReplicaRelation, RotationContract,
 };
 use keylesspass_core::service::{FreshnessAnchor, FreshnessService, SqliteFreshnessService};
 use keylesspass_core::storage::CdrStore;
@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let iterations = if full { 10_000 } else { 1_000 };
     let root = [0x42_u8; 32];
     let vault = Uuid::from_u128(0x102030405060708090a0b0c0d0e0f000);
-    let set = recovery::create_share_set(&root, vault, 1, 1, "computer", 1, "usb", 1)?;
+    let set = recovery::create_share_set(&root, vault, 1, 1, 1, "computer", 1, "usb", 1)?;
     let recovery_share = recovery::decode_recovery_phrase(&set.recovery_phrase)?;
     let combinations = [
         ("recovery+computer", &recovery_share, &set.managed_computer),
@@ -163,17 +163,35 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "",
             descriptor.clone(),
         );
-        let mut pending = CredentialDescriptionRecord::rotation_from(&active, descriptor.clone());
-        transition_rotation(&mut pending, RotationEvent::RequestSent)?;
-        transition_rotation(&mut pending, RotationEvent::TransportOutcomeUnknown)?;
-        transition_rotation(&mut pending, RotationEvent::BeginReconciliation)?;
-        let event = match iteration % 4 {
-            0 => RotationEvent::NewPasswordAuthenticated,
-            1 => RotationEvent::OldPasswordAuthenticated,
-            2 => RotationEvent::BothPasswordsAuthenticated,
-            _ => RotationEvent::NeitherPasswordAuthenticated,
+        let mut pending = CredentialDescriptionRecord::rotation_from_with_contract(
+            &active,
+            descriptor.clone(),
+            RotationContract::AtomicReplacement,
+        );
+        let probes = match iteration % 4 {
+            0 => [
+                (ProbedCredential::New, ProbeVerdict::Success),
+                (ProbedCredential::Old, ProbeVerdict::ConclusiveFailure),
+            ],
+            1 => [
+                (ProbedCredential::Old, ProbeVerdict::Success),
+                (ProbedCredential::New, ProbeVerdict::ConclusiveFailure),
+            ],
+            2 => [
+                (ProbedCredential::New, ProbeVerdict::Success),
+                (ProbedCredential::Old, ProbeVerdict::Success),
+            ],
+            _ => [
+                (ProbedCredential::New, ProbeVerdict::ConclusiveFailure),
+                (ProbedCredential::Old, ProbeVerdict::ConclusiveFailure),
+            ],
         };
-        transition_rotation(&mut pending, event)?;
+        for (credential, verdict) in probes {
+            apply_authentication_probe(
+                &mut pending,
+                AuthenticationProbe::now(credential, verdict, "benchmark-node"),
+            )?;
+        }
         samples.push(iteration_started.elapsed().as_secs_f64() * 1_000_000.0);
     }
     measurements.push(timing(
@@ -343,7 +361,9 @@ fn freshness_measurement(
             FreshnessAnchor {
                 vault_id: vault,
                 root_generation: 1,
+                share_set_generation: 1,
                 cdr_epoch: index as u64 + 1,
+                credentials: Default::default(),
                 operation_log_digest: format!("digest-{index}"),
                 updated_at: chrono::Utc::now(),
             },

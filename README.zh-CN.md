@@ -1,6 +1,6 @@
 # KeyLessPass
 
-> **v3 研究实现说明：** Rust Core 已提供经过认证和代际绑定的 Shamir 2-of-3 Root Key 恢复、CDR v3、无偏策略编码、pending-confirm-reconcile 轮换及新鲜度接口。本文后续部分若出现 `W_MC`、`W_MU`、`W_CU`，描述的是仍由当前 Flutter 初始化界面生成的 legacy v2 格式；它们不是 secret shares，仅用于兼容和迁移。v3 当前通过 Rust 迁移接口启用，完整桌面 UX 尚未交付。
+> **当前实现：** 新初始化使用经过认证并与代际绑定的 Shamir 2-of-3 Root Key 恢复，新建凭据默认使用精确策略空间 v3 派生。旧的成对包装和旧派生算法只用于复现、验证和迁移既有数据，不再用于新记录。
 
 <p align="center">
   <img src="docs/readme-assets/logo.png" width="112" alt="KeyLessPass logo" />
@@ -74,13 +74,14 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 - 普通 U 盘作为 USB 因子包载体。
 - U 盘可备份 CDR 元数据，并支持本机与 U 盘记录一致性检查、显式同步或恢复。
 - 初始化时随机生成每用户主密钥。
-- 支持本机生成英文或简体中文助记短语，生成后不保存。
-- 支持和论文一致的 2-of-3 本地恢复模型：`W_MC`、`W_MU`、`W_CU` 三组成对包装保护同一个 `Kmaster`。
-- 支持使用本机设备和配对 U 盘重置助记短语，且不改变已有派生密码。
-- 派生路径基于稳定的 `recordSeq`、`recordId`、`version`、`salt` 和 `encodingDescriptor`。
-- 新 profile 可选择服务派生算法：HKDF-SHA256、Argon2id、scrypt 或 PBKDF2-HMAC-SHA256。
+- 使用成熟的 Shamir 2-of-3 实现拆分随机 Root Key，并以认证信封绑定 vault、Root 代际、share set、因子身份和因子代际。
+- 纸质恢复份额是带校验的高熵离线份额表示，不要求用户记忆，应用不持久化保存其明文。
+- 新建凭据使用精确有限策略编译、准确空间计数、Rank/Unrank 和按 generation 索引的 FF1 cycle walking。
+- v3 凭据上下文绑定 vault、服务、账号、lineage、凭据盐、Root 代际、策略身份、策略哈希、策略版本和 policy epoch。
+- 在同一 lineage 和未耗尽的受支持策略域内，不同 generation 不会重复；不支持、过小、过大或耗尽的策略域会 fail closed。
 - `displayName`、`serviceHint`、`accountHint`、备注仅用于展示和检索，修改后不改变密码。
-- 支持 pending / commit / cancel 的两阶段密码轮换。
+- 支持证据约束的密码轮换；仅收到修改成功响应不会直接提交，必须记录新旧密码的远端认证证据。
+- 新候选会排除可在本地重新派生的近期历史 generation，远端结果不确定时继续保留旧记录为活动版本。
 - 支持使用两个可用因子重建缺失的 U 盘包或本机包。
 - 支持 U 盘路径选择、包校验和 U 盘包重建。
 - 支持不含敏感数据的诊断信息导出。
@@ -91,24 +92,24 @@ KeyLessPass 不是 Web 应用，不是浏览器插件，不是云密码管理器
 
 | 保存 | 不保存 |
 | --- | --- |
-| 本机因子包：`userId`、`deviceId`、`saltC`、助记短语 salt、助记短语校验器、`W_MC`、可选 `W_CU` 和 schema/version 元数据 | 目标系统明文密码 |
-| U 盘因子包：`userId`、`usbId`、`saltU`、U 盘因子材料、`W_MU`、`W_CU` 和 schema/version 元数据 | 加密服务密码库 |
-| CDR 元数据、盐值、版本、MAC 标签和可选 U 盘 CDR 备份 | 助记短语 |
-| 平台保护的本机设备 secret，例如 macOS `com.keylesspass.local-factor` | 本机或 U 盘 payload 中的明文 `Kmaster` |
+| 平台保护的本机 share 信封和已提交恢复 manifest | 目标系统明文密码 |
+| U 盘 share 信封、已提交 manifest 和可选 CDR 元数据副本 | 加密服务密码库 |
+| 规范化 CDR、凭据盐、lineage、代际、策略描述、轮换状态、远端证据和 MAC 标签 | 持久化的完整 Root Key |
+| 仅在迁移完成前保留的 legacy v2 元数据 | 纸质恢复份额明文 |
 
 ## 简要工作原理
 
-初始化时，KeyLessPass 生成随机 256-bit 每用户主密钥。助记短语不是服务密码根种子，也不会被保存。它会先通过 KDF 形成独立的助记短语因子 `F_M`，再和本机因子 `F_C`、U 盘因子 `F_U` 一起参与本地 2-of-3 解封装/恢复模型，用于恢复 `Kmaster`。服务密码派生阶段使用恢复出的 `Kmaster` 和稳定的 CDR 路径字段。
+初始化时，KeyLessPass 生成随机 256-bit Root Key，并通过标准 Shamir 2-of-3 拆分为纸质恢复、本机和 U 盘三个 share。每个 share 信封都绑定 vault、Root 代际、share-set ID、因子类型与身份、因子代际、阈值、套件和编码版本；重构后使用 Root-Key 派生的完整性标签和 key-confirmation value 验证候选密钥。Shamir 本身不承担认证、撤销或回滚保护，这些性质由信封、已提交 manifest、代际更新和可选 freshness anchor 提供。
 
 ```text
-K_MC = HKDF(F_M || F_C, "KeyLessPass/wrap/MC")
-K_MU = HKDF(F_M || F_U, "KeyLessPass/wrap/MU")
-K_CU = HKDF(F_C || F_U, "KeyLessPass/wrap/CU")
+K_root <- Random(256 bits)
+(S_recovery, S_computer, S_usb) <- ShamirSplit(2, 3, K_root)
+K_purpose <- HKDF(K_root, vaultID || rootGeneration || suite || purposeLabel)
 ```
 
-任意两个因子都能恢复同一个 `Kmaster`：助记短语 + 本机使用 `W_MC`，助记短语 + U 盘使用 `W_MU`，本机 + U 盘使用 `W_CU`。任意单个因子不能恢复 `Kmaster`。日常派生默认使用助记短语 + 本机；U 盘平时可以离线保存，只在初始化、恢复本机、更换本机或重置助记短语时使用。
+任意两个属于同一已提交 vault、share set 和 Root 代际的有效 share 可以恢复 Root Key；一个 share 不足以恢复。Root Key、临时 share、凭据专用密钥和派生密码使用后在能力范围内清理，但若终端在合法重构期间已被完全攻破，本方案不承诺保密性。
 
-为兼容旧数据，缺少算法字段的既有 profile 会按 legacy HKDF-SHA256 处理。新的 profile 可在初始化前选择 HKDF-SHA256、Argon2id、scrypt 或 PBKDF2-HMAC-SHA256；初始化完成后该选择会随本机配置和因子包锁定，如需更改，需要重置本机应用数据并重新初始化。
+为兼容旧数据，既有记录按照自身保存的 legacy 派生版本复现。新记录不提供 KDF 选择器，而是固定使用精确策略空间 v3：HKDF-SHA256 做密钥隔离，FF1 cycle walking 把 credential generation 映射到准确计数的策略域，再由 `Unrank` 得到唯一合法密码。
 
 每条记录只保存非秘密 CDR 元数据。显示名称、服务提示、账号提示和备注可搜索、可编辑，但不参与派生路径。修改密码规则必须创建新版本，并被视为一次密码轮换。
 
@@ -116,16 +117,14 @@ K_CU = HKDF(F_C || F_U, "KeyLessPass/wrap/CU")
 
 ```mermaid
 flowchart LR
-    M["助记短语<br/>不保存"] --> KDF["KDF"]
-    KDF --> FM["助记短语因子 F_M"]
-    FC["本机因子 F_C<br/>平台保护"] --> R["2-of-3 解封装 / 恢复"]
-    FM --> R
-    FU["U 盘因子 F_U<br/>U 盘因子包"] --> R
-    R --> KM["恢复出的 Kmaster"]
-    KM --> D["已选 KDF + 确定性编码"]
-    C["CDR 稳定字段<br/>recordSeq + recordId + version + salt + Rule"] --> D
+    SR["纸质恢复 share<br/>离线高熵"] --> R["Shamir 2-of-3<br/>同一 share set"]
+    SD["本机 share<br/>平台保护"] --> R
+    SU["U 盘 share<br/>普通可复制文件"] --> R
+    R --> KM["临时恢复 Root Key"]
+    KM --> D["精确策略空间 v3<br/>HKDF + FF1 置换 + Unrank"]
+    C["绑定凭据上下文<br/>身份 + lineage + 代际 + 策略哈希"] --> D
     D --> P["服务密码<br/>短暂显示 / 自动清剪贴板"]
-    FU --> U["U 盘保存<br/>U 盘因子包<br/>可选 CDR 副本<br/>无明文密码<br/>无助记短语<br/>无明文 Kmaster"]
+    SU --> U["U 盘保存<br/>share 信封<br/>可选 CDR 副本<br/>无明文密码<br/>无完整 Root Key"]
     C --> U
 ```
 
@@ -133,11 +132,10 @@ flowchart LR
 
 - 不把目标系统明文密码写入磁盘。
 - 不维护加密服务密码库。
-- 不保存助记短语。
-- 不把明文 `Kmaster` 作为本机或 U 盘 payload 字段持久化。
-- 本机包不保存 `usbSecret`，U 盘包不保存 `deviceSecret`。
+- 不持久化保存纸质恢复 share 明文。
+- 不把完整 Root Key 作为本机或 U 盘 payload 字段持久化。
 - U 盘包是普通可复制的因子容器，不是不可复制硬件密钥。
-- 任意两个因子可以恢复 `Kmaster`，任意单个因子不能恢复。
+- 任意两个同集合有效 share 可以恢复 Root Key，任意单个 share 不能恢复。
 - 不包含云同步、远程后台、浏览器自动填充或账号登录体系。
 - 随机数来自操作系统 CSPRNG。
 - 使用前校验 CDR 和因子包完整性。
@@ -145,7 +143,9 @@ flowchart LR
 - 派生密码默认遮罩显示，并在配置时间后清空剪贴板。
 - 日志不得包含助记短语、主密钥、因子秘密、HKDF 原始输出、AEAD key、HMAC key 或派生密码。
 
-第一版客户端只承诺本地和 U 盘元数据的一致性/完整性检查。若需要更强回滚检测，可接入外部版本摘要、append-only 审计日志或可信单调状态。
+纯客户端模式只能发现部分副本不一致；企业锚定模式提供最小 compare-and-set freshness 接口，但仓库不交付生产远端 freshness 服务。
+
+论文对应的 ASTER research profile 还实现了签名精确作用域 capability、持久化使用次数、Root-Epoch replacement、descriptor-only migration、故障注入、TLA+ 模型以及独立的 MP-SPDZ 固定电路可行性实验。它与本地桌面兼容 profile 有意分离：进程内 semantic evaluator 不是门限后端，MP-SPDZ 电路也不是软件发布版的生产服务。详见 [ASTER 实现边界](docs/ASTER_IMPLEMENTATION_PROFILE.md)。
 
 ## 桌面导航
 
@@ -192,6 +192,14 @@ Rust Core 刻意与平台安全存储细节解耦。平台因子 provider 通过
 cd rust_core
 cargo test
 ```
+
+### 复现 ASTER 研究工件
+
+```bash
+./research/aster/scripts/reproduce_all.sh --quick
+```
+
+运行完整目标前请先阅读 [research/aster/README.md](research/aster/README.md) 与 [research/aster/LIMITATIONS.md](research/aster/LIMITATIONS.md)。
 
 ### 运行桌面客户端
 

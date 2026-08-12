@@ -1333,7 +1333,9 @@ class _HomeWindowState extends State<_HomeWindow> {
       'readableUsbPackageCount':
           _usbCandidates.where((item) => item.readable).length,
       'clipboardTimeoutSeconds': _clipboardTimeout,
-      'passwordDerivationAlgorithm': _effectivePasswordDerivationAlgorithm(),
+      'credentialDerivation': 'exact-policy-space-v3',
+      'legacyPasswordDerivationAlgorithm':
+          _effectivePasswordDerivationAlgorithm(),
       'analytics': false,
     });
     final copied = await showDialog<bool>(
@@ -1453,37 +1455,13 @@ class _HomeWindowState extends State<_HomeWindow> {
 
   Widget _derivationAlgorithmSelector() {
     final t = context.t;
-    final enrolled = _status?.enrolled == true;
-    final value = _effectivePasswordDerivationAlgorithm();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DropdownButtonFormField<String>(
-          key: ValueKey('derivation-$value-$enrolled'),
-          initialValue: value,
-          decoration: InputDecoration(labelText: t.derivationAlgorithm),
-          items:
-              const ['hkdf-sha256', 'argon2id', 'scrypt', 'pbkdf2-hmac-sha256']
-                  .map(
-                    (algorithm) => DropdownMenuItem(
-                      value: algorithm,
-                      child: Text(_algorithmLabelStatic(algorithm)),
-                    ),
-                  )
-                  .toList(),
-          onChanged: enrolled
-              ? null
-              : (value) => setState(
-                    () => _passwordDerivationAlgorithm = value ?? 'hkdf-sha256',
-                  ),
-        ),
-        const SizedBox(height: 8),
+        InfoRow(label: t.derivationAlgorithm, value: t.exactDomainAlgorithm),
+        const SizedBox(height: 6),
         InlineNotice(
-          text: enrolled
-              ? (_status?.hasStoredPasswordDerivationAlgorithm == true
-                  ? t.algorithmLockedUntilReset
-                  : t.legacyHkdfDetected)
-              : t.algorithmAppliesOnNextSetup,
+          text: t.exactDomainAlgorithmHelp,
           icon: Icons.info_outline_rounded,
         ),
       ],
@@ -1611,15 +1589,6 @@ Future<void> _chooseUsbPath(TextEditingController controller) async {
   if (path != null) {
     controller.text = path;
   }
-}
-
-String _algorithmLabelStatic(String value) {
-  return switch (value) {
-    'argon2id' => 'Argon2id',
-    'scrypt' => 'scrypt',
-    'pbkdf2-hmac-sha256' => 'PBKDF2-HMAC-SHA256',
-    _ => 'HKDF-SHA256',
-  };
 }
 
 class _RecordDraft {
@@ -1784,10 +1753,7 @@ class _SetupPageState extends State<_SetupPage> {
                       InfoRow(label: t.localOnly, value: t.enabled),
                       InfoRow(
                         label: t.derivationAlgorithm,
-                        value: _algorithmLabelStatic(
-                          widget.status?.passwordDerivationAlgorithm ??
-                              'hkdf-sha256',
-                        ),
+                        value: t.exactDomainAlgorithm,
                       ),
                     ],
                   )
@@ -1904,9 +1870,7 @@ class _SetupPageState extends State<_SetupPage> {
                         const SizedBox(height: 12),
                         InfoRow(
                           label: t.derivationAlgorithm,
-                          value: _algorithmLabelStatic(
-                            widget.passwordDerivationAlgorithm,
-                          ),
+                          value: t.exactDomainAlgorithm,
                         ),
                         const SizedBox(height: 12),
                         TextField(
@@ -2679,6 +2643,7 @@ class _RotationPage extends StatefulWidget {
 
 class _RotationPageState extends State<_RotationPage> {
   String? _message;
+  bool _busy = false;
 
   List<_RecordVersionGroup> get _groups => _groupRecordVersions(widget.records);
 
@@ -2709,6 +2674,73 @@ class _RotationPageState extends State<_RotationPage> {
       setState(() => _message = context.t.newVersionCreated);
     } catch (_) {
       setState(() => _message = context.t.operationFailed);
+    }
+  }
+
+  Future<void> _recordProbe(
+    CredentialRecord record,
+    String credential,
+    String verdict,
+  ) async {
+    final api = widget.api;
+    if (api == null || _busy) return;
+    setState(() => _busy = true);
+    try {
+      await api.recordRotationProbe(
+        recordId: record.recordId,
+        version: record.version,
+        credential: credential,
+        verdict: verdict,
+        endpointId: 'manual-user-verification',
+      );
+      await widget.onDone();
+      if (mounted) {
+        setState(() => _message = context.t.rotationEvidenceRecorded);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _message = context.t.rotationEvidenceRejected);
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _commit(CredentialRecord record) async {
+    final api = widget.api;
+    if (api == null || _busy) return;
+    setState(() => _busy = true);
+    try {
+      await api.confirmRotation(
+        recordId: record.recordId,
+        version: record.version,
+      );
+      await widget.onDone();
+      if (mounted) setState(() => _message = context.t.rotationCommitted);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _message = context.t.rotationEvidenceRejected);
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _cancel(CredentialRecord record) async {
+    final api = widget.api;
+    if (api == null || _busy) return;
+    setState(() => _busy = true);
+    try {
+      await api.cancelRotation(
+        recordId: record.recordId,
+        version: record.version,
+      );
+      await widget.onDone();
+      if (mounted) setState(() => _message = context.t.rotationCanceled);
+    } catch (_) {
+      if (mounted) setState(() => _message = context.t.operationFailed);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -2781,6 +2813,61 @@ class _RotationPageState extends State<_RotationPage> {
                       ),
                     ],
                   ),
+                  if (record.state == 'pending_rotation') ...[
+                    const SizedBox(height: 16),
+                    InlineNotice(
+                      text: t.rotationEvidenceHelp,
+                      icon: Icons.fact_check_rounded,
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        OutlinedButton(
+                          onPressed: _busy
+                              ? null
+                              : () => _recordProbe(record, 'new', 'success'),
+                          child: Text(t.newPasswordWorks),
+                        ),
+                        OutlinedButton(
+                          onPressed: _busy
+                              ? null
+                              : () => _recordProbe(
+                                    record,
+                                    'new',
+                                    'conclusive_failure',
+                                  ),
+                          child: Text(t.newPasswordFails),
+                        ),
+                        OutlinedButton(
+                          onPressed: _busy
+                              ? null
+                              : () => _recordProbe(record, 'old', 'success'),
+                          child: Text(t.oldPasswordWorks),
+                        ),
+                        OutlinedButton(
+                          onPressed: _busy
+                              ? null
+                              : () => _recordProbe(
+                                    record,
+                                    'old',
+                                    'conclusive_failure',
+                                  ),
+                          child: Text(t.oldPasswordFails),
+                        ),
+                        FilledButton.icon(
+                          onPressed: _busy ? null : () => _commit(record),
+                          icon: const Icon(Icons.verified_rounded),
+                          label: Text(t.commitRotation),
+                        ),
+                        TextButton(
+                          onPressed: _busy ? null : () => _cancel(record),
+                          child: Text(t.cancelPending),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
                 if (_message != null) ...[
                   const SizedBox(height: 12),

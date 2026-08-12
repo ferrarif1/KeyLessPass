@@ -1,5 +1,7 @@
 use crate::crypto::kdf;
-use crate::domain::{CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm};
+use crate::domain::{
+    CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm, RotationContract,
+};
 use crate::platform::fallback::FallbackPlatformFactorProvider;
 use crate::platform::linux::LinuxPlatformFactorProvider;
 use crate::platform::macos::MacOSPlatformFactorProvider;
@@ -16,7 +18,8 @@ use crate::service::recovery::{
     RecoverLocalRequest, RecoverUsbRequest, ResetMnemonicRequest,
 };
 use crate::service::rotation::{
-    confirm_rotation_with_provider, rotate_credential_with_provider, ConfirmRotationRequest,
+    confirm_rotation_with_provider, reconcile_rotation_with_provider,
+    rotate_credential_with_provider, ConfirmRotationRequest, ReconciliationResult,
     RotateCredentialRequest,
 };
 use crate::service::usb::{
@@ -144,6 +147,46 @@ fn rewrite_usb_payload(
 fn same_cdr_derivation_is_stable() {
     let harness = setup();
     assert_eq!(derive(&harness), derive(&harness));
+}
+
+#[test]
+fn newly_created_credentials_use_exact_domain_v3() {
+    let harness = setup();
+    let record = CdrStore::new(&harness.paths.db_path)
+        .get(harness.record_id, Some(harness.version))
+        .unwrap();
+    assert_eq!(
+        record.derivation_version,
+        crate::domain::CDR_DERIVATION_VERSION_V3
+    );
+    assert_eq!(
+        record.encoder_version,
+        crate::domain::CDR_ENCODER_VERSION_V3
+    );
+    assert_eq!(record.policy_epoch, Some(1));
+    assert_eq!(record.credential_generation, 0);
+}
+
+#[test]
+fn credential_creation_fails_closed_for_unsupported_exact_domain() {
+    let harness = setup();
+    let mut descriptor = EncodingDescriptor::default();
+    descriptor.length = 1;
+    descriptor.allowed_alphabet = "AB".to_string();
+    descriptor.required_classes.clear();
+    let error = add_credential_with_provider(
+        &harness.paths,
+        &harness.provider,
+        AddCredentialRequest {
+            display_name: "Tiny domain".to_string(),
+            service_hint: "tiny.internal".to_string(),
+            account_hint: "alice".to_string(),
+            notes: String::new(),
+            encoding_descriptor: Some(descriptor),
+        },
+    )
+    .unwrap_err();
+    assert!(error.to_string().contains("domain"));
 }
 
 #[test]
@@ -676,7 +719,7 @@ fn v3_derivation_is_stable_and_independent_of_legacy_kdf_setting() {
             .unwrap();
         assert_eq!(
             record.derivation_version,
-            crate::domain::CDR_DERIVATION_VERSION
+            crate::domain::CDR_DERIVATION_VERSION_V3
         );
     }
 }
@@ -727,6 +770,8 @@ fn encoding_descriptor_change_requires_rotation() {
         RotateCredentialRequest {
             record_id: harness.record_id,
             encoding_descriptor: Some(changed),
+            rotation_contract: RotationContract::AtomicReplacement,
+            history_window: 5,
         },
     )
     .unwrap();
@@ -745,6 +790,8 @@ fn staged_rotation_keeps_previous_active_until_remote_confirmation() {
         RotateCredentialRequest {
             record_id: harness.record_id,
             encoding_descriptor: None,
+            rotation_contract: RotationContract::AtomicReplacement,
+            history_window: 5,
         },
     )
     .unwrap();
@@ -781,6 +828,14 @@ fn staged_rotation_keeps_previous_active_until_remote_confirmation() {
     assert_eq!(before, previous_password);
     assert_ne!(previous_password, current_password);
 
+    reconcile_rotation_with_provider(
+        &harness.paths,
+        &harness.provider,
+        harness.record_id,
+        current.version,
+        ReconciliationResult::NewPasswordWorks,
+    )
+    .unwrap();
     confirm_rotation_with_provider(
         &harness.paths,
         &harness.provider,

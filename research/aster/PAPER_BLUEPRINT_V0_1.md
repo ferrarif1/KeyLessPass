@@ -90,7 +90,7 @@ Claim ASTER at the **credential protocol** level:
 A paper should not be submitted until all of the following exist:
 
 - real 2-of-3 threshold/MPC evaluator implementation;
-- exact policy compiler integrated from EPSCD;
+- ASTER exact-policy compiler with arbitrary-precision counting and Rank/Unrank;
 - signed capability verifier on every evaluator;
 - durable single-use/replay state;
 - Root-Epoch DKG/replacement;
@@ -107,8 +107,8 @@ A paper should not be submitted until all of the following exist:
 The target outcome is not “zero failures because the model is simple.”  The
 paper should show quantitative separation:
 
-- local-root EPSCD: endpoint compromise during derivation exposes a reusable
-  derivation secret;
+- injected endpoint root exposure: compromise during derivation exposes a
+  reusable derivation secret;
 - exact-ticket threshold PRF: root remains hidden but independent PRF outputs do
   not provide the same exact no-repeat sequence contract;
 - ASTER: endpoint-only compromise yields only ticket-authorized outputs;

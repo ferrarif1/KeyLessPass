@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "seed": "ASTER-SEMANTIC-2026-08-11",
+  "backendBoundary": "Process-local semantic evaluator: real Ed25519 and SQLite use accounting, but Root-Epoch keys are not secret-shared and no MPC security/performance claim follows.",
+  "rq2": {
+    "universeSize": 32,
+    "qValues": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "rows": [
+      {
+        "q": 1,
+        "mode": "exact",
+        "acceptedSet": 1,
+        "intendedSet": 1,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 1,
+        "mode": "projected_service_account",
+        "acceptedSet": 8,
+        "intendedSet": 1,
+        "unauthorizedSpill": 7
+      },
+      {
+        "q": 1,
+        "mode": "wildcard",
+        "acceptedSet": 32,
+        "intendedSet": 1,
+        "unauthorizedSpill": 31
+      },
+      {
+        "q": 2,
+        "mode": "exact",
+        "acceptedSet": 2,
+        "intendedSet": 2,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 2,
+        "mode": "projected_service_account",
+        "acceptedSet": 16,
+        "intendedSet": 2,
+        "unauthorizedSpill": 14
+      },
+      {
+        "q": 2,
+        "mode": "wildcard",
+        "acceptedSet": 32,
+        "intendedSet": 2,
+        "unauthorizedSpill": 30
+      },
+      {
+        "q": 4,
+        "mode": "exact",
+        "acceptedSet": 4,
+        "intendedSet": 4,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 4,
+        "mode": "projected_service_account",
+        "acceptedSet": 32,
+        "intendedSet": 4,
+        "unauthorizedSpill": 28
+      },
+      {
+        "q": 4,
+        "mode": "wildcard",
+        "acceptedSet": 32,
+        "intendedSet": 4,
+        "unauthorizedSpill": 28
+      },
+      {
+        "q": 8,
+        "mode": "exact",
+        "acceptedSet": 8,
+        "intendedSet": 8,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 8,
+        "mode": "projected_service_account",
+        "acceptedSet": 32,
+        "intendedSet": 8,
+        "unauthorizedSpill": 24
+      },
+      {
+        "q": 8,
+        "mode": "wildcard",
+        "acceptedSet": 32,
+        "intendedSet": 8,
+        "unauthorizedSpill": 24
+      },
+      {
+        "q": 16,
+        "mode": "exact",
+        "acceptedSet": 16,
+        "intendedSet": 16,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 16,
+        "mode": "projected_service_account",
+        "acceptedSet": 32,
+        "intendedSet": 16,
+        "unauthorizedSpill": 16
+      },
+      {
+        "q": 16,
+        "mode": "wildcard",
+        "acceptedSet": 32,
+        "intendedSet": 16,
+        "unauthorizedSpill": 16
+      },
+      {
+        "q": 32,
+        "mode": "exact",
+        "acceptedSet": 32,
+        "intendedSet": 32,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 32,
+        "mode": "projected_service_account",
+        "acceptedSet": 32,
+        "intendedSet": 32,
+        "unauthorizedSpill": 0
+      },
+      {
+        "q": 32,
+        "mode": "wildcard",
+        "acceptedSet": 32,
+        "intendedSet": 32,
+        "unauthorizedSpill": 0
+      }
+    ],
+    "singleFaultWitnesses": [
+      {
+        "disabledCheck": "expiry",
+        "accepted": true,
+        "witness": "mutated request accepted with only expiry validation disabled"
+      },
+      {
+        "disabledCheck": "revocation",
+        "accepted": true,
+        "witness": "mutated request accepted with only revocation validation disabled"
+      },
+      {
+        "disabledCheck": "nonce_budget",
+        "accepted": true,
+        "witness": "replay accepted when durable nonce/use accounting is disabled"
+      },
+      {
+        "disabledCheck": "freshness_generation",
+        "accepted": true,
+        "witness": "mutated request accepted with only freshness_generation validation disabled"
+      },
+      {
+        "disabledCheck": "root_epoch",
+        "accepted": true,
+        "witness": "mutated request accepted with only root_epoch validation disabled"
+      },
+      {
+        "disabledCheck": "generation",
+        "accepted": true,
+        "witness": "mutated request accepted with only generation validation disabled"
+      },
+      {
+        "disabledCheck": "lineage",
+        "accepted": true,
+        "witness": "mutated request accepted with only lineage validation disabled"
+      },
+      {
+        "disabledCheck": "policy_hash_and_epoch",
+        "accepted": true,
+        "witness": "mutated request accepted with only policy_hash_and_epoch validation disabled"
+      }
+    ],
+    "exactZeroSpill": true
+  },
+  "rq3": {
+    "universeSize": 32,
+    "rows": [
+      {
+        "faultCondition": "injected_root_at_endpoint",
+        "captureTime": "post-use",
+        "unauthorizedOutputsWithoutNewApproval": 32,
+        "unauthorizedOutputsWithApprovalCompromise": 32,
+        "inventory": {
+          "rootEpochKeyPresent": true,
+          "reusableLineageKeyPresent": false,
+          "capabilityPresent": false,
+          "plaintextPasswordPresent": false
+        }
+      },
+      {
+        "faultCondition": "injected_lineage_key_at_endpoint",
+        "captureTime": "post-use",
+        "unauthorizedOutputsWithoutNewApproval": 2,
+        "unauthorizedOutputsWithApprovalCompromise": 2,
+        "inventory": {
+          "rootEpochKeyPresent": false,
+          "reusableLineageKeyPresent": true,
+          "capabilityPresent": false,
+          "plaintextPasswordPresent": false
+        }
+      },
+      {
+        "faultCondition": "injected_broad_capability_at_endpoint",
+        "captureTime": "post-use",
+        "unauthorizedOutputsWithoutNewApproval": 32,
+        "unauthorizedOutputsWithApprovalCompromise": 32,
+        "inventory": {
+          "rootEpochKeyPresent": false,
+          "reusableLineageKeyPresent": false,
+          "capabilityPresent": true,
+          "plaintextPasswordPresent": false
+        }
+      },
+      {
+        "faultCondition": "intended_exact_scope",
+        "captureTime": "pre-request",
+        "unauthorizedOutputsWithoutNewApproval": 0,
+        "unauthorizedOutputsWithApprovalCompromise": 32,
+        "inventory": {
+          "rootEpochKeyPresent": false,
+          "reusableLineageKeyPresent": false,
+          "capabilityPresent": false,
+          "plaintextPasswordPresent": false
+        }
+      },
+      {
+        "faultCondition": "intended_exact_scope",
+        "captureTime": "in-flight-output",
+        "unauthorizedOutputsWithoutNewApproval": 1,
+        "unauthorizedOutputsWithApprovalCompromise": 32,
+        "inventory": {
+          "rootEpochKeyPresent": false,
+          "reusableLineageKeyPresent": false,
+          "capabilityPresent": true,
+          "plaintextPasswordPresent": true
+        }
+      },
+      {
+        "faultCondition": "intended_exact_scope",
+        "captureTime": "post-use",
+        "unauthorizedOutputsWithoutNewApproval": 0,
+        "unauthorizedOutputsWithApprovalCompromise": 32,
+        "inventory": {
+          "rootEpochKeyPresent": false,
+          "reusableLineageKeyPresent": false,
+          "capabilityPresent": false,
+          "plaintextPasswordPresent": false
+        }
+      }
+    ],
+    "boundary": "Secret-type inventory and controlled API harness; this is not a whole-process memory-forensics proof."
+  },
+  "rq4": {
+    "records": 100,
+    "batchSizes": [
+      0,
+      10,
+      25,
+      50,
+      75,
+      100
+    ],
+    "exposureCurve": [
+      {
+        "conclusivelyMigrated": 0,
+        "stillDerivableByOldRoot": 100,
+        "healedAgainstOldRootOnly": 0
+      },
+      {
+        "conclusivelyMigrated": 10,
+        "stillDerivableByOldRoot": 90,
+        "healedAgainstOldRootOnly": 10
+      },
+      {
+        "conclusivelyMigrated": 25,
+        "stillDerivableByOldRoot": 75,
+        "healedAgainstOldRootOnly": 25
+      },
+      {
+        "conclusivelyMigrated": 50,
+        "stillDerivableByOldRoot": 50,
+        "healedAgainstOldRootOnly": 50
+      },
+      {
+        "conclusivelyMigrated": 75,
+        "stillDerivableByOldRoot": 25,
+        "healedAgainstOldRootOnly": 75
+      },
+      {
+        "conclusivelyMigrated": 100,
+        "stillDerivableByOldRoot": 0,
+        "healedAgainstOldRootOnly": 100
+      }
+    ],
+    "shareRefreshPreservedOutputs": true,
+    "independentEpochChangedAllSampledOutputs": true,
+    "conclusivelyMigratedDerivableFromOldRoot": 0,
+    "unknownOutcomeClassification": "not safely healed until adapter evidence resolves the committed descriptor",
+    "historyTimings": [
+      {
+        "historyWindow": 0,
+        "selectedGeneration": 0,
+        "elapsedMicros": 585
+      },
+      {
+        "historyWindow": 1,
+        "selectedGeneration": 0,
+        "elapsedMicros": 946
+      },
+      {
+        "historyWindow": 5,
+        "selectedGeneration": 0,
+        "elapsedMicros": 2188
+      },
+      {
+        "historyWindow": 10,
+        "selectedGeneration": 0,
+        "elapsedMicros": 3998
+      },
+      {
+        "historyWindow": 24,
+        "selectedGeneration": 0,
+        "elapsedMicros": 8301
+      }
+    ]
+  }
+}

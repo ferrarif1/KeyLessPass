@@ -1,5 +1,7 @@
 use keylesspass_core::crypto::{self, encoder, kdf};
-use keylesspass_core::domain::{CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm};
+use keylesspass_core::domain::{
+    CredentialState, EncodingDescriptor, PasswordDerivationAlgorithm, RotationContract,
+};
 use keylesspass_core::platform::fallback::FallbackPlatformFactorProvider;
 use keylesspass_core::service::credentials::{
     add_credential_with_provider, update_credential_display_with_provider, AddCredentialRequest,
@@ -11,7 +13,8 @@ use keylesspass_core::service::recovery::{
     recover_local_with_provider, recover_usb_with_provider, RecoverLocalRequest, RecoverUsbRequest,
 };
 use keylesspass_core::service::rotation::{
-    confirm_rotation_with_provider, rotate_credential_with_provider, ConfirmRotationRequest,
+    confirm_rotation_with_provider, reconcile_rotation_with_provider,
+    rotate_credential_with_provider, ConfirmRotationRequest, ReconciliationResult,
     RotateCredentialRequest,
 };
 use keylesspass_core::storage::{
@@ -236,6 +239,8 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(EncodingDescriptor::default()),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
             )
             .map_err(|err| err.to_string())?;
@@ -298,6 +303,8 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(changed),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
             )
             .map_err(|err| err.to_string())?;
@@ -503,6 +510,8 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(EncodingDescriptor::default()),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
             )
             .map_err(|err| err.to_string())?;
@@ -533,7 +542,17 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(EncodingDescriptor::default()),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
+            )
+            .map_err(|err| err.to_string())?;
+            reconcile_rotation_with_provider(
+                &h.paths,
+                &h.provider,
+                h.record_id,
+                pending.version,
+                ReconciliationResult::NewPasswordWorks,
             )
             .map_err(|err| err.to_string())?;
             confirm_rotation_with_provider(
@@ -573,6 +592,8 @@ fn run_functional_tests() -> Vec<FunctionalResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(EncodingDescriptor::default()),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
             )
             .map_err(|err| err.to_string())?;
@@ -796,6 +817,8 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(EncodingDescriptor::default()),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
             )
             .map_err(|err| err.to_string())?;
@@ -809,7 +832,17 @@ fn run_performance_measurements() -> Vec<PerformanceResult> {
                 RotateCredentialRequest {
                     record_id: h.record_id,
                     encoding_descriptor: Some(EncodingDescriptor::default()),
+                    rotation_contract: RotationContract::AtomicReplacement,
+                    history_window: 5,
                 },
+            )
+            .map_err(|err| err.to_string())?;
+            reconcile_rotation_with_provider(
+                &h.paths,
+                &h.provider,
+                h.record_id,
+                pending.version,
+                ReconciliationResult::NewPasswordWorks,
             )
             .map_err(|err| err.to_string())?;
             confirm_rotation_with_provider(

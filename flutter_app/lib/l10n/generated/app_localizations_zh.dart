@@ -364,6 +364,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rotationPendingHelp => '使用当前版本和上一版本按钮派生对应密码。';
 
   @override
+  String get rotationEvidenceHelp =>
+      '在远端修改密码后，分别记录新旧密码的认证结果。只有新密码成功且旧密码被明确拒绝时，才允许本地提交。';
+
+  @override
+  String get newPasswordWorks => '新密码可用';
+
+  @override
+  String get newPasswordFails => '新密码不可用';
+
+  @override
+  String get oldPasswordWorks => '旧密码仍可用';
+
+  @override
+  String get oldPasswordFails => '旧密码已失效';
+
+  @override
+  String get rotationEvidenceRecorded => '认证证据已记录。';
+
+  @override
+  String get rotationEvidenceRejected => '证据相互矛盾或尚不足以提交。';
+
+  @override
   String get derivePendingPassword => '派生版本密码';
 
   @override
@@ -567,6 +589,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get derivationAlgorithm => '派生算法';
+
+  @override
+  String get exactDomainAlgorithm => '精确策略空间 v3（HKDF-SHA256 + FF1）';
+
+  @override
+  String get exactDomainAlgorithmHelp =>
+      '新凭据采用精确策略计数、Rank/Unrank 和由 generation 索引的域置换。旧 KDF 元数据仅用于复现历史记录。';
 
   @override
   String get algorithmAppliesOnNextSetup => '该选择会用于下一次初始化新的本机配置。';

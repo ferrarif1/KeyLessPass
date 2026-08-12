@@ -1,0 +1,41 @@
+{
+  "acceptanceCriterion": true,
+  "boundary": "Unit and protocol tests; not a cryptographic proof or production deployment assessment.",
+  "cargo": {
+    "command": [
+      "cargo",
+      "test",
+      "--release",
+      "--all-features",
+      "--",
+      "--quiet"
+    ],
+    "returnCode": 0,
+    "stderr": "    Finished `release` profile [optimized] target(s) in 1.24s\n     Running unittests src/lib.rs (target/release/deps/keylesspass_core-94dbad0e1e2c1631)\n   Doc-tests keylesspass_core\n",
+    "stdout": "\nrunning 20 tests\n....................\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+    "testBinaries": [
+      {
+        "failed": 0,
+        "passed": 20
+      },
+      {
+        "failed": 0,
+        "passed": 0
+      }
+    ],
+    "totalFailed": 0,
+    "totalPassed": 20
+  },
+  "pythonSemantic": {
+    "command": [
+      "python3",
+      "research/aster/semantic/test_aster_v0_1.py"
+    ],
+    "passed": true,
+    "returnCode": 0,
+    "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 4.065s\n\nOK\n",
+    "stdout": "",
+    "totalRun": 9
+  },
+  "schemaVersion": 1
+}

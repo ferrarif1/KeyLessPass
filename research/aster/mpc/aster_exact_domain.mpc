@@ -1,0 +1,80 @@
+"""ASTER exact-domain rank release in MP-SPDZ.
+
+This program is an experiment, not a new threshold-cryptography primitive.  It
+uses the maliciously secure, honest-majority ``mal-shamir-bmr-party.x``
+backend.  Every computing party contributes a private 128-bit value; their XOR
+is the AES key, so no input party supplies the complete key.  A ten-round
+balanced Feistel permutation over 20 bits is cycle-walked into the public
+domain [0, 1_000_003).  The validity tests, cycle-walk state, and key remain
+secret; only a success bit and the selected rank are opened.
+
+The fixed public parameters and output are cross-checked by
+``aster_exact_domain_reference.py``.
+"""
+
+from circuit import Circuit
+
+
+DOMAIN_SIZE = 1_000_003
+DOMAIN_BITS = 20
+HALF_BITS = DOMAIN_BITS // 2
+ROUNDS = 10
+MAX_CYCLE_WALKS = 4
+GENERATION = 42
+N_PARTIES = int(program.args[1])
+CONTEXT_TWEAK = 0x6F8E6FAB7BFC9321BE8FD9F529874379
+
+sb128 = sbits.get_type(128)
+sb64 = sbits.get_type(64)
+half_t = sbitint.get_type(HALF_BITS)
+domain_t = sbitint.get_type(DOMAIN_BITS)
+wide_t = sbitint.get_type(DOMAIN_BITS + 1)
+
+
+# The root-epoch key exists only as the XOR of private party contributions.
+key = sb128(0)
+for party in range(N_PARTIES):
+    low = sb64.get_input_from(party)
+    high = sb64.get_input_from(party)
+    contribution = sb128.bit_compose(low.bit_decompose() + high.bit_decompose())
+    key = key ^ contribution
+
+aes128 = Circuit('aes_128')
+
+
+def feistel_permute(value):
+    """Return a keyed permutation of one 20-bit secret value."""
+    bits = value.bit_decompose(DOMAIN_BITS)
+    left = half_t.bit_compose(bits[:HALF_BITS])
+    right = half_t.bit_compose(bits[HALF_BITS:])
+
+    for round_no in range(ROUNDS):
+        # High public bits separate this circuit from raw AES and every round.
+        # The low HALF_BITS contain the secret Feistel right half.
+        domain_separator = CONTEXT_TWEAK ^ ((round_no + 1) << 112)
+        block = sb128(right) ^ sb128(domain_separator)
+        encrypted = aes128(sbitvec([key]), sbitvec([block])).elements()[0]
+        f = half_t.bit_compose(encrypted.bit_decompose()[:HALF_BITS])
+        left, right = right, left ^ f
+
+    return domain_t.bit_compose(
+        left.bit_decompose(HALF_BITS) + right.bit_decompose(HALF_BITS)
+    )
+
+
+candidate = domain_t(GENERATION)
+chosen = wide_t(0)
+selected = wide_t(0) < wide_t(0)
+
+for _ in range(MAX_CYCLE_WALKS):
+    candidate = feistel_permute(candidate)
+    candidate_wide = wide_t.bit_compose(
+        candidate.bit_decompose(DOMAIN_BITS) + [sbit(0)]
+    )
+    valid = candidate_wide < wide_t(DOMAIN_SIZE)
+    take = valid & (selected ^ 1)
+    chosen = take.if_else(candidate_wide, chosen)
+    selected = selected | valid
+
+print_ln('ASTER_MPC_SUCCESS=%s', selected.reveal())
+print_ln('ASTER_MPC_RANK=%s', chosen.reveal())

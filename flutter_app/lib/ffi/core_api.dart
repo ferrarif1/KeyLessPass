@@ -115,6 +115,8 @@ class CoreApi {
   Future<CredentialRecord> rotateCredential({
     required CredentialRecord record,
     required int length,
+    String rotationContract = 'atomic_replacement',
+    int historyWindow = 5,
   }) {
     final descriptor = Map<String, Object?>.from(record.encodingDescriptor)
       ..['length'] = length;
@@ -123,6 +125,8 @@ class CoreApi {
         {
           'recordId': record.recordId,
           'encodingDescriptor': descriptor,
+          'rotationContract': rotationContract,
+          'historyWindow': historyWindow,
         },
         CredentialRecord.fromJson);
   }
@@ -138,6 +142,38 @@ class CoreApi {
           'version': version,
         },
         (_) {});
+  }
+
+  Future<CredentialRecord> recordRotationProbe({
+    required String recordId,
+    required int version,
+    required String credential,
+    required String verdict,
+    required String endpointId,
+  }) {
+    return _core.invoke(
+        'recordRotationProbe',
+        {
+          'recordId': recordId,
+          'version': version,
+          'credential': credential,
+          'verdict': verdict,
+          'endpointId': endpointId,
+        },
+        CredentialRecord.fromJson);
+  }
+
+  Future<CredentialRecord> requestOldRevocation({
+    required String recordId,
+    required int version,
+  }) {
+    return _core.invoke(
+        'requestOldRevocation',
+        {
+          'recordId': recordId,
+          'version': version,
+        },
+        CredentialRecord.fromJson);
   }
 
   Future<void> cancelRotation({

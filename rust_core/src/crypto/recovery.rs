@@ -1,9 +1,9 @@
 use crate::crypto::{b64_decode, b64_encode, kdf, mac};
 use crate::domain::{
-    RecoveryAttemptReport, RecoveryFactorType, RecoveryManifest, RecoveryMetadata,
-    RecoveryShareSet, ShareEnvelope, SuccessfulRecoveryPair, RECOVERY_CRYPTO_SUITE_VERSION,
-    RECOVERY_PHRASE_ENCODING_VERSION, RECOVERY_SCHEME_VERSION, RECOVERY_SHARE_COUNT,
-    RECOVERY_THRESHOLD, SHARE_ENVELOPE_SCHEMA_VERSION,
+    NetworkRecoveryShareSet, RecoveryAttemptReport, RecoveryFactorType, RecoveryManifest,
+    RecoveryMetadata, RecoveryShareSet, ShareEnvelope, SuccessfulRecoveryPair,
+    RECOVERY_CRYPTO_SUITE_VERSION, RECOVERY_PHRASE_ENCODING_VERSION, RECOVERY_SCHEME_VERSION,
+    RECOVERY_SHARE_COUNT, RECOVERY_THRESHOLD, SHARE_ENVELOPE_SCHEMA_VERSION,
 };
 use crate::error::{KeylessPassError, Result};
 use bip39::Language;
@@ -37,12 +37,84 @@ pub fn create_share_set(
     root_key: &[u8; 32],
     vault_id: Uuid,
     root_generation: u64,
+    share_set_generation: u64,
     recovery_factor_generation: u64,
     managed_factor_id: &str,
     managed_factor_generation: u64,
     usb_factor_id: &str,
     usb_factor_generation: u64,
 ) -> Result<RecoveryShareSet> {
+    let (mut envelopes, manifest) = create_bound_share_set(
+        root_key,
+        vault_id,
+        root_generation,
+        share_set_generation,
+        RecoveryFactorType::Recovery,
+        recovery_factor_generation,
+        managed_factor_id,
+        managed_factor_generation,
+        usb_factor_id,
+        usb_factor_generation,
+    )?;
+    let recovery = envelopes.remove(0);
+    let managed_computer = envelopes.remove(0);
+    let usb = envelopes.remove(0);
+    Ok(RecoveryShareSet {
+        recovery_phrase: encode_recovery_phrase(&recovery)?,
+        managed_computer,
+        usb,
+        manifest,
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn create_network_share_set(
+    root_key: &[u8; 32],
+    vault_id: Uuid,
+    root_generation: u64,
+    share_set_generation: u64,
+    network_factor_generation: u64,
+    managed_factor_id: &str,
+    managed_factor_generation: u64,
+    usb_factor_id: &str,
+    usb_factor_generation: u64,
+) -> Result<NetworkRecoveryShareSet> {
+    let (mut envelopes, manifest) = create_bound_share_set(
+        root_key,
+        vault_id,
+        root_generation,
+        share_set_generation,
+        RecoveryFactorType::Network,
+        network_factor_generation,
+        managed_factor_id,
+        managed_factor_generation,
+        usb_factor_id,
+        usb_factor_generation,
+    )?;
+    let network = envelopes.remove(0);
+    let managed_computer = envelopes.remove(0);
+    let usb = envelopes.remove(0);
+    Ok(NetworkRecoveryShareSet {
+        managed_computer,
+        usb,
+        network,
+        manifest,
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
+fn create_bound_share_set(
+    root_key: &[u8; 32],
+    vault_id: Uuid,
+    root_generation: u64,
+    share_set_generation: u64,
+    first_factor_type: RecoveryFactorType,
+    first_factor_generation: u64,
+    managed_factor_id: &str,
+    managed_factor_generation: u64,
+    usb_factor_id: &str,
+    usb_factor_generation: u64,
+) -> Result<(Vec<ShareEnvelope>, RecoveryManifest)> {
     let shares = Gf256::split_array(
         RECOVERY_THRESHOLD as usize,
         RECOVERY_SHARE_COUNT as usize,
@@ -53,12 +125,20 @@ pub fn create_share_set(
     let share_set_id = Uuid::new_v4();
     let created_at = DateTime::from_timestamp(Utc::now().timestamp(), 0)
         .expect("current UTC timestamp must be representable");
-    let recovery_factor_id = format!("recovery:{share_set_id}");
+    let first_factor_id = match first_factor_type {
+        RecoveryFactorType::Recovery => format!("recovery:{share_set_id}"),
+        RecoveryFactorType::Network => format!("network:{share_set_id}"),
+        _ => {
+            return Err(KeylessPassError::Validation(
+                "first recovery factor must be paper recovery or network".to_string(),
+            ))
+        }
+    };
     let factors = [
         (
-            RecoveryFactorType::Recovery,
-            recovery_factor_id.as_str(),
-            recovery_factor_generation,
+            first_factor_type,
+            first_factor_id.as_str(),
+            first_factor_generation,
         ),
         (
             RecoveryFactorType::ManagedComputer,
@@ -98,9 +178,6 @@ pub fn create_share_set(
         envelopes.push(envelope);
     }
 
-    let recovery = envelopes.remove(0);
-    let managed_computer = envelopes.remove(0);
-    let usb = envelopes.remove(0);
     let manifest = RecoveryManifest {
         schema_version: SHARE_ENVELOPE_SCHEMA_VERSION,
         scheme_version: RECOVERY_SCHEME_VERSION,
@@ -108,17 +185,13 @@ pub fn create_share_set(
         vault_id,
         root_generation,
         share_set_id,
+        share_set_generation,
         threshold: RECOVERY_THRESHOLD,
         share_count: RECOVERY_SHARE_COUNT,
         committed_at: created_at,
         key_confirmation_value: key_confirmation_value(root_key, vault_id, root_generation)?,
     };
-    Ok(RecoveryShareSet {
-        recovery_phrase: encode_recovery_phrase(&recovery)?,
-        managed_computer,
-        usb,
-        manifest,
-    })
+    Ok((envelopes, manifest))
 }
 
 pub fn recover_root_key(
@@ -547,6 +620,7 @@ mod tests {
         create_share_set(
             root,
             Uuid::from_u128(0x102030405060708090a0b0c0d0e0f000),
+            generation,
             generation,
             generation,
             "computer-1",

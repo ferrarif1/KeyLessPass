@@ -66,7 +66,7 @@ def main() -> int:
             "references": references,
             "unresolvedMarkers": [
                 marker
-                for marker in ("CODEX-RESULT", "PIVOT", "Encoder v2", "full artifact will")
+                for marker in ("CODEX-RESULT", "PIVOT", "full artifact will")
                 if marker in paper_text
             ],
         },

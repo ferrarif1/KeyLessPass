@@ -1,0 +1,11 @@
+diff --git a/BMR/config.h b/BMR/config.h
+index 88dbf27..21846bf 100644
+--- a/BMR/config.h
++++ b/BMR/config.h
+@@ -8,5 +8,5 @@
+ // change number of parties here or omit to allow any number
+ //#define N_PARTIES 2
+-#define MAX_N_PARTIES 3
++#define MAX_N_PARTIES 5
+
+ #define MAX_INLINE

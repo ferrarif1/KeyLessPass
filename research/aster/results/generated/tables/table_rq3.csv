@@ -1,0 +1,7 @@
+Attack configuration,Capture time,Without new approval,With approval compromise
+injected_root_at_endpoint,post-use,32,32
+injected_lineage_key_at_endpoint,post-use,2,2
+injected_broad_capability_at_endpoint,post-use,32,32
+intended_exact_scope,pre-request,0,32
+intended_exact_scope,in-flight-output,1,32
+intended_exact_scope,post-use,0,32

@@ -97,6 +97,7 @@ pub fn migrate_pairwise_recovery(
             local.package.user_id,
             root_generation,
             root_generation,
+            root_generation,
             &local.package.device_id,
             root_generation,
             &usb.payload.usb_id,

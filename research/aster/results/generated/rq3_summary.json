@@ -1,0 +1,78 @@
+{
+  "boundary": "Secret-type inventory and controlled API harness; this is not a whole-process memory-forensics proof.",
+  "rows": [
+    {
+      "captureTime": "post-use",
+      "faultCondition": "injected_root_at_endpoint",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": true
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 32
+    },
+    {
+      "captureTime": "post-use",
+      "faultCondition": "injected_lineage_key_at_endpoint",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": true,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 2,
+      "unauthorizedOutputsWithoutNewApproval": 2
+    },
+    {
+      "captureTime": "post-use",
+      "faultCondition": "injected_broad_capability_at_endpoint",
+      "inventory": {
+        "capabilityPresent": true,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 32
+    },
+    {
+      "captureTime": "pre-request",
+      "faultCondition": "intended_exact_scope",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 0
+    },
+    {
+      "captureTime": "in-flight-output",
+      "faultCondition": "intended_exact_scope",
+      "inventory": {
+        "capabilityPresent": true,
+        "plaintextPasswordPresent": true,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 1
+    },
+    {
+      "captureTime": "post-use",
+      "faultCondition": "intended_exact_scope",
+      "inventory": {
+        "capabilityPresent": false,
+        "plaintextPasswordPresent": false,
+        "reusableLineageKeyPresent": false,
+        "rootEpochKeyPresent": false
+      },
+      "unauthorizedOutputsWithApprovalCompromise": 32,
+      "unauthorizedOutputsWithoutNewApproval": 0
+    }
+  ],
+  "universeSize": 32
+}

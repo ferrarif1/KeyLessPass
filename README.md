@@ -75,10 +75,12 @@ This makes it useful when an organization must keep using legacy password-based 
 - A checksum-protected paper recovery share (currently rendered as 108 words), a platform-protected managed-computer share, and an ordinary copyable USB share.
 - Share-set refresh and recovery/computer/USB factor replacement with generation-based stale-share rejection.
 - Verified migration from legacy v2 pairwise complete-key wrappers to v3 shares without changing the Root Key or derived service passwords.
-- Service derivation based on stable `recordSeq`, `recordId`, `version`, `salt`, and `encodingDescriptor`.
-- Selectable service derivation algorithm for new profiles: HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256.
+- Exact finite-policy compilation with exact domain cardinality, Rank/Unrank, and generation-indexed FF1 cycle walking for new credentials.
+- Scheme-v3 credential contexts bind the vault, service, account, lineage, credential salt, Root generation, policy identity, policy hash, policy version, and policy epoch.
+- Same-lineage generations are mapped without repetition while the supported policy domain remains unexhausted; unsupported, too-small, or oversized domains fail closed.
 - Editable display metadata that does not change derived passwords.
-- Persistent staged password rotation with prepared, request-sent, unknown-outcome, reconciliation, committed, rollback-required, aborted, and superseded states.
+- Persistent evidence-bound password rotation with prepared, request-sent, unknown-outcome, reconciliation, committed, rollback-required, aborted, and superseded states.
+- Rotation candidates exclude a configurable window of locally derivable historical generations; commit requires conclusive remote evidence rather than a successful update response alone.
 - Local recovery workflows for rebuilding missing USB or local factor packages.
 - USB management for path selection, package verification, and package rebuild.
 - Redacted diagnostics export.
@@ -106,9 +108,9 @@ K_purpose <- HKDF(K_root, vaultID || rootGeneration || suite || purposeLabel)
 
 Every share envelope binds the vault, Root-Key generation, share-set ID, factor type/ID/generation, threshold, suite, encoding version, and creation time. A Root-Key-derived HMAC authenticates that metadata after reconstruction, and a key-confirmation value rejects the wrong recovered key. Shamir itself is not claimed to authenticate shares, revoke factors, or prevent rollback; those properties come from envelopes, committed manifests, generation changes, and an optional freshness anchor.
 
-Legacy v2 profiles retain a read-only pairwise-wrapper path solely for compatibility and verified migration. New v3 recovery takes precedence once its manifest is committed. The current Flutter enrollment screens still create v2 data, so selecting v3 currently requires the Rust migration API; this is an explicit prototype limitation.
+Legacy v2 profiles retain a read-only pairwise-wrapper and legacy-derivation path solely for compatibility and verified migration. New enrollment and new credential records use v3. A committed v3 recovery manifest takes precedence over legacy material.
 
-For compatibility, existing profiles without an algorithm field are treated as legacy HKDF-SHA256. New profiles can choose HKDF-SHA256, Argon2id, scrypt, or PBKDF2-HMAC-SHA256 before enrollment; the choice is locked for that local profile and can be changed only after resetting local application data and initializing again.
+For compatibility, existing records without a derivation version remain reproducible through their recorded legacy algorithm. New records do not expose a KDF selector: they use exact-policy-space v3 with HKDF-SHA256 key separation and an FF1 cycle-walking permutation over the exactly counted policy domain.
 
 For each credential record, KeyLessPass stores only non-secret CDR metadata. Display fields such as name, service hint, account hint, and notes are searchable and editable, but they are not part of the derivation path. Password rule changes create a new CDR version and are treated as rotation.
 
@@ -120,8 +122,8 @@ flowchart LR
     FC["Computer share<br/>platform protected"] --> R
     FU["USB share<br/>ordinary copyable file"] --> R
     R --> KM["Recovered Root Key<br/>transient memory"]
-    KM --> D["Selected KDF + deterministic encoding"]
-    C["CDR stable fields<br/>recordSeq + recordId + version + salt + Rule"] --> D
+    KM --> D["Exact policy-space v3<br/>HKDF + FF1 permutation + Unrank"]
+    C["Bound credential context<br/>identity + lineage + generations + policy hash"] --> D
     D --> P["Service password<br/>shown briefly / clipboard timeout"]
     FU --> U["USB stores<br/>USB factor package<br/>optional CDR replica<br/"]
     C --> U
@@ -143,6 +145,8 @@ flowchart LR
 - Sensitive values such as mnemonic text, master key, factor secrets, raw HKDF output, AEAD keys, HMAC keys, and derived passwords must not be logged.
 
 Client-only rollback detection is limited to partial-copy inconsistency. Enterprise-anchored mode exposes a minimal compare-and-set freshness service for the latest generation/epoch/digest; no production remote service is shipped.
+
+The paper-aligned ASTER research profile adds signed exact-scope capabilities, durable use accounting, Root-Epoch replacement, descriptor-only migration, fault injection, TLA+ models, and an MP-SPDZ fixed-circuit feasibility experiment. It is deliberately separate from the local desktop compatibility profile: the process-local semantic evaluator is not a threshold backend, and the MP-SPDZ circuit is not shipped as a production service. See [ASTER implementation profile](docs/ASTER_IMPLEMENTATION_PROFILE.md).
 
 ## Desktop Navigation
 
@@ -189,6 +193,14 @@ Each platform guide starts from Flutter installation and continues through Rust,
 cd rust_core
 cargo test
 ```
+
+### Reproduce the ASTER Research Profile
+
+```bash
+./research/aster/scripts/reproduce_all.sh --quick
+```
+
+The full target also regenerates the policy corpus, adapter traces, OpenLDAP smoke result, TLA+ evidence, summaries, and security scan. See [research/aster/README.md](research/aster/README.md) before using `--full`.
 
 ### Run the Desktop App
 

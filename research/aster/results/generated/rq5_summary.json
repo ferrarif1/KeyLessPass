@@ -1,0 +1,23 @@
+{
+  "adapters": [
+    "independent_process_ldap_style_model",
+    "loopback_http"
+  ],
+  "boundary": "The HTTP adapter is a real loopback HTTP service. The LDAP-style adapter is an independent TCP process with durable verifier hashes and modeled authoritative readback; it is not OpenLDAP or a replicated LDAP cluster.",
+  "commitInvariantViolations": 0,
+  "openldapSmoke": {
+    "boundary": "Real OpenLDAP modify and bind verification; not a replicated cluster, delayed-replication experiment, or production adapter benchmark.",
+    "candidateAcceptedAfter": true,
+    "candidateAcceptedBefore": false,
+    "image": "osixia/openldap@sha256:18742e9c449c9c1afe129d3f2f3ee15fb34cc43e5f940a20f3399728f41d7c28",
+    "oldAcceptedAfter": false,
+    "oldAcceptedBefore": true,
+    "pass": true
+  },
+  "passwordColumns": 0,
+  "repetitionsPerScenario": 3,
+  "scenarioCount": 16,
+  "schemaVersion": 1,
+  "traceCount": 96,
+  "uncertaintyInvariantViolations": 0
+}

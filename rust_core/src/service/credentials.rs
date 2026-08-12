@@ -1,3 +1,4 @@
+use crate::derivation::{derive_password_v3, Ff1CycleWalking};
 use crate::domain::{CredentialDescriptionRecord, EncodingDescriptor};
 use crate::error::{KeylessPassError, Result};
 use crate::platform::{current_platform_provider, PlatformFactorProvider};
@@ -62,7 +63,7 @@ pub fn add_credential_with_provider(
     store.init()?;
     let seq = store.max_record_seq()? + 1;
     let descriptor = request.encoding_descriptor.unwrap_or_default();
-    let mut record = CredentialDescriptionRecord::new(
+    let mut record = CredentialDescriptionRecord::new_v3(
         config.user_id,
         1,
         seq,
@@ -72,6 +73,7 @@ pub fn add_credential_with_provider(
         request.notes,
         descriptor,
     );
+    derive_password_v3(&master_key, &record, &Ff1CycleWalking::default())?;
     record.set_mac(&master_key)?;
     store.insert(&record)?;
     Ok(record)

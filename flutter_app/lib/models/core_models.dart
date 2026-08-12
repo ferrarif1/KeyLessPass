@@ -66,9 +66,17 @@ class CredentialRecord {
     required this.accountHint,
     required this.notes,
     required this.version,
+    required this.credentialGeneration,
+    required this.rootGeneration,
+    required this.policyEpoch,
+    required this.encoderVersion,
+    required this.derivationVersion,
     required this.salt,
     required this.encodingDescriptor,
     required this.state,
+    required this.rotationState,
+    required this.rotationContract,
+    required this.rotationEvidence,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -80,9 +88,17 @@ class CredentialRecord {
   final String accountHint;
   final String notes;
   final int version;
+  final int credentialGeneration;
+  final int rootGeneration;
+  final int? policyEpoch;
+  final int encoderVersion;
+  final int derivationVersion;
   final String salt;
   final Map<String, Object?> encodingDescriptor;
   final String state;
+  final String rotationState;
+  final String? rotationContract;
+  final Map<String, Object?>? rotationEvidence;
   final String createdAt;
   final String updatedAt;
 
@@ -96,10 +112,20 @@ class CredentialRecord {
       accountHint: json['accountHint'] as String? ?? '',
       notes: json['notes'] as String? ?? '',
       version: (json['version'] as num).toInt(),
+      credentialGeneration:
+          (json['credentialGeneration'] as num?)?.toInt() ?? 0,
+      rootGeneration: (json['rootGeneration'] as num?)?.toInt() ?? 1,
+      policyEpoch: (json['policyEpoch'] as num?)?.toInt(),
+      encoderVersion: (json['encoderVersion'] as num?)?.toInt() ?? 1,
+      derivationVersion: (json['derivationVersion'] as num?)?.toInt() ?? 1,
       salt: json['salt'] as String? ?? '',
       encodingDescriptor:
           (json['encodingDescriptor'] as Map).cast<String, Object?>(),
       state: json['state'] as String? ?? 'active',
+      rotationState: json['rotationState'] as String? ?? 'STABLE',
+      rotationContract: json['rotationContract'] as String?,
+      rotationEvidence:
+          (json['rotationEvidence'] as Map?)?.cast<String, Object?>(),
       createdAt: json['createdAt'] as String? ?? '',
       updatedAt: json['updatedAt'] as String? ?? '',
     );
@@ -119,9 +145,17 @@ class CredentialRecord {
       accountHint: accountHint ?? this.accountHint,
       notes: notes ?? this.notes,
       version: version,
+      credentialGeneration: credentialGeneration,
+      rootGeneration: rootGeneration,
+      policyEpoch: policyEpoch,
+      encoderVersion: encoderVersion,
+      derivationVersion: derivationVersion,
       salt: salt,
       encodingDescriptor: encodingDescriptor,
       state: state,
+      rotationState: rotationState,
+      rotationContract: rotationContract,
+      rotationEvidence: rotationEvidence,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

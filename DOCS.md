@@ -34,6 +34,9 @@ Use this page to find the shortest path for the job you want to finish.
 | Security notes | [docs/SECURITY.md](docs/SECURITY.md) | [docs/SECURITY.zh-CN.md](docs/SECURITY.zh-CN.md) |
 | Store readiness | [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md) | [docs/STORE_READINESS_CHECKLIST.zh-CN.md](docs/STORE_READINESS_CHECKLIST.zh-CN.md) |
 | Recovery implementation notes | [docs/security/2-of-3-recovery-implementation-notes.md](docs/security/2-of-3-recovery-implementation-notes.md) | [docs/security/2-of-3-recovery-implementation-notes.zh-CN.md](docs/security/2-of-3-recovery-implementation-notes.zh-CN.md) |
+| ASTER implementation and claim boundary | [docs/ASTER_IMPLEMENTATION_PROFILE.md](docs/ASTER_IMPLEMENTATION_PROFILE.md) | Same bilingual boundary document |
+| ASTER reproducibility artifact | [research/aster/README.md](research/aster/README.md) | Same artifact documentation |
+| ASTER evidence limitations | [research/aster/LIMITATIONS.md](research/aster/LIMITATIONS.md) | Same artifact documentation |
 
 ## Local Quick Commands
 

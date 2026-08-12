@@ -1,0 +1,76 @@
+{
+  "context": {
+    "accountID": "bbbbbbbb-1111-2222-3333-444444444444",
+    "credentialSalt": "EREREREREREREREREREREQ==",
+    "policyEpoch": 3,
+    "policyID": "cccccccc-1111-2222-3333-444444444444",
+    "policyVersion": 2,
+    "rootGeneration": 7,
+    "serviceID": "aaaaaaaa-1111-2222-3333-444444444444",
+    "vaultID": "00112233-4455-6677-8899-aabbccddeeff"
+  },
+  "credentialKey": "RV7TGEi4fcZfGFIPM4+uPC09nZu0SMHta6zHHffGH3o=",
+  "domainSize": "2356064357042341969920",
+  "generation": 42,
+  "password": "8v89dit72L!N",
+  "policy": {
+    "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$",
+    "classes": [
+      {
+        "alphabet": "abcdefghijklmnopqrstuvwxyz",
+        "maxCount": null,
+        "minCount": 1,
+        "name": "lower"
+      },
+      {
+        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "maxCount": null,
+        "minCount": 1,
+        "name": "upper"
+      },
+      {
+        "alphabet": "0123456789",
+        "maxCount": null,
+        "minCount": 1,
+        "name": "digit"
+      },
+      {
+        "alphabet": "!@#$",
+        "maxCount": null,
+        "minCount": 1,
+        "name": "symbol"
+      }
+    ],
+    "fixedCharacters": [],
+    "fixedPrefix": "",
+    "fixedSuffix": "",
+    "forbiddenCharacters": "",
+    "forbiddenFirstCharacters": "!@#$",
+    "forbiddenLastCharacters": "!@#$",
+    "forbiddenSubstrings": [],
+    "maxIdenticalRun": null,
+    "maxLength": 12,
+    "maxSequentialRun": null,
+    "maxTotalPerCharacter": null,
+    "minLength": 12,
+    "policyIrVersion": 1
+  },
+  "policyHash": "Eqd5EnkXzY15NP1PQwiI5MsNcShNMagYoJ8M6inIV08=",
+  "rank": "2280369250401738372095",
+  "rootKey": "IiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiI=",
+  "scheme": "ASTER exact-domain derivation",
+  "schemeVersion": 1,
+  "tweak": {
+    "accountId": "bbbbbbbb-1111-2222-3333-444444444444",
+    "credentialSalt": "EREREREREREREREREREREQ==",
+    "domain": "ASTER/exact-domain/policy-space-permutation/scheme-v1",
+    "policyEpoch": 3,
+    "policyHash": "Eqd5EnkXzY15NP1PQwiI5MsNcShNMagYoJ8M6inIV08=",
+    "policyId": "cccccccc-1111-2222-3333-444444444444",
+    "policyVersion": 2,
+    "rootGeneration": 7,
+    "schemeVersion": 1,
+    "serviceId": "aaaaaaaa-1111-2222-3333-444444444444",
+    "vaultId": "00112233-4455-6677-8899-aabbccddeeff"
+  }
+}

@@ -1,0 +1,45 @@
+[package]
+name = "aster-core"
+version = "0.1.0"
+description = "ASTER exact-domain derivation and lifecycle research artifact"
+edition = "2021"
+
+[lib]
+name = "keylesspass_core"
+crate-type = ["rlib"]
+
+[features]
+default = []
+research = ["dep:ed25519-dalek"]
+
+[dependencies]
+aes = "0.8"
+base64 = "0.22"
+ed25519-dalek = { version = "2", optional = true }
+fpe = "0.6.1"
+hkdf = "0.12"
+num-bigint = "0.4"
+num-traits = "0.2"
+rand = "0.8"
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_json_canonicalizer = "0.3.2"
+sha2 = "0.10"
+thiserror = "1"
+uuid = { version = "1", features = ["serde", "v4"] }
+zeroize = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+proptest = "1"
+tempfile = "3"
+
+[[example]]
+name = "aster_experiments"
+path = "../../../rust_core/examples/aster_experiments.rs"
+required-features = ["research"]
+
+[[example]]
+name = "aster_rq1"
+path = "../../../rust_core/examples/aster_rq1.rs"
+required-features = ["research"]

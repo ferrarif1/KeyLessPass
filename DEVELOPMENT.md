@@ -6,6 +6,7 @@
 - `rust_core/`: Rust cryptography, CDR storage, factor packages, recovery, and JSON FFI.
 - `packaging/`: macOS, Windows, and Linux packaging entry points.
 - `docs/`: architecture, productization, and readiness notes.
+- `research/aster/`: ASTER specifications, executable experiments, formal models, and result provenance. Manuscripts and journal-delivery files are intentionally ignored.
 
 ## Local Setup
 
@@ -33,6 +34,30 @@ cd flutter_app
 flutter gen-l10n
 flutter test test/i18n_test.dart
 ```
+
+## ASTER-Aligned Core Checks
+
+The desktop product uses exact-policy-space v3 for newly created credentials. Run the complete Rust and Flutter checks with:
+
+```bash
+cd rust_core
+cargo test
+cargo check --all-targets --all-features
+
+cd ../flutter_app
+flutter gen-l10n
+flutter analyze
+flutter test
+```
+
+The ASTER semantic research profile and its bounded evidence suite are separate from the local desktop compatibility profile:
+
+```bash
+cd ..
+./research/aster/scripts/reproduce_all.sh --quick
+```
+
+The semantic evaluator is process-local and must not be described as a production threshold deployment. The checked-in MP-SPDZ experiment establishes fixed-circuit feasibility only. See `docs/ASTER_IMPLEMENTATION_PROFILE.md` and `research/aster/LIMITATIONS.md`.
 
 ## USB Testing On macOS
 

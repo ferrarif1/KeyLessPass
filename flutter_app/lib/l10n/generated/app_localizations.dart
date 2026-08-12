@@ -806,6 +806,48 @@ abstract class AppLocalizations {
   /// **'Use the current and previous version buttons to derive either password.'**
   String get rotationPendingHelp;
 
+  /// No description provided for @rotationEvidenceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'After changing the remote password, record both authentication results. Local commit is allowed only when the new password succeeds and the old password conclusively fails.'**
+  String get rotationEvidenceHelp;
+
+  /// No description provided for @newPasswordWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'New password works'**
+  String get newPasswordWorks;
+
+  /// No description provided for @newPasswordFails.
+  ///
+  /// In en, this message translates to:
+  /// **'New password fails'**
+  String get newPasswordFails;
+
+  /// No description provided for @oldPasswordWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'Old password works'**
+  String get oldPasswordWorks;
+
+  /// No description provided for @oldPasswordFails.
+  ///
+  /// In en, this message translates to:
+  /// **'Old password fails'**
+  String get oldPasswordFails;
+
+  /// No description provided for @rotationEvidenceRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication evidence recorded.'**
+  String get rotationEvidenceRecorded;
+
+  /// No description provided for @rotationEvidenceRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The evidence is inconsistent or insufficient.'**
+  String get rotationEvidenceRejected;
+
   /// No description provided for @derivePendingPassword.
   ///
   /// In en, this message translates to:
@@ -1207,6 +1249,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Derivation algorithm'**
   String get derivationAlgorithm;
+
+  /// No description provided for @exactDomainAlgorithm.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact policy-space v3 (HKDF-SHA256 + FF1)'**
+  String get exactDomainAlgorithm;
+
+  /// No description provided for @exactDomainAlgorithmHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'New credentials use exact policy counting, Rank/Unrank, and a generation-indexed domain permutation. Legacy KDF metadata is retained only to reproduce older records.'**
+  String get exactDomainAlgorithmHelp;
 
   /// No description provided for @algorithmAppliesOnNextSetup.
   ///

@@ -34,6 +34,9 @@ English: [DOCS.md](DOCS.md)
 | 安全说明 | [docs/SECURITY.md](docs/SECURITY.md) | [docs/SECURITY.zh-CN.md](docs/SECURITY.zh-CN.md) |
 | 上架准备清单 | [docs/STORE_READINESS_CHECKLIST.md](docs/STORE_READINESS_CHECKLIST.md) | [docs/STORE_READINESS_CHECKLIST.zh-CN.md](docs/STORE_READINESS_CHECKLIST.zh-CN.md) |
 | 2-of-3 恢复实现说明 | [docs/security/2-of-3-recovery-implementation-notes.md](docs/security/2-of-3-recovery-implementation-notes.md) | [docs/security/2-of-3-recovery-implementation-notes.zh-CN.md](docs/security/2-of-3-recovery-implementation-notes.zh-CN.md) |
+| ASTER 实现和声明边界 | [docs/ASTER_IMPLEMENTATION_PROFILE.md](docs/ASTER_IMPLEMENTATION_PROFILE.md) | 同一份双语边界文档 |
+| ASTER 可复现研究工件 | [research/aster/README.md](research/aster/README.md) | 同一份工件说明 |
+| ASTER 证据局限 | [research/aster/LIMITATIONS.md](research/aster/LIMITATIONS.md) | 同一份工件说明 |
 
 ## 本地常用命令
 

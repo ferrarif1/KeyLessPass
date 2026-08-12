@@ -378,6 +378,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the current and previous version buttons to derive either password.';
 
   @override
+  String get rotationEvidenceHelp =>
+      'After changing the remote password, record both authentication results. Local commit is allowed only when the new password succeeds and the old password conclusively fails.';
+
+  @override
+  String get newPasswordWorks => 'New password works';
+
+  @override
+  String get newPasswordFails => 'New password fails';
+
+  @override
+  String get oldPasswordWorks => 'Old password works';
+
+  @override
+  String get oldPasswordFails => 'Old password fails';
+
+  @override
+  String get rotationEvidenceRecorded => 'Authentication evidence recorded.';
+
+  @override
+  String get rotationEvidenceRejected =>
+      'The evidence is inconsistent or insufficient.';
+
+  @override
   String get derivePendingPassword => 'Derive version password';
 
   @override
@@ -591,6 +614,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get derivationAlgorithm => 'Derivation algorithm';
+
+  @override
+  String get exactDomainAlgorithm =>
+      'Exact policy-space v3 (HKDF-SHA256 + FF1)';
+
+  @override
+  String get exactDomainAlgorithmHelp =>
+      'New credentials use exact policy counting, Rank/Unrank, and a generation-indexed domain permutation. Legacy KDF metadata is retained only to reproduce older records.';
 
   @override
   String get algorithmAppliesOnNextSetup =>

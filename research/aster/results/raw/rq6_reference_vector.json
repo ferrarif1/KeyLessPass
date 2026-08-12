@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "corruption_threshold": 1,
+      "effective_key_hex": "aaba8a9a150535259ebd9cfb9ab99877",
+      "parties": 3,
+      "rank": 70397,
+      "walks": 1
+    },
+    {
+      "corruption_threshold": 2,
+      "effective_key_hex": "ed248948d004ad60ca348ca7b7897103",
+      "parties": 5,
+      "rank": 697614,
+      "walks": 1
+    }
+  ],
+  "context_tweak_hex": "6f8e6fab7bfc9321be8fd9f529874379",
+  "domain_bits": 20,
+  "domain_size": 1000003,
+  "generation": 42,
+  "max_cycle_walks": 4,
+  "party_contributions_hex": [
+    "00112233445566778899aabbccddeeff",
+    "0f0e0d0c0b0a09080706050403020100",
+    "a5a5a5a55a5a5a5a1122334455667788",
+    "1234567890abcdeffedcba0987654321",
+    "55aa55aa55aa55aaaa55aa55aa55aa55"
+  ],
+  "rounds": 10
+}

@@ -1,6 +1,6 @@
-# Codex execution prompt: complete the ASTER research implementation and experiments
+# Execution prompt: complete the ASTER research implementation and experiments
 
-You are working in the existing **KeyLessPass** repository. Treat this as a research-engineering task whose end product must support an SCI security paper. Work autonomously: inspect the repository first, preserve existing behavior, create an isolated research implementation where appropriate, run the experiments, save raw results, generate tables/figures, and then replace every `CODEX-RESULT` marker in the ASTER manuscript with measured evidence. Do not invent numbers, citations, or successful tests.
+Treat this as a research-engineering task whose end product must support an SCI security paper. Inspect the repository first, preserve existing behavior, create an isolated research implementation where appropriate, run the experiments, save raw results, generate tables/figures, and replace every unresolved manuscript result marker with measured evidence. Do not invent numbers, citations, or successful tests.
 
 ## 0. Research target
 
@@ -69,9 +69,9 @@ If equivalent existing directories already exist, reuse them and document the ma
 
 Copy the provided ASTER manuscript into `research/aster/paper/ASTER_manuscript.md` and preserve all `CODEX-RESULT` markers until real results exist.
 
-## 3. Reuse the exact-policy-space implementation
+## 3. Implement the ASTER exact-domain layer
 
-Locate the existing exact policy compiler / Rank / Unrank implementation from the EPSCD work. Do not rewrite it from scratch unless the current implementation is unusable.
+Implement ASTER's exact policy compiler and Rank/Unrank path using the repository's maintained finite-language utilities where appropriate.
 
 Required API (adapt names to the repository):
 
@@ -391,14 +391,14 @@ Generate a figure showing unauthorized spill vs capability budget.
 
 ## 13. Experiment RQ3 - endpoint compromise blast radius
 
-Implement four baselines:
+Implement four controlled secret-exposure conditions:
 
-1. **LocalRoot**: endpoint reconstructs a reusable root during derivation.
-2. **LocalLineage**: endpoint receives a reusable per-lineage key.
-3. **RemoteBroadPRF**: remote service protects key but accepts broad attacker-chosen contexts.
-4. **ASTERExact**: exact capability + threshold/MPC evaluation.
+1. **Injected root exposure**: place a reusable root at the endpoint.
+2. **Injected lineage-key exposure**: place a reusable per-lineage key at the endpoint.
+3. **Injected broad capability**: allow attacker-chosen contexts at a remote evaluator.
+4. **Intended exact scope**: exact capability + threshold/MPC evaluation.
 
-Do not weaken ASTER to make baselines easier.
+Treat the first three as protocol negative controls, not competing systems.
 
 At three capture times (pre-request, in-flight output, post-use), collect a **research-secret inventory**, not actual secret values, plus a controlled attacker harness that tries to derive all contexts/generations without new approval.
 
@@ -615,7 +615,7 @@ Run repository-wide secret-pattern searches and test fixtures to enforce #10.
 
 Do not say the research implementation is complete until all of the following are true:
 
-- existing KeyLessPass production tests still pass;
+- existing product tests still pass;
 - ASTER semantic/unit/property tests pass;
 - the real threshold/MPC backend passes fixed-vector agreement tests;
 - no endpoint API exposes Root-Epoch/reusable lineage keys;

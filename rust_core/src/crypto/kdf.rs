@@ -226,7 +226,7 @@ pub fn password_derivation_input_v3(record: &CredentialDescriptionRecord) -> Res
     Ok(serde_json_canonicalizer::to_vec(&input)?)
 }
 
-/// Derives the 256-bit deterministic seed consumed by encoder v2 for CDR v3.
+/// Derives the compatibility seed used only for pre-ASTER credential records.
 pub fn derive_service_secret_v3(
     root_key: &[u8; 32],
     record: &CredentialDescriptionRecord,
