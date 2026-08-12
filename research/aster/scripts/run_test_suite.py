@@ -28,7 +28,7 @@ def main() -> int:
     if not artifact_crate.is_dir():
         artifact_crate = ROOT / "rust_core"
     cargo = run(
-        ["cargo", "test", "--release", "--all-features", "--", "--quiet"],
+        ["cargo", "test", "--release", "--all-features", "--lib", "--", "--quiet"],
         artifact_crate,
     )
     python = run(

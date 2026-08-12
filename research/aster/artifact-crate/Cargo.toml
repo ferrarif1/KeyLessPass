@@ -5,7 +5,7 @@ description = "ASTER exact-domain derivation and lifecycle research artifact"
 edition = "2021"
 
 [lib]
-name = "keylesspass_core"
+name = "aster_core"
 crate-type = ["rlib"]
 
 [features]

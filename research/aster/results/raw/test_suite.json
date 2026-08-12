@@ -7,20 +7,17 @@
       "test",
       "--release",
       "--all-features",
+      "--lib",
       "--",
       "--quiet"
     ],
     "returnCode": 0,
-    "stderr": "    Finished `release` profile [optimized] target(s) in 1.24s\n     Running unittests src/lib.rs (target/release/deps/keylesspass_core-94dbad0e1e2c1631)\n   Doc-tests keylesspass_core\n",
-    "stdout": "\nrunning 20 tests\n....................\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+    "stderr": "    Finished `release` profile [optimized] target(s) in 0.50s\n     Running unittests src/lib.rs (target/release/deps/aster_core-6be2d695373a7c5d)\n",
+    "stdout": "\nrunning 20 tests\n....................\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s\n\n",
     "testBinaries": [
       {
         "failed": 0,
         "passed": 20
-      },
-      {
-        "failed": 0,
-        "passed": 0
       }
     ],
     "totalFailed": 0,
@@ -33,7 +30,7 @@
     ],
     "passed": true,
     "returnCode": 0,
-    "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 4.065s\n\nOK\n",
+    "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 1.076s\n\nOK\n",
     "stdout": "",
     "totalRun": 9
   },

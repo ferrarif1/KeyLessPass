@@ -38,6 +38,7 @@ FORBIDDEN = re.compile(
             "Remote" + "BroadPRF",
             "ASTER" + "Exact",
             r"Encoder[ _-]?" + "v2",
+            "Key" + "LessPass",
         )
     ),
     re.IGNORECASE,
@@ -115,7 +116,7 @@ def audit(path: Path) -> None:
     if FORBIDDEN.search(relative):
         raise SystemExit(f"retired research name in artifact path: {relative}")
     try:
-        text = path.read_text(encoding="utf-8")
+        text = artifactize_text(path.read_text(encoding="utf-8"))
     except (UnicodeDecodeError, OSError):
         return
     match = FORBIDDEN.search(text)
@@ -123,6 +124,15 @@ def audit(path: Path) -> None:
         raise SystemExit(
             f"retired research name in artifact text: {relative}: {match.group(0)}"
         )
+
+
+def artifactize_text(text: str) -> str:
+    """Remove product-era identifiers from the standalone ASTER artifact."""
+    return (
+        text.replace("keylesspass_core", "aster_core")
+        .replace("KeylessPassError", "AsterCoreError")
+        .replace("keylesspass error", "ASTER core error")
+    )
 
 
 def add_bytes(archive: zipfile.ZipFile, destination: str, content: bytes, mode: int) -> None:
@@ -135,6 +145,10 @@ def add_bytes(archive: zipfile.ZipFile, destination: str, content: bytes, mode: 
 def add_file(archive: zipfile.ZipFile, source: Path) -> None:
     relative = source.relative_to(ROOT).as_posix()
     content = source.read_bytes()
+    try:
+        content = artifactize_text(content.decode("utf-8")).encode("utf-8")
+    except UnicodeDecodeError:
+        pass
     if relative.startswith("research/aster/artifact-crate/"):
         relative = "rust_core/" + relative.removeprefix(
             "research/aster/artifact-crate/"

@@ -9,6 +9,6 @@ Policy violations,0
 Same-lineage duplicates,0
 Replay mismatches,0
 Rank/Unrank failures,0
-Median compile time (ms),80
-P95 compile time (ms),1812
+Median compile time (ms),96
+P95 compile time (ms),5241
 Maximum automaton states,49401

@@ -36,7 +36,7 @@ pub enum AsterError {
     Policy(String),
     #[error("storage error: {0}")]
     Storage(#[from] rusqlite::Error),
-    #[error("exact-domain error: {0}")]
+    #[error("ASTER core error: {0}")]
     Core(#[from] crate::error::KeylessPassError),
 }
 

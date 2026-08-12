@@ -29,6 +29,7 @@ research/aster/scripts/run_tla.sh
 if [[ "$MODE" == "--full" ]]; then
   cd "$ROOT/rust_core"
   cargo run --release --features research --example aster_rq1 -- \
+    ../experiments/real_policy_corpus/translated_corpus.json \
     ../research/aster/results/raw/rq1_policy_results.jsonl
   cd "$ROOT"
   if ! docker image inspect aster-mpspdz:mal-shamir-bmr-max5 >/dev/null 2>&1; then

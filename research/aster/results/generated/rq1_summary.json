@@ -2,22 +2,22 @@
   "acceptanceCriterion": true,
   "boundary": "All 121 exact translations compiled. The configured FF1 implementation completed full sequences for 97 policies and failed closed for 24 domains above its 512-bit ceiling.",
   "compileMillis": {
-    "maximum": 59439,
-    "median": 80,
-    "p95": 1812,
-    "p99": 5803,
+    "maximum": 40610,
+    "median": 96,
+    "p95": 5241,
+    "p99": 7934,
     "samples": 121
   },
   "deriveMillisPerPolicy": {
-    "maximum": 61383,
-    "median": 22054,
-    "p95": 52786,
-    "p99": 58918,
+    "maximum": 233693,
+    "median": 22540,
+    "p95": 131978,
+    "p99": 179734,
     "samples": 97
   },
   "exactlyTranslated": 121,
   "failClosedReasons": {
-    "keylesspass error: validation error: FF1 domain exceeds 512 bits": 24
+    "ASTER core error: validation error: FF1 domain exceeds 512 bits": 24
   },
   "generatedCredentials": 9700000,
   "largestDomainBits": 840.9567846230146,
